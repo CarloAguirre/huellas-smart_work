@@ -1,0 +1,41 @@
+/* Estilo para el contenedor principal */
+.container {
+    display: flex;
+    height: 100vh; /* Ocupará toda la altura de la ventana */
+  }
+  
+  /* Estilo para el sidebar */
+  .sidebar {
+    width: 200px;  /* Ancho fijo del sidebar */
+    background-color: #f5f5f5; /* Color de fondo del sidebar */
+    padding: 15px; /* Espaciado interno del sidebar */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Sombra sutil para darle profundidad */
+    overflow-y: auto; /* Permitirá el desplazamiento si el contenido del sidebar es muy largo */
+  }
+  
+  .sidebar ul {
+    list-style-type: none; /* Remueve los puntos de la lista */
+    padding: 0;  /* Remueve el padding por defecto */
+  }
+  
+  .sidebar li {
+    margin-bottom: 10px; /* Espaciado entre los elementos del sidebar */
+  }
+  
+  .sidebar a {
+    text-decoration: none; /* Remueve el subrayado de los enlaces */
+    color: #333; /* Color de texto de los enlaces */
+  }
+  
+  .sidebar a:hover {
+    text-decoration: underline; /* Subraya el enlace al pasar el cursor */
+  }
+  
+  /* Estilo para el área principal de contenido */
+  .content {
+    flex-grow: 1;  /* Permite que el contenido ocupe todo el espacio restante */
+    padding: 15px; /* Espaciado interno del área de contenido */
+    background-color: #ffffff; /* Color de fondo del área de contenido */
+    overflow-y: auto; /* Permitirá el desplazamiento si el contenido es muy largo */
+  }
+  

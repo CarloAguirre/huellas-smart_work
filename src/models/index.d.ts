@@ -42,8 +42,18 @@ type EagerFactor = {
     readOnlyFields: 'createdAt' | 'updatedAt';
   };
   readonly id: string;
-  readonly name?: string | null;
-  readonly type?: string | null;
+  readonly cod: string;
+  readonly ALCANCE: string;
+  readonly CATEGORIA: string;
+  readonly SUBCATEGORIA: string;
+  readonly ACTIVIDAD: string;
+  readonly CONCATENADO: string;
+  readonly COMBUSTIBLE: string;
+  readonly CONTAMINANTE: string;
+  readonly INCERTIDUMBRE: string;
+  readonly VALORFE: string;
+  readonly UNIDADFE: string;
+  readonly ORIGENFE: string;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -54,8 +64,18 @@ type LazyFactor = {
     readOnlyFields: 'createdAt' | 'updatedAt';
   };
   readonly id: string;
-  readonly name?: string | null;
-  readonly type?: string | null;
+  readonly cod: string;
+  readonly ALCANCE: string;
+  readonly CATEGORIA: string;
+  readonly SUBCATEGORIA: string;
+  readonly ACTIVIDAD: string;
+  readonly CONCATENADO: string;
+  readonly COMBUSTIBLE: string;
+  readonly CONTAMINANTE: string;
+  readonly INCERTIDUMBRE: string;
+  readonly VALORFE: string;
+  readonly UNIDADFE: string;
+  readonly ORIGENFE: string;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }

@@ -85,18 +85,88 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
-                "name": {
-                    "name": "name",
+                "cod": {
+                    "name": "cod",
                     "isArray": false,
                     "type": "String",
-                    "isRequired": false,
+                    "isRequired": true,
                     "attributes": []
                 },
-                "type": {
-                    "name": "type",
+                "ALCANCE": {
+                    "name": "ALCANCE",
                     "isArray": false,
                     "type": "String",
-                    "isRequired": false,
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "CATEGORIA": {
+                    "name": "CATEGORIA",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "SUBCATEGORIA": {
+                    "name": "SUBCATEGORIA",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "ACTIVIDAD": {
+                    "name": "ACTIVIDAD",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "CONCATENADO": {
+                    "name": "CONCATENADO",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "COMBUSTIBLE": {
+                    "name": "COMBUSTIBLE",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "CONTAMINANTE": {
+                    "name": "CONTAMINANTE",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "INCERTIDUMBRE": {
+                    "name": "INCERTIDUMBRE",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "VALORFE": {
+                    "name": "VALORFE",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "UNIDADFE": {
+                    "name": "UNIDADFE",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "ORIGENFE": {
+                    "name": "ORIGENFE",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
                     "attributes": []
                 },
                 "createdAt": {
@@ -154,5 +224,5 @@ export const schema = {
     "enums": {},
     "nonModels": {},
     "codegenVersion": "3.4.4",
-    "version": "daf5cd420c886240a1524923382f8260"
+    "version": "af6c4e8bee11172a77b6716b88162c10"
 };

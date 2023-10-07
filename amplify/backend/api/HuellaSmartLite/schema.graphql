@@ -6,6 +6,16 @@ type Company @model @auth(rules: [{allow: public}, {allow: private}]) {
 
 type Factor @model @auth(rules: [{allow: public}, {allow: private}]) {
   id: ID!
-  name: String
-  type: String
-} 
+  cod: String!
+  ALCANCE: String!
+  CATEGORIA: String!
+  SUBCATEGORIA: String!
+  ACTIVIDAD: String!
+  CONCATENADO: String!
+  COMBUSTIBLE: String!
+  CONTAMINANTE: String!
+  INCERTIDUMBRE: String!
+  VALORFE: String!
+  UNIDADFE: String!
+  ORIGENFE: String!
+}

@@ -1,6 +1,72 @@
+<!-- factores-de-emision.component.html -->
+
+<!-- Botón para mostrar formulario -->
+<button mat-raised-button (click)="mostrarFormulario()">Nuevo Factor de Emisión</button>
+<!-- Formulario de Nuevo Factor -->
+<button mat-raised-button color="warn" (click)="eliminarSeleccionados()">Eliminar seleccionados</button>
+<div *ngIf="mostrandoFormulario">
+    
+    <form [formGroup]="form" (ngSubmit)="agregarFactor()">
+        
+        <mat-form-field>
+            <input matInput placeholder="cod" formControlName="cod">
+        </mat-form-field>
+        <mat-form-field>
+            <input matInput placeholder="ALCANCE" formControlName="ALCANCE">
+        </mat-form-field>
+        <mat-form-field>
+            <input matInput placeholder="CATEGORIA" formControlName="CATEGORIA">
+        </mat-form-field>
+        <mat-form-field>
+            <input matInput placeholder="SUBCATEGORIA" formControlName="SUBCATEGORIA">
+        </mat-form-field>
+        <mat-form-field>
+            <input matInput placeholder="ACTIVIDAD" formControlName="ACTIVIDAD">
+        </mat-form-field>
+        <mat-form-field>
+            <input matInput placeholder="CONCATENADO" formControlName="CONCATENADO">
+        </mat-form-field>
+        <mat-form-field>
+            <input matInput placeholder="COMBUSTIBLE" formControlName="COMBUSTIBLE">
+        </mat-form-field>
+        <mat-form-field>
+            <input matInput placeholder="CONTAMINANTE" formControlName="CONTAMINANTE">
+        </mat-form-field>
+        <mat-form-field>
+            <input matInput placeholder="INCERTIDUMBRE" formControlName="INCERTIDUMBRE">
+        </mat-form-field>
+        <mat-form-field>
+            <input matInput placeholder="VALORFE" formControlName="VALORFE">
+        </mat-form-field>
+        <mat-form-field>
+            <input matInput placeholder="UNIDADFE" formControlName="UNIDADFE">
+        </mat-form-field>
+        <mat-form-field>
+            <input matInput placeholder="ORIGENFE" formControlName="ORIGENFE">
+        </mat-form-field>
+
+        <button mat-raised-button type="submit">Guardar</button>
+        <button mat-raised-button type="button" (click)="cancelarFormulario()">Cancelar</button>
+    </form>
+</div>
+
+
 <table mat-table [dataSource]="factores" class="mat-elevation-z8 tablaFactores">
-    <!-- ID Column -->
-    <!-- ALCANCE Column -->
+<!-- Columna de selección -->
+<ng-container matColumnDef="select">
+    <th mat-header-cell *matHeaderCellDef>
+        <mat-checkbox (change)="$event ? masterToggle() : null"
+                      [checked]="selection.hasValue() && isAllSelected()"
+                      [indeterminate]="selection.hasValue() && !isAllSelected()">
+        </mat-checkbox>
+    </th>
+    <td mat-cell *matCellDef="let row">
+        <mat-checkbox (click)="$event.stopPropagation()" 
+                      (change)="$event ? selection.toggle(row) : null" 
+                      [checked]="selection.isSelected(row)">
+        </mat-checkbox>
+    </td>
+</ng-container>
     <ng-container matColumnDef="ALCANCE">
         <th mat-header-cell *matHeaderCellDef>ALCANCE</th>
         <td mat-cell *matCellDef="let factor">{{factor.ALCANCE}}</td>

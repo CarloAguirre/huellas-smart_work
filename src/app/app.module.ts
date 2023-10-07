@@ -13,6 +13,11 @@ import { EmisionesComponent } from './emisiones/emisiones.component';
 import { ResultadosComponent } from './resultados/resultados.component';
 import { MatTableModule } from '@angular/material/table';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+
+import { ReactiveFormsModule } from '@angular/forms';
 
 Amplify.configure(awsconfig);
 
@@ -29,7 +34,11 @@ Amplify.configure(awsconfig);
     AppRoutingModule,
     HttpClientModule,
     MatTableModule,
-    NoopAnimationsModule
+    NoopAnimationsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatCheckboxModule
   ],
   providers: [],
   bootstrap: [AppComponent]

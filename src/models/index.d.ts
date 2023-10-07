@@ -51,7 +51,7 @@ type EagerFactor = {
   readonly COMBUSTIBLE: string;
   readonly CONTAMINANTE: string;
   readonly INCERTIDUMBRE: string;
-  readonly VALORFE: string;
+  readonly VALORFE: number;
   readonly UNIDADFE: string;
   readonly ORIGENFE: string;
   readonly createdAt?: string | null;
@@ -73,7 +73,7 @@ type LazyFactor = {
   readonly COMBUSTIBLE: string;
   readonly CONTAMINANTE: string;
   readonly INCERTIDUMBRE: string;
-  readonly VALORFE: string;
+  readonly VALORFE: number;
   readonly UNIDADFE: string;
   readonly ORIGENFE: string;
   readonly createdAt?: string | null;

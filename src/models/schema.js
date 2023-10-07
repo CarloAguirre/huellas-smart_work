@@ -151,7 +151,7 @@ export const schema = {
                 "VALORFE": {
                     "name": "VALORFE",
                     "isArray": false,
-                    "type": "String",
+                    "type": "Float",
                     "isRequired": true,
                     "attributes": []
                 },
@@ -224,5 +224,5 @@ export const schema = {
     "enums": {},
     "nonModels": {},
     "codegenVersion": "3.4.4",
-    "version": "af6c4e8bee11172a77b6716b88162c10"
+    "version": "a4eee18ee73ed82a027cb626a048673f"
 };

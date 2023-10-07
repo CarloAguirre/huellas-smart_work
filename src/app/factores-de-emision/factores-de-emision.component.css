@@ -16,3 +16,11 @@
 .tablaFactores th {
     white-space: nowrap;  /* Esto hace que el encabezado de la celda no se divida */
 }
+
+mat-form-field {
+    width: 100%;
+}
+
+mat-form-field.mat-select {
+    width: 300px;
+}

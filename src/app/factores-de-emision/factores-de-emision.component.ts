@@ -6,6 +6,7 @@ import { Factor} from 'src/models';  // La ruta puede variar según donde se gen
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ChangeDetectorRef } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-factores-de-emision',
@@ -16,7 +17,7 @@ export class FactoresDeEmisionComponent implements OnInit {
   selection = new SelectionModel<Factor>(true, []);
 
   factores: any[] = [];
-  displayedColumns: string[] = ['select','ALCANCE', 'CATEGORIA', 'SUBCATEGORIA', 'ACTIVIDAD', 'CONCATENADO', 'COMBUSTIBLE', 'CONTAMINANTE', 'INCERTIDUMBRE', 'VALORFE', 'UNIDADFE', 'ORIGENFE'];
+  displayedColumns: string[] = ['select','ID/COD','ALCANCE', 'CATEGORIA', 'SUBCATEGORIA', 'ACTIVIDAD', 'COMBUSTIBLE', 'CONTAMINANTE', 'INCERTIDUMBRE', 'VALORFE', 'UNIDADFE', 'ORIGENFE'];
 
   public form: FormGroup = new FormGroup({
     cod: new FormControl('', Validators.required),
@@ -24,60 +25,99 @@ export class FactoresDeEmisionComponent implements OnInit {
     CATEGORIA: new FormControl('', Validators.required),
     SUBCATEGORIA: new FormControl('', Validators.required),
     ACTIVIDAD: new FormControl('', Validators.required),
-    CONCATENADO: new FormControl('', Validators.required),
     COMBUSTIBLE: new FormControl('', Validators.required),
-    CONTAMINANTE: new FormControl('', Validators.required),
-    INCERTIDUMBRE: new FormControl('', Validators.required),
-    VALORFE: new FormControl('', Validators.required),
     UNIDADFE: new FormControl('', Validators.required),
+    FE_CO2: new FormControl('', Validators.required),
+    FE_CH4: new FormControl('', Validators.required),
+    FE_N2O: new FormControl('', Validators.required),
+    FE_SF6: new FormControl('', Validators.required),
+    FE_HFC: new FormControl('', Validators.required),
+    FE_PFC: new FormControl('', Validators.required),
+    FE_NF3: new FormControl('', Validators.required),
+    INCERTIDUMBRE: new FormControl('', Validators.required),
     ORIGENFE: new FormControl('', Validators.required),
         //... puedes agregar todos los campos que necesites aquí.
 });
 
 public mostrandoFormulario = false;
 
-constructor(private http: HttpClient, private cdRef: ChangeDetectorRef) { }
+constructor(private http: HttpClient, private cdRef: ChangeDetectorRef, private snackBar: MatSnackBar) { }
   
-  async ngOnInit(): Promise<void> {
-    let factoresDesdeDataStore: Factor[] = [];
-    try {
-      factoresDesdeDataStore = await DataStore.query(Factor);
-    } catch (error) {
-      console.error('Error al consultar DataStore:', error);
-    }
-    
-    this.http.get<any>('/assets/factores.json').subscribe(data => {
-      let combustiblesVistos = new Set();
-    
-      const factoresDesdeJson = data.factores;
-      this.factores = [...factoresDesdeDataStore, ...factoresDesdeJson];
-
-      
-      this.factores = this.factores.filter((factor: any) => {
-        if (!combustiblesVistos.has(factor.CONCATENADO)) {
-          combustiblesVistos.add(factor.CONCATENADO);
-          return true;  // conserva el factor en el array
-        }
-        return false;  // descarta el factor del array
-      });
-    });
+async ngOnInit(): Promise<void> {
+  let factoresDesdeDataStore: Factor[] = [];
+  try {
+    factoresDesdeDataStore = await DataStore.query(Factor);
+  } catch (error) {
+    console.error('Error al consultar DataStore:', error);
   }
+  
+  this.http.get<any>('/assets/factores.json').subscribe(data => {
+    const factoresDesdeJson = data.factores;
+    this.factores = [...factoresDesdeDataStore, ...factoresDesdeJson];
+  });
+}
+
+
   mostrarFormulario(): void {
     this.mostrandoFormulario = true;
 }
 
 async agregarFactor(): Promise<void> {
-    const nuevoFactor = this.form.value;
-    try {
-        await DataStore.save(new Factor(nuevoFactor));
-        this.factores = [nuevoFactor, ...this.factores];
-        this.cdRef.detectChanges();
-        this.mostrandoFormulario = false; // Oculta el formulario
-        this.form.reset(); // <-- Limpia el formulario
-    } catch (error) {
-        console.error("Error al guardar el nuevo factor:", error);
-    }
+
+  if (!this.form.valid) {
+    // Muestra un mensaje de error usando MatSnackBar
+    this.snackBar.open('Por favor, completa todos los campos requeridos', 'Cerrar', {
+        duration: 5000, // El mensaje se mostrará durante 5 segundos
+    });
+    return;
 }
+  const nuevoFactorBase = this.form.value;
+
+  // Creamos el valor para CONCATENADO
+  nuevoFactorBase.CONCATENADO = `${nuevoFactorBase.SUBCATEGORIA} - ${nuevoFactorBase.ACTIVIDAD} - ${nuevoFactorBase.COMBUSTIBLE}`;
+
+  const contaminantes = [
+    { nombre: "Dióxido de Carbono (CO2)", valor: parseFloat(nuevoFactorBase.FE_CO2)},
+    { nombre: "Metano (CH4)", valor: parseFloat(nuevoFactorBase.FE_CH4) },
+    { nombre: "Óxido Nitroso (N2O)", valor: parseFloat(nuevoFactorBase.FE_N2O) },
+    { nombre: "Hexafluoruro de azufre (SF6)", valor: parseFloat(nuevoFactorBase.FE_SF6) },
+    { nombre: "Hidrofluorocarbono (HFC)", valor: parseFloat(nuevoFactorBase.FE_HFC)},
+    { nombre: "Perfluorocarbono (PFC)", valor: parseFloat(nuevoFactorBase.FE_PFC) },
+    { nombre: "Trifluoruro de nitrógeno (NF3)", valor: parseFloat(nuevoFactorBase.FE_NF3)}
+];
+
+
+
+for (let contaminante of contaminantes) {
+  let registro = {
+      ...nuevoFactorBase,
+      CONTAMINANTE: contaminante.nombre,
+      VALORFE: contaminante.valor
+  };
+
+  // Elimina las propiedades que ya no son necesarias
+  delete registro.FE_CO2;
+  delete registro.FE_CH4;
+  delete registro.FE_N2O;
+  delete registro.FE_SF6;
+  delete registro.FE_HFC;
+  delete registro.FE_PFC;
+  delete registro.FE_NF3;
+
+  try {
+      await DataStore.save(new Factor(registro));
+      this.factores = [registro, ...this.factores];
+  } catch (error) {
+      console.error("Error al guardar el nuevo factor:", error);
+  }
+}
+
+
+  this.cdRef.detectChanges();
+  this.mostrandoFormulario = false;
+  this.form.reset();
+}
+
 
 cancelarFormulario(): void {
     this.mostrandoFormulario = false;
@@ -101,23 +141,29 @@ async eliminarSeleccionados(): Promise<void> {
   if (!confirmar) {
       return;
   }
-  const seleccionados = this.selection.selected;
 
-  // Elimina de DataStore
-  for (let item of seleccionados) {
-      try {
+  // Obtiene los códigos únicos de los elementos seleccionados
+  const codigosAEliminar = [...new Set(this.selection.selected.map(item => item.cod))];
+
+    for (const cod of codigosAEliminar) {
+      const itemsConMismoCod = await DataStore.query(Factor, c => c.cod.eq(cod));
+      
+      for (const item of itemsConMismoCod) {
+        try {
           await DataStore.delete(Factor, item.id);
-      } catch (error) {
+        } catch (error) {
           console.error("Error al eliminar el factor:", error);
+        }
       }
-  }
+    }
 
-  // Actualiza el arreglo local
-  this.factores = this.factores.filter(factor => !this.selection.isSelected(factor));
+    // Actualiza el arreglo local filtrando por los códigos que no deben ser eliminados
+    this.factores = this.factores.filter(factor => !codigosAEliminar.includes(factor.cod));
 
   // Limpia la selección
   this.selection.clear();
 }
+
 
 
 }

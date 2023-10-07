@@ -5,17 +5,42 @@
 <!-- Formulario de Nuevo Factor -->
 <button mat-raised-button color="warn" (click)="eliminarSeleccionados()">Eliminar seleccionados</button>
 <div *ngIf="mostrandoFormulario">
-    
+
     <form [formGroup]="form" (ngSubmit)="agregarFactor()">
-        
+
         <mat-form-field>
             <input matInput placeholder="cod" formControlName="cod">
         </mat-form-field>
+
+
         <mat-form-field>
-            <input matInput placeholder="ALCANCE" formControlName="ALCANCE">
+            <mat-label>ALCANCE</mat-label>
+            <mat-select formControlName="ALCANCE">
+                <mat-option value="Alcance 1">Alcance 1</mat-option>
+                <mat-option value="Alcance 2">Alcance 2</mat-option>
+                <mat-option value="Alcance 3">Alcance 3</mat-option>
+            </mat-select>
         </mat-form-field>
         <mat-form-field>
-            <input matInput placeholder="CATEGORIA" formControlName="CATEGORIA">
+            <mat-label>CATEGORIA</mat-label>
+            <mat-select formControlName="CATEGORIA">
+                <mat-option value="Combustión estacionaria">Combustión estacionaria</mat-option>
+                <mat-option value="Combustión móvil">Combustión móvil</mat-option>
+                <mat-option value="Emisiones de procesos">Emisiones de procesos</mat-option>
+                <mat-option value="Emisiones fugitivas">Emisiones fugitivas</mat-option>
+                <mat-option value="Calor, vapor, refrigeración y aire comprimido comprados">Calor, vapor, refrigeración y aire comprimido comprados</mat-option>
+                <mat-option value="Electricidad comprada">Electricidad comprada</mat-option>
+                <mat-option value="Pérdidas por transmisión y distribución">Pérdidas por transmisión y distribución</mat-option>
+                <mat-option value="Bienes y servicios comprados">Bienes y servicios comprados</mat-option>
+                <mat-option value="Desplazamiento de los empleados ">Desplazamiento de los empleados</mat-option>
+                <mat-option value="Residuos generados en las operaciones">Residuos generados en las operaciones</mat-option>
+                <mat-option value="Transporte y distribución aguas abajo (cadena de valor)">Transporte y distribución aguas abajo (cadena de valor)</mat-option>
+                <mat-option value="Transporte y distribución aguas arriba (cadena de suministro)">Transporte y distribución aguas arriba (cadena de suministro)</mat-option>
+                <mat-option value="Uso de productos vendidos">Uso de productos vendidos</mat-option>
+                <mat-option value="Viajes de negocio">Viajes de negocio</mat-option>
+
+            </mat-select>
+
         </mat-form-field>
         <mat-form-field>
             <input matInput placeholder="SUBCATEGORIA" formControlName="SUBCATEGORIA">
@@ -24,22 +49,49 @@
             <input matInput placeholder="ACTIVIDAD" formControlName="ACTIVIDAD">
         </mat-form-field>
         <mat-form-field>
-            <input matInput placeholder="CONCATENADO" formControlName="CONCATENADO">
-        </mat-form-field>
-        <mat-form-field>
             <input matInput placeholder="COMBUSTIBLE" formControlName="COMBUSTIBLE">
         </mat-form-field>
         <mat-form-field>
-            <input matInput placeholder="CONTAMINANTE" formControlName="CONTAMINANTE">
+            <mat-label>UNIDAD DE MEDIDA</mat-label>
+            <mat-select formControlName="UNIDADFE">
+                <mat-option value="kgCO2eq/$">kgCO2eq/$</mat-option>
+                <mat-option value="kgCO2eq/kg">kgCO2eq/kg</mat-option>
+                <mat-option value="kgCO2eq/l">kgCO2eq/l</mat-option>
+                <mat-option value="kgCO2eq/m3">kgCO2eq/m3</mat-option>
+                <mat-option value="kgCO2eq/MWh">kgCO2eq/MWh</mat-option>
+                <mat-option value="kgCO2eq/persona-km">kgCO2eq/persona-km</mat-option>
+                <mat-option value="kgCO2eq/t">kgCO2eq/t</mat-option>
+                <mat-option value="kgCO2eq/t-km">kgCO2eq/t-km</mat-option>
+            </mat-select>
         </mat-form-field>
         <mat-form-field>
-            <input matInput placeholder="INCERTIDUMBRE" formControlName="INCERTIDUMBRE">
+            <input matInput placeholder="Dióxido de Carbono (CO2)" formControlName="FE_CO2">
         </mat-form-field>
         <mat-form-field>
-            <input matInput placeholder="VALORFE" formControlName="VALORFE">
+            <input matInput placeholder="Metano (CH4)" formControlName="FE_CH4">
         </mat-form-field>
         <mat-form-field>
-            <input matInput placeholder="UNIDADFE" formControlName="UNIDADFE">
+            <input matInput placeholder="Óxido Nitroso (N2O)" formControlName="FE_N2O">
+        </mat-form-field>
+        <mat-form-field>
+            <input matInput placeholder="Hexafluoruro de azufre (SF6)" formControlName="FE_SF6">
+        </mat-form-field>
+        <mat-form-field>
+            <input matInput placeholder="Hidrofluorocarbono (HFC)" formControlName="FE_HFC">
+        </mat-form-field>
+        <mat-form-field>
+            <input matInput placeholder="Perfluorocarbono (PFC)" formControlName="FE_PFC">
+        </mat-form-field>
+        <mat-form-field>
+            <input matInput placeholder="Trifluoruro de nitrógeno (NF3)" formControlName="FE_NF3">
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>INCERTIDUMBRE</mat-label>
+            <mat-select formControlName="INCERTIDUMBRE">
+                <mat-option value="ALTA">ALTA</mat-option>
+                <mat-option value="MEDIA">MEDIA</mat-option>
+                <mat-option value="BAJA">BAJA</mat-option>
+            </mat-select>
         </mat-form-field>
         <mat-form-field>
             <input matInput placeholder="ORIGENFE" formControlName="ORIGENFE">
@@ -52,26 +104,30 @@
 
 
 <table mat-table [dataSource]="factores" class="mat-elevation-z8 tablaFactores">
-<!-- Columna de selección -->
-<ng-container matColumnDef="select">
-    <th mat-header-cell *matHeaderCellDef>
-        <mat-checkbox (change)="$event ? masterToggle() : null"
-                      [checked]="selection.hasValue() && isAllSelected()"
-                      [indeterminate]="selection.hasValue() && !isAllSelected()">
-        </mat-checkbox>
-    </th>
-    <td mat-cell *matCellDef="let row">
-        <mat-checkbox (click)="$event.stopPropagation()" 
-                      (change)="$event ? selection.toggle(row) : null" 
-                      [checked]="selection.isSelected(row)">
-        </mat-checkbox>
-    </td>
-</ng-container>
+    <!-- Columna de selección -->
+    <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+            <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
+                [indeterminate]="selection.hasValue() && !isAllSelected()">
+            </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row">
+            <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+                [checked]="selection.isSelected(row)">
+            </mat-checkbox>
+        </td>
+    </ng-container>
+    <ng-container matColumnDef="ID/COD">
+        <th mat-header-cell *matHeaderCellDef>ID/COD</th>
+        <td mat-cell *matCellDef="let factor">
+            <ng-container *ngIf="factor.ID; else showCod">{{factor.ID}}</ng-container>
+            <ng-template #showCod>{{factor.cod}}</ng-template>
+        </td>
+    </ng-container>
     <ng-container matColumnDef="ALCANCE">
         <th mat-header-cell *matHeaderCellDef>ALCANCE</th>
         <td mat-cell *matCellDef="let factor">{{factor.ALCANCE}}</td>
     </ng-container>
-
     <!-- CATEGORIA Column -->
     <ng-container matColumnDef="CATEGORIA">
         <th mat-header-cell *matHeaderCellDef>CATEGORIA</th>
@@ -87,11 +143,6 @@
     <ng-container matColumnDef="ACTIVIDAD">
         <th mat-header-cell *matHeaderCellDef>ACTIVIDAD</th>
         <td mat-cell *matCellDef="let factor">{{factor.ACTIVIDAD}}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="CONCATENADO">
-        <th mat-header-cell *matHeaderCellDef>CONCATENADO</th>
-        <td mat-cell *matCellDef="let factor">{{factor.CONCATENADO}}</td>
     </ng-container>
 
     <ng-container matColumnDef="COMBUSTIBLE">

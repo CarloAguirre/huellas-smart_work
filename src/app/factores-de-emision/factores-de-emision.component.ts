@@ -27,13 +27,13 @@ export class FactoresDeEmisionComponent implements OnInit {
     ACTIVIDAD: new FormControl('', Validators.required),
     COMBUSTIBLE: new FormControl('', Validators.required),
     UNIDADFE: new FormControl('', Validators.required),
-    FE_CO2: new FormControl('', Validators.required),
-    FE_CH4: new FormControl('', Validators.required),
-    FE_N2O: new FormControl('', Validators.required),
-    FE_SF6: new FormControl('', Validators.required),
-    FE_HFC: new FormControl('', Validators.required),
-    FE_PFC: new FormControl('', Validators.required),
-    FE_NF3: new FormControl('', Validators.required),
+    FE_CO2: new FormControl('', [Validators.pattern(/^\d+(\.\d+)?$/)]),
+    FE_CH4: new FormControl('', [Validators.pattern(/^\d+(\.\d+)?$/)]),
+    FE_N2O: new FormControl('', [Validators.pattern(/^\d+(\.\d+)?$/)]),
+    FE_SF6: new FormControl('', [Validators.pattern(/^\d+(\.\d+)?$/)]),
+    FE_HFC: new FormControl('', [Validators.pattern(/^\d+(\.\d+)?$/)]),
+    FE_PFC: new FormControl('', [Validators.pattern(/^\d+(\.\d+)?$/)]),
+    FE_NF3: new FormControl('', [Validators.pattern(/^\d+(\.\d+)?$/)]),
     INCERTIDUMBRE: new FormControl('', Validators.required),
     ORIGENFE: new FormControl('', Validators.required),
         //... puedes agregar todos los campos que necesites aquí.
@@ -89,10 +89,13 @@ async agregarFactor(): Promise<void> {
 
 
 for (let contaminante of contaminantes) {
+  // Si el valor del contaminante es vacío o nulo, continuamos con el siguiente
+  if (!contaminante.valor) continue;
+
   let registro = {
-      ...nuevoFactorBase,
-      CONTAMINANTE: contaminante.nombre,
-      VALORFE: contaminante.valor
+    ...nuevoFactorBase,
+    CONTAMINANTE: contaminante.nombre,
+    VALORFE: contaminante.valor
   };
 
   // Elimina las propiedades que ya no son necesarias
@@ -163,7 +166,39 @@ async eliminarSeleccionados(): Promise<void> {
   // Limpia la selección
   this.selection.clear();
 }
+descargarCSV(): void {
+  let csvData = this.convertToCSV(this.factores);
+  let blob = new Blob(['\ufeff' + csvData], { type: 'text/csv;charset=utf-8;' });
+  let dwldLink = document.createElement("a");
+  let url = URL.createObjectURL(blob);
+  dwldLink.setAttribute("href", url);
+  dwldLink.setAttribute("download", "factores.csv");
+  dwldLink.style.visibility = "hidden";
+  document.body.appendChild(dwldLink);
+  dwldLink.click();
+  document.body.removeChild(dwldLink);
+}
 
+convertToCSV(objArray: any[]): string {
+  // Campos que quieres incluir en el CSV
+  const camposPermitidos = [
+    "cod", "ALCANCE", "CATEGORIA", "SUBCATEGORIA", "ACTIVIDAD", "CONCATENADO", 
+    "COMBUSTIBLE", "CONTAMINANTE", "INCERTIDUMBRE", "VALORFE", "UNIDADFE", "ORIGENFE"
+  ];
+  
+  let str = '';
+  
+  // Encabezado
+  let header = camposPermitidos.join(",");
+  str += header + '\r\n';
+
+  for (let i = 0; i < objArray.length; i++) {
+    let line = camposPermitidos.map(campo => objArray[i][campo]).join(",");
+    str += line + '\r\n';
+  }
+
+  return str;
+}
 
 
 }

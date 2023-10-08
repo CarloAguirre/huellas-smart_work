@@ -4,6 +4,8 @@
 <button mat-raised-button (click)="mostrarFormulario()">Nuevo Factor de Emisión</button>
 <!-- Formulario de Nuevo Factor -->
 <button mat-raised-button color="warn" (click)="eliminarSeleccionados()">Eliminar seleccionados</button>
+<button mat-raised-button (click)="descargarCSV()">Descargar CSV</button>
+
 <div *ngIf="mostrandoFormulario">
 
     <form [formGroup]="form" (ngSubmit)="agregarFactor()">
@@ -66,25 +68,53 @@
         </mat-form-field>
         <mat-form-field>
             <input matInput placeholder="Dióxido de Carbono (CO2)" formControlName="FE_CO2">
+            <mat-error *ngIf="form.controls['FE_CO2'].hasError('pattern')">
+                Debe ingresar un número válido.
+            </mat-error>
         </mat-form-field>
+        
         <mat-form-field>
             <input matInput placeholder="Metano (CH4)" formControlName="FE_CH4">
+            <mat-error *ngIf="form.controls['FE_CH4'].hasError('pattern')">
+                Debe ingresar un número válido.
+            </mat-error>
         </mat-form-field>
+        
         <mat-form-field>
             <input matInput placeholder="Óxido Nitroso (N2O)" formControlName="FE_N2O">
+            <mat-error *ngIf="form.controls['FE_N2O'].hasError('pattern')">
+                Debe ingresar un número válido.
+            </mat-error>
         </mat-form-field>
+        
         <mat-form-field>
             <input matInput placeholder="Hexafluoruro de azufre (SF6)" formControlName="FE_SF6">
+            <mat-error *ngIf="form.controls['FE_SF6'].hasError('pattern')">
+                Debe ingresar un número válido.
+            </mat-error>
         </mat-form-field>
+        
         <mat-form-field>
             <input matInput placeholder="Hidrofluorocarbono (HFC)" formControlName="FE_HFC">
+            <mat-error *ngIf="form.controls['FE_HFC'].hasError('pattern')">
+                Debe ingresar un número válido.
+            </mat-error>
         </mat-form-field>
+        
         <mat-form-field>
             <input matInput placeholder="Perfluorocarbono (PFC)" formControlName="FE_PFC">
+            <mat-error *ngIf="form.controls['FE_PFC'].hasError('pattern')">
+                Debe ingresar un número válido.
+            </mat-error>
         </mat-form-field>
+        
         <mat-form-field>
             <input matInput placeholder="Trifluoruro de nitrógeno (NF3)" formControlName="FE_NF3">
+            <mat-error *ngIf="form.controls['FE_NF3'].hasError('pattern')">
+                Debe ingresar un número válido.
+            </mat-error>
         </mat-form-field>
+        
         <mat-form-field>
             <mat-label>INCERTIDUMBRE</mat-label>
             <mat-select formControlName="INCERTIDUMBRE">

@@ -17,6 +17,13 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
+                "ALCANCE": {
+                    "name": "ALCANCE",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
                 "CATEGORIA": {
                     "name": "CATEGORIA",
                     "isArray": false,
@@ -24,15 +31,15 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
-                "SUBCATGORIA": {
-                    "name": "SUBCATGORIA",
+                "SUBCATEGORIA": {
+                    "name": "SUBCATEGORIA",
                     "isArray": false,
                     "type": "String",
                     "isRequired": true,
                     "attributes": []
                 },
-                "ACTIVDAD": {
-                    "name": "ACTIVDAD",
+                "ACTIVIDAD": {
+                    "name": "ACTIVIDAD",
                     "isArray": false,
                     "type": "String",
                     "isRequired": true,
@@ -56,6 +63,13 @@ export const schema = {
                     "name": "UNIDADFE",
                     "isArray": false,
                     "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "CANTIDAD": {
+                    "name": "CANTIDAD",
+                    "isArray": false,
+                    "type": "Float",
                     "isRequired": true,
                     "attributes": []
                 },
@@ -119,13 +133,6 @@ export const schema = {
                     "name": "TerminoPeriodo",
                     "isArray": false,
                     "type": "AWSDate",
-                    "isRequired": true,
-                    "attributes": []
-                },
-                "ALCANCE": {
-                    "name": "ALCANCE",
-                    "isArray": false,
-                    "type": "String",
                     "isRequired": true,
                     "attributes": []
                 },
@@ -320,5 +327,5 @@ export const schema = {
     "enums": {},
     "nonModels": {},
     "codegenVersion": "3.4.4",
-    "version": "c14d58653623dec91bf0a0bb61980b52"
+    "version": "9dda8480a4fc8988d67fd5ad5659c18d"
 };

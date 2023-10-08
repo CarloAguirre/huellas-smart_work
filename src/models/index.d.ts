@@ -13,12 +13,14 @@ type EagerEmision = {
   };
   readonly id: string;
   readonly Company: string;
+  readonly ALCANCE: string;
   readonly CATEGORIA: string;
-  readonly SUBCATGORIA: string;
-  readonly ACTIVDAD: string;
+  readonly SUBCATEGORIA: string;
+  readonly ACTIVIDAD: string;
   readonly CONCATENADO: string;
   readonly COMBUSTIBLE: string;
   readonly UNIDADFE: string;
+  readonly CANTIDAD: number;
   readonly CO2: number;
   readonly CH4: number;
   readonly N2O: number;
@@ -28,7 +30,6 @@ type EagerEmision = {
   readonly NF3: number;
   readonly InicioPeriodo: string;
   readonly TerminoPeriodo: string;
-  readonly ALCANCE: string;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -40,12 +41,14 @@ type LazyEmision = {
   };
   readonly id: string;
   readonly Company: string;
+  readonly ALCANCE: string;
   readonly CATEGORIA: string;
-  readonly SUBCATGORIA: string;
-  readonly ACTIVDAD: string;
+  readonly SUBCATEGORIA: string;
+  readonly ACTIVIDAD: string;
   readonly CONCATENADO: string;
   readonly COMBUSTIBLE: string;
   readonly UNIDADFE: string;
+  readonly CANTIDAD: number;
   readonly CO2: number;
   readonly CH4: number;
   readonly N2O: number;
@@ -55,7 +58,6 @@ type LazyEmision = {
   readonly NF3: number;
   readonly InicioPeriodo: string;
   readonly TerminoPeriodo: string;
-  readonly ALCANCE: string;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }

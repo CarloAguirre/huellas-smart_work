@@ -15,7 +15,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class FactoresDeEmisionComponent implements OnInit {
   selection = new SelectionModel<Factor>(true, []);
-
   factores: any[] = [];
   displayedColumns: string[] = ['select','ID/COD','ALCANCE', 'CATEGORIA', 'SUBCATEGORIA', 'ACTIVIDAD', 'COMBUSTIBLE', 'CONTAMINANTE', 'INCERTIDUMBRE', 'VALORFE', 'UNIDADFE', 'ORIGENFE'];
 

@@ -1,12 +1,14 @@
 type Emision @model @auth(rules: [{allow: public}]) {
   id: ID!
   Company: String!
+  ALCANCE: String!
   CATEGORIA: String!
-  SUBCATGORIA: String!
-  ACTIVDAD: String!
+  SUBCATEGORIA: String!
+  ACTIVIDAD: String!
   CONCATENADO: String!
   COMBUSTIBLE: String!
   UNIDADFE: String!
+  CANTIDAD: Float!
   CO2: Float!
   CH4: Float!
   N2O: Float!
@@ -16,7 +18,6 @@ type Emision @model @auth(rules: [{allow: public}]) {
   NF3: Float!
   InicioPeriodo: AWSDate!
   TerminoPeriodo: AWSDate!
-  ALCANCE: String!
 }
 
 type Factor @model @auth(rules: [{allow: public}, {allow: private}]) {

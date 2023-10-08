@@ -45,13 +45,6 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
-                "CONCATENADO": {
-                    "name": "CONCATENADO",
-                    "isArray": false,
-                    "type": "String",
-                    "isRequired": true,
-                    "attributes": []
-                },
                 "COMBUSTIBLE": {
                     "name": "COMBUSTIBLE",
                     "isArray": false,
@@ -327,5 +320,5 @@ export const schema = {
     "enums": {},
     "nonModels": {},
     "codegenVersion": "3.4.4",
-    "version": "9dda8480a4fc8988d67fd5ad5659c18d"
+    "version": "79e2129b3f8cfe7c952762ada699a299"
 };

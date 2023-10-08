@@ -5,7 +5,6 @@ type Emision @model @auth(rules: [{allow: public}]) {
   CATEGORIA: String!
   SUBCATEGORIA: String!
   ACTIVIDAD: String!
-  CONCATENADO: String!
   COMBUSTIBLE: String!
   UNIDADFE: String!
   CANTIDAD: Float!

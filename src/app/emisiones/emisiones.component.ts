@@ -25,6 +25,7 @@ export class EmisionesComponent implements OnInit {
   actividades: string[] = [];
   combustibles: string[] = [];
   unidades: string[] = [];
+  contaminantes: string[] = [];
   
   public form: FormGroup = new FormGroup({
     ALCANCE: new FormControl('', Validators.required),
@@ -33,10 +34,10 @@ export class EmisionesComponent implements OnInit {
     ACTIVIDAD: new FormControl({value: '', disabled: true}, Validators.required),
     COMBUSTIBLE: new FormControl({value: '', disabled: true}, Validators.required),
     UNIDADFE: new FormControl({value: '', disabled: true}, Validators.required),
+    CONTAMINANTE: new FormControl({value: '', disabled: true}, Validators.required),
     CANTIDAD: new FormControl('', Validators.required),
     InicioPeriodo: new FormControl('', Validators.required),
     TerminoPeriodo: new FormControl('', Validators.required),
-    
 });
   public mostrandoFormulario = false;
 
@@ -64,7 +65,8 @@ export class EmisionesComponent implements OnInit {
           SUBCATEGORIA: '',
           ACTIVIDAD: '',
           COMBUSTIBLE: '',
-          UNIDADFE: ''
+          UNIDADFE: '',
+          CONTAMINANTE: ''
       });
   
 
@@ -91,6 +93,13 @@ export class EmisionesComponent implements OnInit {
         this.form.get('COMBUSTIBLE')?.valueChanges.subscribe(selectedCombustible => {
           this.unidades = [...new Set(this.factores.filter(factor => factor.COMBUSTIBLE === selectedCombustible).map(factor => factor.UNIDADFE))];
           this.form.get('UNIDADFE')?.enable();
+          this.cdRef.detectChanges();
+        });
+
+
+        this.form.get('UNIDADFE')?.valueChanges.subscribe(selectedUnidad => {
+          this.contaminantes = [...new Set(this.factores.filter(factor => factor.UNIDADFE === selectedUnidad).map(factor => factor.CONTAMINANTE))];
+          this.form.get('CONTAMINANTE')?.enable();
           this.cdRef.detectChanges();
         });
       }

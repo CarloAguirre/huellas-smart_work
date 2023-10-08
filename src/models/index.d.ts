@@ -17,7 +17,6 @@ type EagerEmision = {
   readonly CATEGORIA: string;
   readonly SUBCATEGORIA: string;
   readonly ACTIVIDAD: string;
-  readonly CONCATENADO: string;
   readonly COMBUSTIBLE: string;
   readonly UNIDADFE: string;
   readonly CANTIDAD: number;
@@ -45,7 +44,6 @@ type LazyEmision = {
   readonly CATEGORIA: string;
   readonly SUBCATEGORIA: string;
   readonly ACTIVIDAD: string;
-  readonly CONCATENADO: string;
   readonly COMBUSTIBLE: string;
   readonly UNIDADFE: string;
   readonly CANTIDAD: number;

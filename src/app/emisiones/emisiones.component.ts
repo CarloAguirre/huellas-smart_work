@@ -102,6 +102,9 @@ export class EmisionesComponent implements OnInit {
     if (this.form.valid) {
       // Extraer los valores del formulario
       const values = this.form.value;
+      const factoresRelevantes = this.factores.filter(factor => factor.CONCATENADO === values.CONCATENADO);
+      const cantidad = parseFloat(values.CANTIDAD);
+
       const formatDateToAWSDate = (date: Date): string => {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');  // los meses en JS empiezan desde 0
@@ -110,9 +113,45 @@ export class EmisionesComponent implements OnInit {
       };
       // Descomponer el valor de CONCATENADO en sus tres partes
       const [subcategoria, actividad, combustible] = values.CONCATENADO.split(' - ');
-  
+    // Inicializar valores de gases
+    let CO2 = 0, CH4 = 0, N2O = 0, SF6 = 0, HFC = 0, PFC = 0, NF3 = 0;
+
+    // Calcular emisiones basadas en factores relevantes
+    factoresRelevantes.forEach(factor => {
+      const emision = factor.VALORFE * cantidad;
+      switch (factor.CONTAMINANTE) {
+        case 'Dióxido de Carbono (CO2)':
+          CO2 += emision;
+          break;
+        case 'Metano (CH4)':
+          CH4 += emision;
+          break;
+        case 'Óxido Nitroso (N2O)':
+          N2O += emision;
+          break;
+        case 'Hexafluoruro de azufre (SF6)':
+          SF6 += emision;
+          break;
+        case 'Hidrofluorocarbonos (HFC)':
+          HFC += emision;
+          break;
+        case 'Perfluorocarbonos (PFC)':
+          PFC += emision;
+          break;
+        case 'Trifluoruro de nitrógeno (NF3)':
+          NF3 += emision;
+          break;
+        default:
+          console.error(`Contaminante no reconocido: ${factor.CONTAMINANTE}`);
+      }
+    });
+
       // Crear un objeto Emision basado en los valores del formulario
-      const emision = new Emision({
+      const emision = new Emision(
+        
+        
+        {
+          
         Company: 'Nombre de la empresa',  // Debes decidir de dónde obtener este valor
         ALCANCE: values.ALCANCE,
         CATEGORIA: values.CATEGORIA,
@@ -120,14 +159,14 @@ export class EmisionesComponent implements OnInit {
         ACTIVIDAD: actividad,
         COMBUSTIBLE: combustible,
         UNIDADFE: values.UNIDADFE,
-        CANTIDAD: parseFloat(values.CANTIDAD),
-        CO2: 0,  // Valor hardcodeado por ahora
-        CH4: 0,  // Valor hardcodeado por ahora
-        N2O: 0,  // Valor hardcodeado por ahora
-        SF6: 0,  // Valor hardcodeado por ahora
-        HFC: 0,  // Valor hardcodeado por ahora
-        PFC: 0,  // Valor hardcodeado por ahora
-        NF3: 0,  // Valor hardcodeado por ahora
+        CANTIDAD: cantidad,
+        CO2: CO2,
+        CH4: CH4,
+        N2O: N2O,
+        SF6: SF6,
+        HFC: HFC,
+        PFC: PFC,
+        NF3: NF3,
         InicioPeriodo: formatDateToAWSDate(values.InicioPeriodo),
         TerminoPeriodo: formatDateToAWSDate(values.TerminoPeriodo),
       });

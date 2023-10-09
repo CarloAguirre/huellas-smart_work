@@ -22,38 +22,16 @@
         </mat-form-field>
 
         <mat-form-field>
-            <mat-label>SUBCATEGORIA</mat-label>
-            <mat-select formControlName="SUBCATEGORIA">
-                <mat-option *ngFor="let subcategoria of subcategorias" [value]="subcategoria">{{ subcategoria }}</mat-option>
-            </mat-select>
-        </mat-form-field>
-
-
-        <mat-form-field>
-            <mat-label>ACTIVIDAD</mat-label>
-            <mat-select formControlName="ACTIVIDAD">
-                <mat-option *ngFor="let actividad of actividades" [value]="actividad">{{ actividad }}</mat-option>
+            <mat-label>SUBCATEGORIA	- ACTIVIDAD - COMBUSTIBLE</mat-label>
+            <mat-select formControlName="CONCATENADO">
+                <mat-option *ngFor="let concatenado of concatenados" [value]="concatenado">{{ concatenado }}</mat-option>
             </mat-select>
         </mat-form-field>
 
         <mat-form-field>
-            <mat-label>COMBUSTIBLE</mat-label>
-            <mat-select formControlName="COMBUSTIBLE">
-                <mat-option *ngFor="let combustible of combustibles" [value]="combustible">{{ combustible }}</mat-option>
-            </mat-select>
-        </mat-form-field>
-
-        <mat-form-field>
-            <mat-label>Unidad</mat-label>
+            <mat-label>UNIDADFE</mat-label>
             <mat-select formControlName="UNIDADFE">
                 <mat-option *ngFor="let unidad of unidades" [value]="unidad">{{ unidad }}</mat-option>
-            </mat-select>
-        </mat-form-field>
-
-        <mat-form-field>
-            <mat-label>CONTAMINANTE</mat-label>
-            <mat-select formControlName="CONTAMINANTE">
-                <mat-option *ngFor="let contaminante of contaminantes" [value]="contaminante">{{ contaminante }}</mat-option>
             </mat-select>
         </mat-form-field>
 

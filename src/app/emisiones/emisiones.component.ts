@@ -21,20 +21,14 @@ export class EmisionesComponent implements OnInit {
   displayedColumns: string[] = ['select', 'id', 'ALCANCE', 'CATEGORIA', 'SUBCATEGORIA', 'ACTIVIDAD', 'COMBUSTIBLE', 'UNIDADFE', 'CANTIDAD', 'CO2', 'CH4', 'N2O', 'SF6', 'HFC', 'PFC', 'NF3', 'InicioPeriodo', 'TerminoPeriodo'];
   alcances: string[] = [];
   categorias: string[] = [];
-  subcategorias: string[] = [];
-  actividades: string[] = [];
-  combustibles: string[] = [];
+  concatenados: string[] = [];
   unidades: string[] = [];
-  contaminantes: string[] = [];
   
   public form: FormGroup = new FormGroup({
     ALCANCE: new FormControl('', Validators.required),
     CATEGORIA: new FormControl({value: '', disabled: true}, Validators.required),
-    SUBCATEGORIA: new FormControl({value: '', disabled: true}, Validators.required),
-    ACTIVIDAD: new FormControl({value: '', disabled: true}, Validators.required),
-    COMBUSTIBLE: new FormControl({value: '', disabled: true}, Validators.required),
+    CONCATENADO: new FormControl({value: '', disabled: true}, Validators.required),
     UNIDADFE: new FormControl({value: '', disabled: true}, Validators.required),
-    CONTAMINANTE: new FormControl({value: '', disabled: true}, Validators.required),
     CANTIDAD: new FormControl('', Validators.required),
     InicioPeriodo: new FormControl('', Validators.required),
     TerminoPeriodo: new FormControl('', Validators.required),
@@ -42,7 +36,9 @@ export class EmisionesComponent implements OnInit {
   public mostrandoFormulario = false;
 
   constructor(private http: HttpClient, private cdRef: ChangeDetectorRef, private snackBar: MatSnackBar) { }
-
+  async cargarEmisiones(): Promise<void> {
+    this.emisiones = await DataStore.query(Emision);
+}
   async ngOnInit(): Promise<void> {
     try {
       // Espera a que ambas fuentes de datos estén listas
@@ -52,7 +48,8 @@ export class EmisionesComponent implements OnInit {
         this.http.get<any>('/assets/factores.json').toPromise()
       ]);
   
-      this.emisiones = emisionesDesdeDataStore;
+      await this.cargarEmisiones();
+
       this.factores = [...factoresDesdeDataStore, ...factoresDesdeJson.factores];
   
       // Ahora que tienes todos los factores, puedes procesarlos para obtener los alcances, categorías, etc.
@@ -62,11 +59,10 @@ export class EmisionesComponent implements OnInit {
       this.form.get('ALCANCE')?.valueChanges.subscribe(selectedAlcance => {
         this.form.patchValue({
           CATEGORIA: '',
-          SUBCATEGORIA: '',
-          ACTIVIDAD: '',
-          COMBUSTIBLE: '',
-          UNIDADFE: '',
-          CONTAMINANTE: ''
+          CONCATENADO:'',
+          UNIDADFE:'',
+          CANTIDAD:'',
+
       });
   
 
@@ -74,34 +70,20 @@ export class EmisionesComponent implements OnInit {
         this.form.get('CATEGORIA')?.enable();
   
         this.form.get('CATEGORIA')?.valueChanges.subscribe(selectedCategoria => {
-          this.subcategorias = [...new Set(this.factores.filter(factor => factor.CATEGORIA === selectedCategoria).map(factor => factor.SUBCATEGORIA))];
-          this.form.get('SUBCATEGORIA')?.enable();
+          this.concatenados = [...new Set(this.factores.filter(factor => factor.CATEGORIA === selectedCategoria).map(factor => factor.CONCATENADO))];
+          this.form.get('CONCATENADO')?.enable();
           this.cdRef.detectChanges();
         });
 
-        this.form.get('SUBCATEGORIA')?.valueChanges.subscribe(selectedSubCategoria => {
-          this.actividades = [...new Set(this.factores.filter(factor => factor.SUBCATEGORIA === selectedSubCategoria).map(factor => factor.ACTIVIDAD))];
-          this.form.get('ACTIVIDAD')?.enable();
-          this.cdRef.detectChanges();
-        });
-        this.form.get('ACTIVIDAD')?.valueChanges.subscribe(selectedActividad => {
-          this.combustibles = [...new Set(this.factores.filter(factor => factor.ACTIVIDAD === selectedActividad).map(factor => factor.COMBUSTIBLE))];
-          this.form.get('COMBUSTIBLE')?.enable();
-          this.cdRef.detectChanges();
-        });
-
-        this.form.get('COMBUSTIBLE')?.valueChanges.subscribe(selectedCombustible => {
-          this.unidades = [...new Set(this.factores.filter(factor => factor.COMBUSTIBLE === selectedCombustible).map(factor => factor.UNIDADFE))];
+        this.form.get('CONCATENADO')?.valueChanges.subscribe(selectedConcatenado => {
+          this.unidades = [...new Set(this.factores.filter(factor => factor.CONCATENADO === selectedConcatenado).map(factor => factor.UNIDADFE))];
           this.form.get('UNIDADFE')?.enable();
           this.cdRef.detectChanges();
         });
 
 
-        this.form.get('UNIDADFE')?.valueChanges.subscribe(selectedUnidad => {
-          this.contaminantes = [...new Set(this.factores.filter(factor => factor.UNIDADFE === selectedUnidad).map(factor => factor.CONTAMINANTE))];
-          this.form.get('CONTAMINANTE')?.enable();
-          this.cdRef.detectChanges();
-        });
+
+      
       }
       
       );
@@ -111,79 +93,74 @@ export class EmisionesComponent implements OnInit {
     }
   }
   
-
-
-
-
-  
   
   mostrarFormulario(): void {
     this.mostrandoFormulario = true;
   }
   
-  async agregarEmision(): Promise<void> {
-
-    if (!this.form.valid) {
-      // Muestra un mensaje de error usando MatSnackBar
-      this.snackBar.open('Por favor, completa todos los campos requeridos', 'Cerrar', {
-          duration: 5000, // El mensaje se mostrará durante 5 segundos
+  async agregarEmision() {
+    if (this.form.valid) {
+      // Extraer los valores del formulario
+      const values = this.form.value;
+      const formatDateToAWSDate = (date: Date): string => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');  // los meses en JS empiezan desde 0
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+      // Descomponer el valor de CONCATENADO en sus tres partes
+      const [subcategoria, actividad, combustible] = values.CONCATENADO.split(' - ');
+  
+      // Crear un objeto Emision basado en los valores del formulario
+      const emision = new Emision({
+        Company: 'Nombre de la empresa',  // Debes decidir de dónde obtener este valor
+        ALCANCE: values.ALCANCE,
+        CATEGORIA: values.CATEGORIA,
+        SUBCATEGORIA: subcategoria,
+        ACTIVIDAD: actividad,
+        COMBUSTIBLE: combustible,
+        UNIDADFE: values.UNIDADFE,
+        CANTIDAD: parseFloat(values.CANTIDAD),
+        CO2: 0,  // Valor hardcodeado por ahora
+        CH4: 0,  // Valor hardcodeado por ahora
+        N2O: 0,  // Valor hardcodeado por ahora
+        SF6: 0,  // Valor hardcodeado por ahora
+        HFC: 0,  // Valor hardcodeado por ahora
+        PFC: 0,  // Valor hardcodeado por ahora
+        NF3: 0,  // Valor hardcodeado por ahora
+        InicioPeriodo: formatDateToAWSDate(values.InicioPeriodo),
+        TerminoPeriodo: formatDateToAWSDate(values.TerminoPeriodo),
       });
-      return;
-  }
-    const nuevoFactorBase = this.form.value;
   
-    // Creamos el valor para CONCATENADO
-    nuevoFactorBase.CONCATENADO = `${nuevoFactorBase.SUBCATEGORIA} - ${nuevoFactorBase.ACTIVIDAD} - ${nuevoFactorBase.COMBUSTIBLE}`;
-  
-    const contaminantes = [
-      { nombre: "Dióxido de Carbono (CO2)", valor: parseFloat(nuevoFactorBase.FE_CO2)},
-      { nombre: "Metano (CH4)", valor: parseFloat(nuevoFactorBase.FE_CH4) },
-      { nombre: "Óxido Nitroso (N2O)", valor: parseFloat(nuevoFactorBase.FE_N2O) },
-      { nombre: "Hexafluoruro de azufre (SF6)", valor: parseFloat(nuevoFactorBase.FE_SF6) },
-      { nombre: "Hidrofluorocarbono (HFC)", valor: parseFloat(nuevoFactorBase.FE_HFC)},
-      { nombre: "Perfluorocarbono (PFC)", valor: parseFloat(nuevoFactorBase.FE_PFC) },
-      { nombre: "Trifluoruro de nitrógeno (NF3)", valor: parseFloat(nuevoFactorBase.FE_NF3)}
-  ];
-  
-  
-  
-  for (let contaminante of contaminantes) {
-    // Si el valor del contaminante es vacío o nulo, continuamos con el siguiente
-    if (!contaminante.valor) continue;
-  
-    let registro = {
-      ...nuevoFactorBase,
-      CONTAMINANTE: contaminante.nombre,
-      VALORFE: contaminante.valor
-    };
-  
-    // Elimina las propiedades que ya no son necesarias
-    delete registro.FE_CO2;
-    delete registro.FE_CH4;
-    delete registro.FE_N2O;
-    delete registro.FE_SF6;
-    delete registro.FE_HFC;
-    delete registro.FE_PFC;
-    delete registro.FE_NF3;
-  
-    try {
-        await DataStore.save(new Emision(registro));
-        this.emisiones = [registro, ...this.emisiones];
-    } catch (error) {
-        console.error("Error al guardar el nuevo factor:", error);
+      // Guardar el objeto Emision en DataStore
+      try {
+        await DataStore.save(emision);
+        this.snackBar.open('Emisión guardada con éxito!', 'Cerrar', {
+          duration: 2000,
+        }
+                
+        );
+        this.cancelarFormulario();
+        await this.cargarEmisiones();
+      } catch (error) {
+        this.snackBar.open('Error al guardar la emisión', 'Cerrar', {
+          duration: 2000,
+        });
+        console.error('Error al guardar en DataStore:', error);
+      }
+    } else {
+      this.snackBar.open('Por favor, completa todos los campos requeridos', 'Cerrar', {
+        duration: 2000,
+      });
     }
   }
   
-  
-    this.cdRef.detectChanges();
+  cancelarFormulario() {
+    
     this.mostrandoFormulario = false;
     this.form.reset();
   }
   
-  
-  cancelarFormulario(): void {
-      this.mostrandoFormulario = false;
-  }
   
   isAllSelected() {
     const numSelected = this.selection.selected.length;

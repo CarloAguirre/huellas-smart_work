@@ -100,7 +100,6 @@ export class EmisionesComponent implements OnInit {
   
   async agregarEmision() {
     if (this.form.valid) {
-      // Extraer los valores del formulario
       const values = this.form.value;
       const factoresRelevantes = this.factores.filter(factor => factor.CONCATENADO === values.CONCATENADO);
       const cantidad = parseFloat(values.CANTIDAD);
@@ -132,10 +131,10 @@ export class EmisionesComponent implements OnInit {
         case 'Hexafluoruro de azufre (SF6)':
           SF6 += emision;
           break;
-        case 'Hidrofluorocarbonos (HFC)':
+        case 'Hidrofluorocarbono (HFC)':
           HFC += emision;
           break;
-        case 'Perfluorocarbonos (PFC)':
+        case 'Perfluorocarbono (PFC)':
           PFC += emision;
           break;
         case 'Trifluoruro de nitrógeno (NF3)':
@@ -148,10 +147,7 @@ export class EmisionesComponent implements OnInit {
 
       // Crear un objeto Emision basado en los valores del formulario
       const emision = new Emision(
-        
-        
         {
-          
         Company: 'Nombre de la empresa',  // Debes decidir de dónde obtener este valor
         ALCANCE: values.ALCANCE,
         CATEGORIA: values.CATEGORIA,
@@ -195,7 +191,6 @@ export class EmisionesComponent implements OnInit {
   }
   
   cancelarFormulario() {
-    
     this.mostrandoFormulario = false;
     this.form.reset();
   }
@@ -241,40 +236,45 @@ export class EmisionesComponent implements OnInit {
     // Limpia la selección
     this.selection.clear();
   }
-  descargarCSV(): void {
-    let csvData = this.convertToCSV(this.emisiones);
-    let blob = new Blob(['\ufeff' + csvData], { type: 'text/csv;charset=utf-8;' });
-    let dwldLink = document.createElement("a");
-    let url = URL.createObjectURL(blob);
-    dwldLink.setAttribute("href", url);
-    dwldLink.setAttribute("download", "factores.csv");
-    dwldLink.style.visibility = "hidden";
-    document.body.appendChild(dwldLink);
-    dwldLink.click();
-    document.body.removeChild(dwldLink);
-  }
-  
-  convertToCSV(objArray: any[]): string {
-    // Campos que quieres incluir en el CSV
-    const camposPermitidos = [
-      "cod", "ALCANCE", "CATEGORIA", "SUBCATEGORIA", "ACTIVIDAD", "CONCATENADO", 
-      "COMBUSTIBLE", "CONTAMINANTE", "INCERTIDUMBRE", "VALORFE", "UNIDADFE", "ORIGENFE"
-    ];
-    
+
+  private convertToCSV(objArray: any[]): string {
+    const array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
     let str = '';
-    
-    // Encabezado
-    let header = camposPermitidos.join(",");
-    str += header + '\r\n';
-  
-    for (let i = 0; i < objArray.length; i++) {
-      let line = camposPermitidos.map(campo => objArray[i][campo]).join(",");
-      str += line + '\r\n';
+    const row = Object.keys(array[0]).map((key) => (`"${key}"`)).join(',');
+
+    str += row + '\r\n';
+
+    for (let i = 0; i < array.length; i++) {
+        let line = '';
+        for (const index in array[i]) {
+            if (line !== '') line += ',';
+            line += `"${array[i][index]}"`;
+        }
+        str += line + '\r\n';
     }
-  
     return str;
+}
+
+private descargarCSV(data: string, filename = 'download.csv'): void {
+  const blob = new Blob(['\ufeff' + data], { type: 'text/csv;charset=utf-8;' });
+  const dwldLink = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+
+  dwldLink.setAttribute('href', url);
+  dwldLink.setAttribute('download', filename);
+  dwldLink.style.visibility = 'hidden';
+
+  document.body.appendChild(dwldLink);
+  dwldLink.click();
+  document.body.removeChild(dwldLink);
+}
+
+  public generarYDescargarCSVEmisiones(): void {
+    const csvData = this.convertToCSV(this.emisiones);
+    this.descargarCSV(csvData, 'emisiones.csv');
   }
   
+
   
   }
   

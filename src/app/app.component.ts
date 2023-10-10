@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Auth } from 'aws-amplify';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -25,6 +26,10 @@ async loadNickname() {
     this.isLoadingNickname = false;
   }
 }
+constructor(private router: Router) { }
 
+isActive(route: string): boolean {
+  return this.router.url.includes(route);
+}
 
 }

@@ -1,7 +1,8 @@
 
 <button mat-raised-button (click)="mostrarFormulario()">Nuevo Factor de Emisión</button>
 <button mat-raised-button color="warn" (click)="eliminarSeleccionados()">Eliminar seleccionados</button>
-<button mat-raised-button (click)="descargarCSV()">Descargar CSV</button>
+<button mat-raised-button color="primary" (click)="generarYDescargarCSVFactores()">Descargar CSV Factores</button>
+
 
 <div *ngIf="mostrandoFormulario">
 

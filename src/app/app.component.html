@@ -16,9 +16,15 @@
       <!-- Sidebar con opciones para cambiar de vista -->
       <div class="sidebar">
         <ul>
-          <li><a routerLink="/factores-de-emision">Factores de emisión</a></li>
-          <li><a routerLink="/emisiones">Emisiones</a></li>
-          <li><a routerLink="/resultados">Resultados</a></li>
+          <li [class.active]="isActive('/factores-de-emision')">
+            <a routerLink="/factores-de-emision">Factores de emisión</a>
+          </li>
+          <li [class.active]="isActive('/emisiones')">
+            <a routerLink="/emisiones">Emisiones</a>
+          </li>
+          <li [class.active]="isActive('/resultados')">
+            <a routerLink="/resultados">Resultados</a>
+          </li>
         </ul>
       </div>
 

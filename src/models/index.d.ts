@@ -29,6 +29,8 @@ type EagerEmision = {
   readonly NF3: number;
   readonly InicioPeriodo: string;
   readonly TerminoPeriodo: string;
+  readonly INCERTIDUMBRE?: string | null;
+  readonly ORIGENFE?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -56,6 +58,8 @@ type LazyEmision = {
   readonly NF3: number;
   readonly InicioPeriodo: string;
   readonly TerminoPeriodo: string;
+  readonly INCERTIDUMBRE?: string | null;
+  readonly ORIGENFE?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }

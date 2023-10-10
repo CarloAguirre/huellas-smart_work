@@ -42,6 +42,16 @@ export class ResultadosComponent implements OnInit {
     'totalNF3',
   ];
 
+  mesAbreviado(mes: number): string {
+    const meses = [
+      'Ene', 'Feb', 'Mar', 'Abr',
+      'May', 'Jun', 'Jul', 'Ago',
+      'Sept', 'Oct', 'Nov', 'Dic'
+    ];
+    return meses[mes] || '';
+  }
+  
+
   async ngOnInit() {
     try {
       this.emisiones = await DataStore.query(Emision);
@@ -75,10 +85,11 @@ export class ResultadosComponent implements OnInit {
                 1;
               const factorProporcional = diasEnElMes / diasTotales;
 
-              const key = `${mes + 1}-${año}`;
+              const key = `${this.mesAbreviado(mes)}-${año}`;
+
               if (!emisionesMensuales[key]) {
                 emisionesMensuales[key] = {
-                  periodo: key,
+                  periodo: `${this.mesAbreviado(mes)}-${año}`,
                   totalTonCO2eq: 0,
                   totalAlcance1: 0,
                   totalAlcance2: 0,

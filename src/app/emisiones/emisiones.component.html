@@ -2,7 +2,11 @@
 <button mat-raised-button (click)="mostrarFormulario()">Nueva Emisión</button>
 <button mat-raised-button color="warn" (click)="eliminarSeleccionados()">Eliminar seleccionados</button>
 <button mat-raised-button color="primary" (click)="generarYDescargarCSVEmisiones()">Descargar CSV Emisiones</button>
-
+<button (click)="descargarPlantilla()">Descargar Plantilla Carga Masiva Excel</button>
+<div style="display: flex;">
+<input type="file" (change)="handleFile($event)" />
+<button (click)="procesarEmisiones()">Carga Masiva</button>
+</div>
 
 <div *ngIf="mostrandoFormulario">
 
@@ -59,7 +63,6 @@
         <button mat-raised-button type="button" (click)="cancelarFormulario()">Cancelar</button>
     </form>
 </div>
-
 
 <table mat-table [dataSource]="emisiones" class="mat-elevation-z8 tablaEmisiones">
     <!-- Columna de selección -->
@@ -159,6 +162,16 @@
     <ng-container matColumnDef="TerminoPeriodo">
         <th mat-header-cell *matHeaderCellDef>TerminoPeriodo</th>
         <td mat-cell *matCellDef="let factor">{{factor.TerminoPeriodo}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="INCERTIDUMBRE">
+        <th mat-header-cell *matHeaderCellDef>INCERTIDUMBRE</th>
+        <td mat-cell *matCellDef="let factor">{{factor.INCERTIDUMBRE}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="ORIGENFE">
+        <th mat-header-cell *matHeaderCellDef>ORIGENFE</th>
+        <td mat-cell *matCellDef="let factor">{{factor.ORIGENFE}}</td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

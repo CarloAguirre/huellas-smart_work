@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Auth } from 'aws-amplify';
 import { Router } from '@angular/router';
+import { DataStore } from '@aws-amplify/datastore';
 
 
 @Component({
@@ -31,5 +32,16 @@ constructor(private router: Router) { }
 isActive(route: string): boolean {
   return this.router.url.includes(route);
 }
-
+async handleSignOut(signOutFunction: any) {
+  try {
+    // Limpiar el DataStore local
+    await DataStore.clear();
+    console.log('DataStore ha sido limpiado.');
+    
+    // Luego, usar la función de cerrar sesión provista por el slot
+    signOutFunction();
+  } catch (error) {
+    console.error('Hubo un error:', error);
+  }
+}
 }

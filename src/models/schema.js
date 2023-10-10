@@ -129,6 +129,20 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
+                "INCERTIDUMBRE": {
+                    "name": "INCERTIDUMBRE",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "ORIGENFE": {
+                    "name": "ORIGENFE",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
                 "createdAt": {
                     "name": "createdAt",
                     "isArray": false,
@@ -158,7 +172,28 @@ export const schema = {
                     "properties": {
                         "rules": [
                             {
+                                "provider": "userPools",
+                                "ownerField": "owner",
+                                "allow": "owner",
+                                "identityClaim": "cognito:username",
+                                "operations": [
+                                    "create",
+                                    "update",
+                                    "delete",
+                                    "read"
+                                ]
+                            },
+                            {
                                 "allow": "public",
+                                "operations": [
+                                    "create",
+                                    "update",
+                                    "delete",
+                                    "read"
+                                ]
+                            },
+                            {
+                                "allow": "private",
                                 "operations": [
                                     "create",
                                     "update",
@@ -294,6 +329,18 @@ export const schema = {
                     "properties": {
                         "rules": [
                             {
+                                "provider": "userPools",
+                                "ownerField": "owner",
+                                "allow": "owner",
+                                "identityClaim": "cognito:username",
+                                "operations": [
+                                    "create",
+                                    "update",
+                                    "delete",
+                                    "read"
+                                ]
+                            },
+                            {
                                 "allow": "public",
                                 "operations": [
                                     "create",
@@ -320,5 +367,5 @@ export const schema = {
     "enums": {},
     "nonModels": {},
     "codegenVersion": "3.4.4",
-    "version": "79e2129b3f8cfe7c952762ada699a299"
+    "version": "feeb3f019f9c9699aba71f13d592d565"
 };

@@ -1,4 +1,4 @@
-type Emision @model @auth(rules: [{allow: public}]) {
+type Emision @model @auth(rules: [{allow: owner}, {allow: public}, {allow: private}]) {
   id: ID!
   Company: String!
   ALCANCE: String!
@@ -17,9 +17,11 @@ type Emision @model @auth(rules: [{allow: public}]) {
   NF3: Float!
   InicioPeriodo: AWSDate!
   TerminoPeriodo: AWSDate!
+  INCERTIDUMBRE: String
+  ORIGENFE: String
 }
 
-type Factor @model @auth(rules: [{allow: public}, {allow: private}]) {
+type Factor @model @auth(rules: [{allow: owner}, {allow: public}, {allow: private}]) {
   id: ID!
   cod: String!
   ALCANCE: String!

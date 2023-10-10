@@ -1,13 +1,13 @@
 
 <amplify-authenticator>
   <ng-template amplifySlot="authenticated" let-signOut="signOut">
-    
     <!-- Mostrar el nickname del usuario y el botón de cerrar sesión -->
     <div style="display: flex; justify-content: space-between; padding: 10px; background-color: #f5f5f5;">
       <h1 *ngIf="isLoadingNickname">Cargando...</h1>
 <h1 *ngIf="!isLoadingNickname">Welcome {{ nickname }}!</h1>
 
-      <button (click)="signOut()">Sign Out</button>
+<button (click)="handleSignOut(signOut)">Sign Out</button>
+
     </div>
     
     <!-- Contenedor principal para el sidebar y el contenido -->

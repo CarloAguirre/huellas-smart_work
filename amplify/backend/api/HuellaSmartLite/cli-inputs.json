@@ -6,16 +6,16 @@
     "defaultAuthType": {
       "mode": "API_KEY",
       "expirationTime": 365,
-      "apiKeyExpirationDate": "2024-10-09T22:50:55.065Z",
-      "keyDescription": "api key description"
+      "apiKeyExpirationDate": "2024-10-10T01:03:26.927Z",
+      "keyDescription": "api huella smart final"
     },
     "additionalAuthTypes": [
       {
-        "mode": "AMAZON_COGNITO_USER_POOLS",
-        "cognitoUserPoolId": "authHuellaSmartLite"
+        "mode": "AWS_IAM"
       },
       {
-        "mode": "AWS_IAM"
+        "mode": "AMAZON_COGNITO_USER_POOLS",
+        "cognitoUserPoolId": "authHuellaSmartLite"
       }
     ],
     "conflictResolution": {

@@ -1,4 +1,4 @@
-type Emision @model @auth(rules: [{allow: owner}, {allow: private}]) {
+type Emision @model @auth(rules: [{allow: owner}, {allow: public}]) {
   id: ID!
   Company: String!
   ALCANCE: String!
@@ -21,7 +21,7 @@ type Emision @model @auth(rules: [{allow: owner}, {allow: private}]) {
   ORIGENFE: String
 }
 
-type Factor @model @auth(rules: [{allow: owner}, {allow: private}]) {
+type Factor @model @auth(rules: [{allow: owner}, {allow: public}]) {
   id: ID!
   cod: String!
   ALCANCE: String!

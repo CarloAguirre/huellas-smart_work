@@ -1,4 +1,26 @@
-type Emision @model @auth(rules: [{allow: owner}, {allow: public}]) {
+type Company @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String
+  email: AWSEmail
+  isActive: Boolean
+  Users: [User] @hasMany(indexName: "byCompany", fields: ["id"])
+  Factors: [Factor] @hasMany(indexName: "byCompany", fields: ["id"])
+  Emisions: [Emision] @hasMany(indexName: "byCompany", fields: ["id"])
+}
+
+type User @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String
+  sub: String
+  email: String
+  isAdmin: Boolean
+  isActive: Boolean
+  companyID: ID! @index(name: "byCompany")
+  Emisions: [Emision] @hasMany(indexName: "byUser", fields: ["id"])
+  Factors: [Factor] @hasMany(indexName: "byUser", fields: ["id"])
+}
+
+type Emision @model @auth(rules: [{allow: public}]) {
   id: ID!
   Company: String!
   ALCANCE: String!
@@ -19,9 +41,11 @@ type Emision @model @auth(rules: [{allow: owner}, {allow: public}]) {
   TerminoPeriodo: AWSDate!
   INCERTIDUMBRE: String
   ORIGENFE: String
+  companyID: ID! @index(name: "byCompany")
+  userID: ID! @index(name: "byUser")
 }
 
-type Factor @model @auth(rules: [{allow: owner}, {allow: public}]) {
+type Factor @model @auth(rules: [{allow: public}]) {
   id: ID!
   cod: String!
   ALCANCE: String!
@@ -35,5 +59,7 @@ type Factor @model @auth(rules: [{allow: owner}, {allow: public}]) {
   VALORFE: Float!
   UNIDADFE: String!
   ORIGENFE: String!
+  companyID: ID! @index(name: "byCompany")
+  userID: ID! @index(name: "byUser")
 }
  

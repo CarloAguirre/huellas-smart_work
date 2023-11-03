@@ -8,29 +8,20 @@ import { ChangeDetectorRef } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as XLSX from 'xlsx';
-import { Auth } from 'aws-amplify';
+import { DataService } from '../services/data.service';
+import { ElementRef, ViewChild } from '@angular/core';
 
-async function obtenerNicknameUsuarioCognito(): Promise<string | null> {
-  try {
-    const usuarioActual = await Auth.currentAuthenticatedUser();
-    const nickname = usuarioActual.attributes.nickname;
-    return nickname;
-  } catch (error) {
-    console.error('Error al obtener el usuario Cognito:', error);
-    return null;
-  }
-}
 function excelDateToJSDate(serial: number): Date {
   const utcDays = Math.floor(serial - 25569);
   const utcValue = utcDays * 86400;
   const dateInfo = new Date(utcValue * 1000);
-  
+
   const fractionalDay = serial - Math.floor(serial) + 0.0000001;
-  
+
   let totalSeconds = Math.floor(86400 * fractionalDay);
   const seconds = totalSeconds % 60;
   totalSeconds -= seconds;
-  
+
   const hours = Math.floor(totalSeconds / (60 * 60));
   const minutes = Math.floor(totalSeconds / 60) % 60;
 
@@ -47,6 +38,7 @@ export class EmisionesComponent implements OnInit {
   selection = new SelectionModel<Emision>(true, []);
   factores: any[] = [];
   emisiones: Emision[] = [];
+  nombreArchivo: string = 'Seleccionar archivo';  // Añade esta línea
   displayedColumns: string[] = [
     'select',
     'id',
@@ -76,54 +68,76 @@ export class EmisionesComponent implements OnInit {
 
   public form: FormGroup = new FormGroup({
     ALCANCE: new FormControl('', Validators.required),
-    CATEGORIA: new FormControl({ value: '', disabled: true }, Validators.required ),
-    CONCATENADO: new FormControl({ value: '', disabled: true },Validators.required ),
-    UNIDADFE: new FormControl({ value: '', disabled: true }, Validators.required ),
+    CATEGORIA: new FormControl({ value: '', disabled: true }, Validators.required),
+    CONCATENADO: new FormControl({ value: '', disabled: true }, Validators.required),
+    UNIDADFE: new FormControl({ value: '', disabled: true }, Validators.required),
     CANTIDAD: new FormControl('', Validators.required),
     InicioPeriodo: new FormControl('', Validators.required),
     TerminoPeriodo: new FormControl('', Validators.required),
   });
   public mostrandoFormulario = false;
 
+  
+
   constructor(
     private http: HttpClient,
     private cdRef: ChangeDetectorRef,
-    private snackBar: MatSnackBar
-  ) {}
+    private snackBar: MatSnackBar,
+    private dataService: DataService  // Inyecta DataService
 
+  ) { }
+  companyID: string | null = 'null';
+  userID: string | null = 'null';
   handleFile(event: any) {
     const target: DataTransfer = <DataTransfer>(event.target);
-  
+
     if (target.files.length !== 1) {
       console.error('No se puede usar múltiples archivos');
       return;
     }
-  
+
+
+    if (target.files.length !== 1) {
+      console.error('No se puede usar múltiples archivos');
+      return;
+    }
+
+       // Actualiza el nombre del archivo
+       this.nombreArchivo = target.files[0].name;
+
     const reader: FileReader = new FileReader();
     reader.onload = (e: any) => {
       const bstr: string = e.target.result;
       const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
-  
+
       const wsname: string = wb.SheetNames[0];
       const ws: XLSX.WorkSheet = wb.Sheets[wsname];
-  
+
       this.emisionesDesdeExcel = XLSX.utils.sheet_to_json(ws);
       console.log("Datos cargados desde Excel:", this.emisionesDesdeExcel);
 
     };
-  
+
     reader.readAsBinaryString(target.files[0]);
   }
-  
+  factoresDesdeExcel: any[] = [];
+  @ViewChild('fileInput') fileInput!: ElementRef;
+
   async procesarEmisiones() {
+    if (this.emisionesDesdeExcel.length === 0) {
+      // Muestra una notificación al usuario
+      this.snackBar.open('No hay datos para procesar. Por favor, selecciona un archivo primero.', 'Cerrar', { duration: 4000 });
+      return;
+    }
+
     const errores: any[] = [];
     const exitosos: any[] = [];
-  
+
     for (const emisionData of this.emisionesDesdeExcel) {
       const form = this.crearFormularioConDatos(emisionData);
       console.log("Formulario creado con datos:", form.value);
 
-  
+
       if (form.valid) {
         try {
           await this.agregarEmisionDesdeFormulario(form);
@@ -135,16 +149,22 @@ export class EmisionesComponent implements OnInit {
         errores.push({ data: emisionData, error: 'Datos no válidos en el formulario.' });
       }
     }
-  
+
     // Notifica al usuario sobre los resultados
     this.snackBar.open(`${exitosos.length} emisiones agregadas con éxito. ${errores.length} emisiones tuvieron errores.`, 'Cerrar', { duration: 4000 });
-}
+  
+    this.fileInput.nativeElement.value = '';  // Resetea el control del archivo
+    this.nombreArchivo = 'Seleccionar archivo';
+    this.emisionesDesdeExcel = [];
+  }
 
   crearFormularioConDatos(data: any): FormGroup {
     return new FormGroup({
       ALCANCE: new FormControl(data.ALCANCE, Validators.required),
       CATEGORIA: new FormControl(data.CATEGORIA, Validators.required),
-      CONCATENADO: new FormControl(data.CONCATENADO, Validators.required),
+      SUBCATEGORIA: new FormControl(data.SUBCATEGORIA, Validators.required),
+      ACTIVIDAD: new FormControl(data.ACTIVIDAD, Validators.required),
+      COMBUSTIBLE: new FormControl(data.COMBUSTIBLE, Validators.required),
       UNIDADFE: new FormControl(data.UNIDADFE, Validators.required),
       CANTIDAD: new FormControl(data.CANTIDAD, Validators.required),
       InicioPeriodo: new FormControl(data.InicioPeriodo, Validators.required),
@@ -153,110 +173,120 @@ export class EmisionesComponent implements OnInit {
   }
 
   async agregarEmisionDesdeFormulario(form: FormGroup) {
-    const nickname = await obtenerNicknameUsuarioCognito();
+    const nickname = 'holamundo'
     if (form.valid) {
-        const values = form.value;
-        const jsInicioPeriodo = excelDateToJSDate(values.InicioPeriodo);
-const jsTerminoPeriodo = excelDateToJSDate(values.TerminoPeriodo);
+      const values = form.value;
+      const jsInicioPeriodo = excelDateToJSDate(values.InicioPeriodo);
+      const jsTerminoPeriodo = excelDateToJSDate(values.TerminoPeriodo);
+      const CONCATENADO = `${values.SUBCATEGORIA} - ${values.ACTIVIDAD} - ${values.COMBUSTIBLE}`;
 
-        const factoresRelevantes = this.factores.filter(
-          (factor) => factor.CONCATENADO === values.CONCATENADO
-        );
-        const INCERTIDUMBRE = factoresRelevantes[0]?.INCERTIDUMBRE || '';
-        const ORIGENFE = factoresRelevantes[0]?.ORIGENFE || '';
-        
-        const cantidad = parseFloat(values.CANTIDAD);
-  
-        const formatDateToAWSDate = (date: Date): string => {
-          const year = date.getFullYear();
-          const month = String(date.getMonth() + 1).padStart(2, '0'); 
-          const day = String(date.getDate()).padStart(2, '0');
-          return `${year}-${month}-${day}`;
-        };
-         // Descomponer el valor de CONCATENADO en sus tres partes
-      const [subcategoria, actividad, combustible] =
-      values.CONCATENADO.split(' - ');
-    // Inicializar valores de gases
-    let CO2 = 0,
-      CH4 = 0,
-      N2O = 0,
-      SF6 = 0,
-      HFC = 0,
-      PFC = 0,
-      NF3 = 0;
+      const factoresRelevantes = this.factores.filter(
+        (factor) => factor.CONCATENADO === CONCATENADO
+      );
+      const INCERTIDUMBRE = factoresRelevantes[0]?.INCERTIDUMBRE || '';
+      const ORIGENFE = factoresRelevantes[0]?.ORIGENFE || '';
 
-    // Calcular emisiones basadas en factores relevantes
-    factoresRelevantes.forEach((factor) => {
-      const emision = factor.VALORFE * cantidad;
-      switch (factor.CONTAMINANTE) {
-        case 'Dióxido de Carbono (CO2)':
-          CO2 += emision;
-          break;
-        case 'Metano (CH4)':
-          CH4 += emision;
-          break;
-        case 'Óxido Nitroso (N2O)':
-          N2O += emision;
-          break;
-        case 'Hexafluoruro de azufre (SF6)':
-          SF6 += emision;
-          break;
-        case 'Hidrofluorocarbono (HFC)':
-          HFC += emision;
-          break;
-        case 'Perfluorocarbono (PFC)':
-          PFC += emision;
-          break;
-        case 'Trifluoruro de nitrógeno (NF3)':
-          NF3 += emision;
-          break;
-        default:
-          console.error(`Contaminante no reconocido: ${factor.CONTAMINANTE}`);
-      }
-      console.log("Factores relevantes:", factoresRelevantes);
-console.log("Objeto emision a guardar:", emision);
-    });
+      const cantidad = parseFloat(values.CANTIDAD);
 
-    // Crear un objeto Emision basado en los valores del formulario
-    const emision = new Emision({
-      Company: nickname!, // Debes decidir de dónde obtener este valor
-      ALCANCE: values.ALCANCE,
-      CATEGORIA: values.CATEGORIA,
-      SUBCATEGORIA: subcategoria,
-      ACTIVIDAD: actividad,
-      COMBUSTIBLE: combustible,
-      UNIDADFE: values.UNIDADFE,
-      CANTIDAD: cantidad,
-      CO2: CO2,
-      CH4: CH4,
-      N2O: N2O,
-      SF6: SF6,
-      HFC: HFC,
-      PFC: PFC,
-      NF3: NF3,
-      InicioPeriodo: formatDateToAWSDate(jsInicioPeriodo),
-      TerminoPeriodo: formatDateToAWSDate(jsTerminoPeriodo),
-      INCERTIDUMBRE: INCERTIDUMBRE,
-      ORIGENFE: ORIGENFE,
-    });  
-        try {
-          await DataStore.save(emision);
-        } catch (error) {
-          console.error('Detalle del error:', error);
+      const formatDateToAWSDate = (date: Date): string => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+      // Descomponer el valor de CONCATENADO en sus tres partes
+      // Inicializar valores de gases
+      let CO2 = 0,
+        CH4 = 0,
+        N2O = 0,
+        SF6 = 0,
+        HFC = 0,
+        PFC = 0,
+        NF3 = 0;
 
-          throw new Error('Error al guardar en DataStore.');
+      // Calcular emisiones basadas en factores relevantes
+      factoresRelevantes.forEach((factor) => {
+        const emision = factor.VALORFE * cantidad;
+        switch (factor.CONTAMINANTE) {
+          case 'Dióxido de Carbono (CO2)':
+            CO2 += emision;
+            break;
+          case 'Metano (CH4)':
+            CH4 += emision;
+            break;
+          case 'Óxido Nitroso (N2O)':
+            N2O += emision;
+            break;
+          case 'Hexafluoruro de azufre (SF6)':
+            SF6 += emision;
+            break;
+          case 'Hidrofluorocarbono (HFC)':
+            HFC += emision;
+            break;
+          case 'Perfluorocarbono (PFC)':
+            PFC += emision;
+            break;
+          case 'Trifluoruro de nitrógeno (NF3)':
+            NF3 += emision;
+            break;
+          default:
+            console.error(`Contaminante no reconocido: ${factor.CONTAMINANTE}`);
         }
+        console.log("Factores relevantes:", factoresRelevantes);
+        console.log("Objeto emision a guardar:", emision);
+      });
+
+      // Crear un objeto Emision basado en los valores del formulario
+      const emision = new Emision({
+        Company: 'nickname', // Debes decidir de dónde obtener este valor
+        ALCANCE: values.ALCANCE,
+        CATEGORIA: values.CATEGORIA,
+        SUBCATEGORIA: values.SUBCATEGORIA,
+        ACTIVIDAD: values.ACTIVIDAD,
+        COMBUSTIBLE: values.COMBUSTIBLE,
+        UNIDADFE: values.UNIDADFE,
+        CANTIDAD: cantidad,
+        CO2: CO2,
+        CH4: CH4,
+        N2O: N2O,
+        SF6: SF6,
+        HFC: HFC,
+        PFC: PFC,
+        NF3: NF3,
+        InicioPeriodo: formatDateToAWSDate(jsInicioPeriodo),
+        TerminoPeriodo: formatDateToAWSDate(jsTerminoPeriodo),
+        INCERTIDUMBRE: INCERTIDUMBRE,
+        ORIGENFE: ORIGENFE,
+        companyID: this.companyID!, 
+        userID: this.userID!       
+      });
+      try {
+        await DataStore.save(emision);
+      } catch (error) {
+        console.error('Detalle del error:', error);
+
+        throw new Error('Error al guardar en DataStore.');
+      }
     } else {
       throw new Error('Datos no válidos en el formulario.');
     }
     await this.cargarEmisiones();
   }
-  
+
   async cargarEmisiones(): Promise<void> {
     this.emisiones = await DataStore.query(Emision);
   }
   async ngOnInit(): Promise<void> {
     try {
+      const data = await this.dataService.getUserAndCompany();
+      if (data && data.company && data.user) {
+        this.companyID = data.company.id;
+        this.userID = data.user.id;
+      } else {
+        console.error('No se pudo obtener el usuario o la compañía');
+      }
+
+
       // Espera a que ambas fuentes de datos estén listas
       const [
         emisionesDesdeDataStore,
@@ -274,7 +304,6 @@ console.log("Objeto emision a guardar:", emision);
         ...factoresDesdeDataStore,
         ...factoresDesdeJson.factores,
       ];
-
       // Ahora que tienes todos los factores, puedes procesarlos para obtener los alcances, categorías, etc.
       this.alcances = [
         ...new Set(this.factores.map((factor) => factor.ALCANCE)),
@@ -333,12 +362,26 @@ console.log("Objeto emision a guardar:", emision);
     }
   }
 
+  formularioAbierto: boolean = false;
+
   mostrarFormulario(): void {
-    this.mostrandoFormulario = true;
+    this.formularioAbierto = true;
+  }
+
+  cerrarFormulario(): void {
+    this.formularioAbierto = false;
+  }
+
+  manejarClick(): void {
+    if (this.formularioAbierto) {
+      this.cerrarFormulario();  // si el formulario está abierto, ciérralo
+    } else {
+      this.mostrarFormulario();  // si el formulario está cerrado, ábrelo
+    }
   }
 
   async agregarEmision() {
-    const nickname = await obtenerNicknameUsuarioCognito();
+    const nickname = 'HolaMundo'
 
     if (this.form.valid) {
       const values = this.form.value;
@@ -346,7 +389,7 @@ console.log("Objeto emision a guardar:", emision);
         (factor) => factor.CONCATENADO === values.CONCATENADO
       );
       const INCERTIDUMBRE = factoresRelevantes[0]?.INCERTIDUMBRE || '';
-const ORIGENFE = factoresRelevantes[0]?.ORIGENFE || '';
+      const ORIGENFE = factoresRelevantes[0]?.ORIGENFE || '';
       const cantidad = parseFloat(values.CANTIDAD);
 
       const formatDateToAWSDate = (date: Date): string => {
@@ -419,35 +462,38 @@ const ORIGENFE = factoresRelevantes[0]?.ORIGENFE || '';
           TerminoPeriodo: formatDateToAWSDate(values.TerminoPeriodo),
           INCERTIDUMBRE: INCERTIDUMBRE,
           ORIGENFE: ORIGENFE,
+          companyID: this.companyID!, 
+          userID: this.userID!       
         });
 
-      // Guardar el objeto Emision en DataStore
-      try {
-        await DataStore.save(emision);
-        this.snackBar.open('Emisión guardada con éxito!', 'Cerrar', {
-          duration: 2000,
-        });
-        this.cancelarFormulario();
-        await this.cargarEmisiones();
-      } catch (error) {
-        this.snackBar.open('Error al guardar la emisión', 'Cerrar', {
-          duration: 2000,
-        });
-        console.error('Error al guardar en DataStore:', error);
-      }
-    } else {
-      this.snackBar.open(
-        'Por favor, completa todos los campos requeridos',
-        'Cerrar',
-        {
-          duration: 2000,
+        // Guardar el objeto Emision en DataStore
+        try {
+          await DataStore.save(emision);
+          this.snackBar.open('Emisión guardada con éxito!', 'Cerrar', {
+            duration: 2000,
+          });
+          this.cancelarFormulario();
+          await this.cargarEmisiones();
+        } catch (error) {
+          this.snackBar.open('Error al guardar la emisión', 'Cerrar', {
+            duration: 2000,
+          });
+          console.error('Error al guardar en DataStore:', error);
         }
-      );
+      } else {
+        this.snackBar.open(
+          'Por favor, completa todos los campos requeridos',
+          'Cerrar',
+          {
+            duration: 2000,
+          }
+        );
+      }
     }
-  }}
+  }
 
   cancelarFormulario() {
-    this.mostrandoFormulario = false;
+    this.formularioAbierto = false;
     this.form.reset();
   }
 
@@ -544,7 +590,7 @@ const ORIGENFE = factoresRelevantes[0]?.ORIGENFE || '';
 
   descargarPlantilla() {
     const url = 'assets/templates/EmisionesMasivasCO2.xlsx';
-    
+
     const a = document.createElement('a');
     a.href = url;
     a.download = 'plantillaEmisiones.xlsx';

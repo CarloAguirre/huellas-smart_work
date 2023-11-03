@@ -1,17 +1,43 @@
+<!-- Primeros dos botones alineados a la izquierda -->
+<button mat-raised-button [style.backgroundColor]="formularioAbierto ? '#f44336' : '#9fd09f'"
+    style="float: left; border-radius: 5px; border: 2px solid #9fd09f; padding: 6px 10px; font-size: 16px; font-weight: 600; color: white; margin: 20px 5px;"
+    (click)="manejarClick()">
+    {{ formularioAbierto ? 'Cancelar' : 'Nuevo Factor de Emisión' }}
+</button>
 
-<button mat-raised-button (click)="mostrarFormulario()">Nuevo Factor de Emisión</button>
-<button mat-raised-button color="warn" (click)="eliminarSeleccionados()">Eliminar seleccionados</button>
-<button mat-raised-button color="primary" (click)="generarYDescargarCSVFactores()">Descargar CSV Factores</button>
+
+<label for="fileInput"
+    style="float: left; border-radius: 5px; border: 2px solid #97bcdd; padding: 4px 10px; font-size: 16px; font-weight: 600; background-color: #97bcdd; color: white; margin: 20px 5px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; height: 36px;">
+    <mat-icon style="margin-right: 8px;">folder</mat-icon>
+    {{ nombreArchivo }}
+</label>
+<input type="file" #fileInput id="fileInput" (change)="handleFile($event)" style="display: none;" />
+<button (click)="procesarFactores()"
+    style="float: left; border-radius: 5px; border: 2px solid #97bcdd; padding: 1.5px 10px; font-size: 16px; font-weight: 600; background-color: #97bcdd; color: white; margin: 20px 0px;">
+    <img src="/assets/icons/save.svg" alt="Guardar" />
+</button>
+
+<!-- Últimos dos botones alineados a la derecha -->
+<button mat-raised-button
+    style="float: right; border-radius: 5px; border: 2px solid #4c91cc; padding: 6px 10px; font-size: 16px; font-weight: 600; background-color: #4c91cc; color: white; margin: 20px 5px;"
+    (click)="generarYDescargarCSVFactores()">Descargar CSV
+</button>
+<button mat-raised-button
+    style="float: right; border-radius: 5px; border: 2px solid #f44336; padding: 6px 10px; font-size: 16px; font-weight: 600; background-color: #f44336; color: white; margin: 20px 5px;"
+    (click)="eliminarSeleccionados()">Eliminar
+</button>
+
+<!-- Limpia los floats -->
+<div style="clear: both;"></div>
 
 
-<div *ngIf="mostrandoFormulario">
+<div *ngIf="formularioAbierto">
 
     <form [formGroup]="form" (ngSubmit)="agregarFactor()">
 
         <mat-form-field>
             <input matInput placeholder="cod" formControlName="cod">
         </mat-form-field>
-
 
         <mat-form-field>
             <mat-label>ALCANCE</mat-label>
@@ -28,17 +54,21 @@
                 <mat-option value="Combustión móvil">Combustión móvil</mat-option>
                 <mat-option value="Emisiones de procesos">Emisiones de procesos</mat-option>
                 <mat-option value="Emisiones fugitivas">Emisiones fugitivas</mat-option>
-                <mat-option value="Calor, vapor, refrigeración y aire comprimido comprados">Calor, vapor, refrigeración y aire comprimido comprados</mat-option>
+                <mat-option value="Calor, vapor, refrigeración y aire comprimido comprados">Calor, vapor, refrigeración
+                    y aire comprimido comprados</mat-option>
                 <mat-option value="Electricidad comprada">Electricidad comprada</mat-option>
-                <mat-option value="Pérdidas por transmisión y distribución">Pérdidas por transmisión y distribución</mat-option>
+                <mat-option value="Pérdidas por transmisión y distribución">Pérdidas por transmisión y
+                    distribución</mat-option>
                 <mat-option value="Bienes y servicios comprados">Bienes y servicios comprados</mat-option>
                 <mat-option value="Desplazamiento de los empleados ">Desplazamiento de los empleados</mat-option>
-                <mat-option value="Residuos generados en las operaciones">Residuos generados en las operaciones</mat-option>
-                <mat-option value="Transporte y distribución aguas abajo (cadena de valor)">Transporte y distribución aguas abajo (cadena de valor)</mat-option>
-                <mat-option value="Transporte y distribución aguas arriba (cadena de suministro)">Transporte y distribución aguas arriba (cadena de suministro)</mat-option>
+                <mat-option value="Residuos generados en las operaciones">Residuos generados en las
+                    operaciones</mat-option>
+                <mat-option value="Transporte y distribución aguas abajo (cadena de valor)">Transporte y distribución
+                    aguas abajo (cadena de valor)</mat-option>
+                <mat-option value="Transporte y distribución aguas arriba (cadena de suministro)">Transporte y
+                    distribución aguas arriba (cadena de suministro)</mat-option>
                 <mat-option value="Uso de productos vendidos">Uso de productos vendidos</mat-option>
                 <mat-option value="Viajes de negocio">Viajes de negocio</mat-option>
-
             </mat-select>
 
         </mat-form-field>
@@ -70,49 +100,49 @@
                 Debe ingresar un número válido.
             </mat-error>
         </mat-form-field>
-        
+
         <mat-form-field>
             <input matInput placeholder="Metano (CH4)" formControlName="FE_CH4">
             <mat-error *ngIf="form.controls['FE_CH4'].hasError('pattern')">
                 Debe ingresar un número válido.
             </mat-error>
         </mat-form-field>
-        
+
         <mat-form-field>
             <input matInput placeholder="Óxido Nitroso (N2O)" formControlName="FE_N2O">
             <mat-error *ngIf="form.controls['FE_N2O'].hasError('pattern')">
                 Debe ingresar un número válido.
             </mat-error>
         </mat-form-field>
-        
+
         <mat-form-field>
             <input matInput placeholder="Hexafluoruro de azufre (SF6)" formControlName="FE_SF6">
             <mat-error *ngIf="form.controls['FE_SF6'].hasError('pattern')">
                 Debe ingresar un número válido.
             </mat-error>
         </mat-form-field>
-        
+
         <mat-form-field>
             <input matInput placeholder="Hidrofluorocarbono (HFC)" formControlName="FE_HFC">
             <mat-error *ngIf="form.controls['FE_HFC'].hasError('pattern')">
                 Debe ingresar un número válido.
             </mat-error>
         </mat-form-field>
-        
+
         <mat-form-field>
             <input matInput placeholder="Perfluorocarbono (PFC)" formControlName="FE_PFC">
             <mat-error *ngIf="form.controls['FE_PFC'].hasError('pattern')">
                 Debe ingresar un número válido.
             </mat-error>
         </mat-form-field>
-        
+
         <mat-form-field>
             <input matInput placeholder="Trifluoruro de nitrógeno (NF3)" formControlName="FE_NF3">
             <mat-error *ngIf="form.controls['FE_NF3'].hasError('pattern')">
                 Debe ingresar un número válido.
             </mat-error>
         </mat-form-field>
-        
+
         <mat-form-field>
             <mat-label>INCERTIDUMBRE</mat-label>
             <mat-select formControlName="INCERTIDUMBRE">
@@ -125,8 +155,14 @@
             <input matInput placeholder="ORIGENFE" formControlName="ORIGENFE">
         </mat-form-field>
 
-        <button mat-raised-button type="submit">Guardar</button>
-        <button mat-raised-button type="button" (click)="cancelarFormulario()">Cancelar</button>
+        <button mat-raised-button type="submit"
+            style="float: right; border-radius: 5px; border: 2px solid #9fd09f; padding: 5px 10px; font-size: 16px; font-weight: 600; background-color: #9fd09f; color: white; margin: 20px 5px;">
+            Guardar
+        </button>
+        <button mat-raised-button type="button" (click)="manejarClick()"
+            style="float: right; border-radius: 5px; border: 2px solid #f44336; padding: 5px 10px; font-size: 16px; font-weight: 600; background-color: #f44336; color: white; margin: 20px 5px;">
+            Cancelar
+        </button>
     </form>
 </div>
 

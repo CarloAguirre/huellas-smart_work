@@ -41,7 +41,6 @@ export class EmisionesComponent implements OnInit {
   nombreArchivo: string = 'Seleccionar archivo';  // Añade esta línea
   displayedColumns: string[] = [
     'select',
-    'id',
     'ALCANCE',
     'CATEGORIA',
     'SUBCATEGORIA',
@@ -88,6 +87,8 @@ export class EmisionesComponent implements OnInit {
   ) { }
   companyID: string | null = 'null';
   userID: string | null = 'null';
+
+  
   handleFile(event: any) {
     const target: DataTransfer = <DataTransfer>(event.target);
 
@@ -282,6 +283,8 @@ export class EmisionesComponent implements OnInit {
       if (data && data.company && data.user) {
         this.companyID = data.company.id;
         this.userID = data.user.id;
+        
+      
       } else {
         console.error('No se pudo obtener el usuario o la compañía');
       }

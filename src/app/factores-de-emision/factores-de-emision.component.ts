@@ -249,7 +249,6 @@ export class FactoresDeEmisionComponent implements OnInit {
 
 
 
-
   handleFile(event: any): void {
     const target: DataTransfer = <DataTransfer>(event.target);
 

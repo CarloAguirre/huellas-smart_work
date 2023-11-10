@@ -50,43 +50,44 @@ export class ResultadosComponent implements OnInit {
     ];
     return meses[mes] || '';
   }
-  
+
 
   async ngOnInit() {
     try {
       this.emisiones = await DataStore.query(Emision);
       const emisionesMensuales: { [key: string]: EmisionesResumen } = {};
-
+    
       this.emisiones.forEach((emision) => {
         const fechaInicio = new Date(emision.InicioPeriodo);
         const fechaTermino = new Date(emision.TerminoPeriodo);
         const añoInicio = fechaInicio.getFullYear();
         const añoTermino = fechaTermino.getFullYear();
-
+    
+        let acumuladorFactor = 0; // Acumulador para los factores proporcionales
+    
         for (let año = añoInicio; año <= añoTermino; año++) {
           const mesComienzo = año === añoInicio ? fechaInicio.getMonth() : 0;
           const mesFin = año === añoTermino ? fechaTermino.getMonth() : 11;
-
+    
           for (let mes = mesComienzo; mes <= mesFin; mes++) {
             const inicioDelMesActual = new Date(año, mes, 1);
             const finDelMesActual = new Date(año, mes + 1, 0);
-            const fechaInicioConsiderada =
-              fechaInicio > inicioDelMesActual
-                ? fechaInicio
-                : inicioDelMesActual;
-            const fechaTerminoConsiderada =
-              fechaTermino < finDelMesActual ? fechaTermino : finDelMesActual;
-
+            const fechaInicioConsiderada = fechaInicio > inicioDelMesActual ? fechaInicio : inicioDelMesActual;
+            const fechaTerminoConsiderada = fechaTermino < finDelMesActual ? fechaTermino : finDelMesActual;
+    
             if (fechaInicioConsiderada <= fechaTerminoConsiderada) {
-              const diasEnElMes = new Date(año, mes + 1, 0).getDate();
-              const diasTotales =
-                (fechaTermino.getTime() - fechaInicio.getTime()) /
-                  (1000 * 3600 * 24) +
-                1;
-              const factorProporcional = diasEnElMes / diasTotales;
-
+              const diasDelMesEnPeriodo = (fechaTerminoConsiderada.getTime() - fechaInicioConsiderada.getTime()) / (1000 * 3600 * 24) + 1;
+              const diasTotales = (fechaTermino.getTime() - fechaInicio.getTime()) / (1000 * 3600 * 24) + 1;
+              let factorProporcional = diasDelMesEnPeriodo / diasTotales;
+    
+              const esUltimoMes = año === añoTermino && mes === mesFin;
+              if (esUltimoMes) {
+                // Ajustar el factor proporcional del último mes
+                factorProporcional = 1 - acumuladorFactor;
+              }
+    
               const key = `${this.mesAbreviado(mes)}-${año}`;
-
+    
               if (!emisionesMensuales[key]) {
                 emisionesMensuales[key] = {
                   periodo: `${this.mesAbreviado(mes)}-${año}`,
@@ -104,16 +105,16 @@ export class ResultadosComponent implements OnInit {
                 };
               }
 
-                   // Suma basada en el alcance
-                   const totalEmissionForThisEntry = (emision.CO2 + emision.CH4 + emision.N2O + emision.SF6 + emision.HFC + emision.PFC + emision.NF3) * factorProporcional;
+              // Suma basada en el alcance
+              const totalEmissionForThisEntry = (emision.CO2 + emision.CH4 + emision.N2O + emision.SF6 + emision.HFC + emision.PFC + emision.NF3) * factorProporcional;
 
-                   if (emision.ALCANCE === "Alcance 1") {
-                       emisionesMensuales[key].totalAlcance1 += totalEmissionForThisEntry;
-                   } else if (emision.ALCANCE === "Alcance 2") {
-                       emisionesMensuales[key].totalAlcance2 += totalEmissionForThisEntry;
-                   } else if (emision.ALCANCE === "Alcance 3") {
-                    emisionesMensuales[key].totalAlcance3 += totalEmissionForThisEntry;
-                  }
+              if (emision.ALCANCE === "Alcance 1") {
+                emisionesMensuales[key].totalAlcance1 += totalEmissionForThisEntry;
+              } else if (emision.ALCANCE === "Alcance 2") {
+                emisionesMensuales[key].totalAlcance2 += totalEmissionForThisEntry;
+              } else if (emision.ALCANCE === "Alcance 3") {
+                emisionesMensuales[key].totalAlcance3 += totalEmissionForThisEntry;
+              }
 
               emisionesMensuales[key].totalCO2 += emision.CO2 * factorProporcional;
               emisionesMensuales[key].totalCH4 += emision.CH4 * factorProporcional;
@@ -122,18 +123,22 @@ export class ResultadosComponent implements OnInit {
               emisionesMensuales[key].totalHFC += emision.HFC * factorProporcional;
               emisionesMensuales[key].totalPFC += emision.PFC * factorProporcional;
               emisionesMensuales[key].totalNF3 += emision.NF3 * factorProporcional;
-              emisionesMensuales[key].totalTonCO2eq += (emision.CO2 + emision.CH4 + emision.N2O + emision.SF6 + emision.HFC + emision.PFC + emision.NF3) / 1000;
+              emisionesMensuales[key].totalTonCO2eq += totalEmissionForThisEntry/1000; // Ya has aplicado el factor proporcional
+              if (esUltimoMes) {
+                acumuladorFactor = 0;
+              } else {
+                acumuladorFactor += factorProporcional;
+              }
             }
           }
         }
+    
+        this.resumenEmisiones = Object.values(emisionesMensuales);
       });
-
-      this.resumenEmisiones = Object.values(emisionesMensuales);
     } catch (error) {
       console.error('Error al consultar los datos:', error);
     }
   }
-
   isAllSelected() {
     const numSelected = this.selection.selected.length;
     const numRows = this.emisiones.length;
@@ -149,40 +154,46 @@ export class ResultadosComponent implements OnInit {
   private convertToCSV(objArray: any[]): string {
     const array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
     let str = '';
-    const row = Object.keys(array[0]).map((key) => (`"${key}"`)).join(',');
-
+    const header = Object.keys(array[0]);
+    const row = header.join(';'); // Usamos punto y coma como separador de campos
+  
     str += row + '\r\n';
-
+  
     for (let i = 0; i < array.length; i++) {
-        let line = '';
-        for (const index in array[i]) {
-            if (line !== '') line += ',';
-            line += `"${array[i][index]}"`;
+      let line = '';
+      for (const index in array[i]) {
+        if (line !== '') line += ';'; // Usamos punto y coma como separador de campos
+        let value = array[i][index];
+        if (typeof value === 'number') {
+          // Reemplazamos el punto por una coma para los decimales si es necesario
+          value = value.toString().replace('.', ',');
+        } else if (typeof value === 'string') {
+          // Encerramos las cadenas entre comillas
+          value = `"${value}"`;
         }
-        str += line + '\r\n';
+        line += value;
+      }
+      str += line + '\r\n';
     }
     return str;
-}
+  }
+  
 
-private descargarCSV(data: string, filename = 'download.csv'): void {
-  const blob = new Blob(['\ufeff' + data], { type: 'text/csv;charset=utf-8;' });
-  const dwldLink = document.createElement('a');
-  const url = URL.createObjectURL(blob);
+  private descargarCSV(data: string, filename = 'download.csv'): void {
+    const blob = new Blob(['\ufeff' + data], { type: 'text/csv;charset=utf-8;' });
+    const dwldLink = document.createElement('a');
+    const url = URL.createObjectURL(blob);
 
-  dwldLink.setAttribute('href', url);
-  dwldLink.setAttribute('download', filename);
-  dwldLink.style.visibility = 'hidden';
+    dwldLink.setAttribute('href', url);
+    dwldLink.setAttribute('download', filename);
+    dwldLink.style.visibility = 'hidden';
 
-  document.body.appendChild(dwldLink);
-  dwldLink.click();
-  document.body.removeChild(dwldLink);
-}
-public generarYDescargarCSV(): void {
-  const csvData = this.convertToCSV(this.resumenEmisiones);
-  this.descargarCSV(csvData, 'resumen-emisiones.csv');
-}
-
-
-
-
+    document.body.appendChild(dwldLink);
+    dwldLink.click();
+    document.body.removeChild(dwldLink);
+  }
+  public generarYDescargarCSV(): void {
+    const csvData = this.convertToCSV(this.resumenEmisiones);
+    this.descargarCSV(csvData, 'resumen-emisiones.csv');
+  }
 }

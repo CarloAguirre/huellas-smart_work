@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { Amplify } from 'aws-amplify';
+import { Amplify, AuthModeStrategyType } from 'aws-amplify';
 import { AmplifyAuthenticatorModule } from '@aws-amplify/ui-angular';
 
 import { AppComponent } from './app.component';
@@ -26,7 +26,12 @@ import { MatIconModule } from '@angular/material/icon';
 
 import { ReactiveFormsModule } from '@angular/forms';
 
-Amplify.configure(awsconfig);
+Amplify.configure({
+  ...awsconfig,
+  DataStore: {
+    authModeStrategyType: AuthModeStrategyType.MULTI_AUTH
+  }
+})
 
 @NgModule({
   declarations: [

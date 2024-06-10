@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DataStore } from 'aws-amplify';
-import { Emision } from 'src/models'; // La ruta puede variar según donde se generó tu modelo.
+import { Emision, Establishment, User } from 'src/models'; // La ruta puede variar según donde se generó tu modelo.
 import { Factor } from 'src/models'; // La ruta puede variar según donde se generó tu modelo.
 import { HttpClient } from '@angular/common/http';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -38,6 +38,7 @@ export class EmisionesComponent implements OnInit {
   selection = new SelectionModel<Emision>(true, []);
   factores: any[] = [];
   emisiones: Emision[] = [];
+  establecimiento: Establishment [] = []
   nombreArchivo: string = 'Seleccionar archivo';  // Añade esta línea
   displayedColumns: string[] = [
     'select',
@@ -65,6 +66,8 @@ export class EmisionesComponent implements OnInit {
   concatenados: string[] = [];
   unidades: string[] = [];
 
+
+
   public form: FormGroup = new FormGroup({
     ALCANCE: new FormControl('', Validators.required),
     CATEGORIA: new FormControl({ value: '', disabled: true }, Validators.required),
@@ -73,10 +76,15 @@ export class EmisionesComponent implements OnInit {
     CANTIDAD: new FormControl('', Validators.required),
     InicioPeriodo: new FormControl('', Validators.required),
     TerminoPeriodo: new FormControl('', Validators.required),
+    ESTABLECIMIENTO: new FormControl('', Validators.required),
+
   });
   public mostrandoFormulario = false;
 
-  
+  public formEstablecimiento: FormGroup = new FormGroup({
+    ESTABLECIMIENTO: new FormControl('', Validators.required),
+  });
+
 
   constructor(
     private http: HttpClient,
@@ -85,10 +93,12 @@ export class EmisionesComponent implements OnInit {
     private dataService: DataService  // Inyecta DataService
 
   ) { }
-  companyID: string | null = 'null';
+  companyID: string = '';
   userID: string | null = 'null';
+  establishmentID: string = 'null';
+  establecimientos: Establishment[] = [];
 
-  
+
   handleFile(event: any) {
     const target: DataTransfer = <DataTransfer>(event.target);
 
@@ -153,7 +163,7 @@ export class EmisionesComponent implements OnInit {
 
     // Notifica al usuario sobre los resultados
     this.snackBar.open(`${exitosos.length} emisiones agregadas con éxito. ${errores.length} emisiones tuvieron errores.`, 'Cerrar', { duration: 4000 });
-  
+
     this.fileInput.nativeElement.value = '';  // Resetea el control del archivo
     this.nombreArchivo = 'Seleccionar archivo';
     this.emisionesDesdeExcel = [];
@@ -237,9 +247,9 @@ export class EmisionesComponent implements OnInit {
         console.log("Objeto emision a guardar:", emision);
       });
 
-      // Crear un objeto Emision basado en los valores del formulario
+   // Crear un objeto Emision basado en los valores del formulario
       const emision = new Emision({
-        Company: 'nickname', // Debes decidir de dónde obtener este valor
+        Company: nickname, // Debes decidir de dónde obtener este valor
         ALCANCE: values.ALCANCE,
         CATEGORIA: values.CATEGORIA,
         SUBCATEGORIA: values.SUBCATEGORIA,
@@ -258,9 +268,12 @@ export class EmisionesComponent implements OnInit {
         TerminoPeriodo: formatDateToAWSDate(jsTerminoPeriodo),
         INCERTIDUMBRE: INCERTIDUMBRE,
         ORIGENFE: ORIGENFE,
-        companyID: this.companyID!, 
-        userID: this.userID!       
+        userID: this.userID!,
+        companyID: this.companyID!, // Asegúrate de que este valor esté disponible
+        EstablishmentID: this.establishmentID
       });
+
+
       try {
         await DataStore.save(emision);
       } catch (error) {
@@ -277,14 +290,18 @@ export class EmisionesComponent implements OnInit {
   async cargarEmisiones(): Promise<void> {
     this.emisiones = await DataStore.query(Emision);
   }
+
+  async cargarEstablecimiento(): Promise<void> {
+    this.establecimiento = await DataStore.query(Establishment);
+  }
   async ngOnInit(): Promise<void> {
     try {
       const data = await this.dataService.getUserAndCompany();
       if (data && data.company && data.user) {
-        this.companyID = data.company.id;
+        this.companyID = data.user.companyID;
         this.userID = data.user.id;
-        
-      
+        this.establecimientos = (data.establishments ?? []) as Establishment[];
+
       } else {
         console.error('No se pudo obtener el usuario o la compañía');
       }
@@ -363,9 +380,11 @@ export class EmisionesComponent implements OnInit {
     } catch (error) {
       console.error('Error al consultar los datos:', error);
     }
+    console.log(this.establecimientos)
   }
 
   formularioAbierto: boolean = false;
+  formularioEstablecimientoAbierto: boolean = false;
 
   mostrarFormulario(): void {
     this.formularioAbierto = true;
@@ -373,6 +392,15 @@ export class EmisionesComponent implements OnInit {
 
   cerrarFormulario(): void {
     this.formularioAbierto = false;
+  }
+
+  //Formulario Establecimientos
+  mostrarFormularioEstablecimiento(): void {
+    this.formularioEstablecimientoAbierto = true;
+  }
+
+  cerrarFormularioEstablecimiento(): void {
+    this.formularioEstablecimientoAbierto = false;
   }
 
   manejarClick(): void {
@@ -388,6 +416,7 @@ export class EmisionesComponent implements OnInit {
 
     if (this.form.valid) {
       const values = this.form.value;
+
       const factoresRelevantes = this.factores.filter(
         (factor) => factor.CONCATENADO === values.CONCATENADO
       );
@@ -465,12 +494,14 @@ export class EmisionesComponent implements OnInit {
           TerminoPeriodo: formatDateToAWSDate(values.TerminoPeriodo),
           INCERTIDUMBRE: INCERTIDUMBRE,
           ORIGENFE: ORIGENFE,
-          companyID: this.companyID!, 
-          userID: this.userID!       
+          companyID: this.companyID!,
+          userID: this.userID!,
+          EstablishmentID: this.establishmentID
         });
 
         // Guardar el objeto Emision en DataStore
         try {
+          console.log(emision)
           await DataStore.save(emision);
           this.snackBar.open('Emisión guardada con éxito!', 'Cerrar', {
             duration: 2000,
@@ -495,7 +526,55 @@ export class EmisionesComponent implements OnInit {
     }
   }
 
+  //TODO CREAR ESTABLECIMIENTO:
+  manejarClickEstablecimiento(): void {
+    if (this.formularioEstablecimientoAbierto) {
+      this.cerrarFormularioEstablecimiento();  // si el formulario está abierto, ciérralo
+    } else {
+      this.mostrarFormularioEstablecimiento();  // si el formulario está cerrado, ábrelo
+    }
+  }
+async agregarEstablecimiento() {
+
+  var nombre = ''
+  if (this.formEstablecimiento) {
+    nombre = this.formEstablecimiento.value.ESTABLECIMIENTO;
+  }
+
+  console.log(typeof this.companyID);
+  console.log(this.userID);
+
+  if (this.companyID !== null) {
+    const establecimiento = new Establishment({
+      companyID: this.companyID,
+      name: nombre
+    });
+
+    try {
+      await DataStore.save(establecimiento);
+      this.snackBar.open('Establecimiento guardado con éxito!', 'Cerrar', {
+        duration: 2000,
+      });
+      this.cancelarFormularioEstablecimiento();
+      await this.cargarEstablecimiento();
+    } catch (error) {
+      this.snackBar.open('Error al guardar el establecimiento', 'Cerrar', {
+        duration: 2000,
+      });
+      console.error('Error al guardar en DataStore:', error);
+    }
+  } else {
+        console.error('companyID is null');
+  }
+}
+
+
   cancelarFormulario() {
+    this.formularioAbierto = false;
+    this.form.reset();
+  }
+
+  cancelarFormularioEstablecimiento() {
     this.formularioAbierto = false;
     this.form.reset();
   }

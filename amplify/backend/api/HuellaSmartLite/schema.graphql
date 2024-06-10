@@ -5,7 +5,7 @@ type Company @model @auth(rules: [{allow: public}]) {
   isActive: Boolean
   Users: [User] @hasMany(indexName: "byCompany", fields: ["id"])
   Factors: [Factor] @hasMany(indexName: "byCompany", fields: ["id"])
-  Emisions: [Emision] @hasMany(indexName: "byCompany", fields: ["id"])
+  Establishment: [Establishment] @hasMany(indexName: "byEstablishment", fields: ["id"])
 }
 
 type User @model @auth(rules: [{allow: public}]) {
@@ -43,6 +43,7 @@ type Emision @model @auth(rules: [{allow: public, operations: [update, delete]},
   ORIGENFE: String
   userID: ID! @index(name: "byUser")
   companyID: ID! @index(name: "byCompany")
+  EstablishmentID: ID! @index(name: "byEstablishment")
 }
 
 type Factor @model @auth(rules: [{allow: public, operations: [update, delete]}, {allow: owner}, {allow: groups, groups: ["SuperAdmin"], operations: [read, create, update, delete]}]) {
@@ -62,4 +63,13 @@ type Factor @model @auth(rules: [{allow: public, operations: [update, delete]}, 
   companyID: ID! @index(name: "byCompany")
   userID: ID! @index(name: "byUser")
 }
- 
+
+type Establishment @model @auth(rules: [
+  { allow: public, operations: [create, read, update, delete] },
+  { allow: owner },
+]) {
+  id: ID!
+  name: String!
+  companyID: ID! @index(name: "byEstablishment")
+  Emisions: [Emision] @hasMany(indexName: "byEstablishment", fields: ["id"])
+}

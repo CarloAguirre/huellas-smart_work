@@ -62,6 +62,7 @@ export class FactoresDeEmisionComponent implements OnInit {
     try {
       // Obtener los datos del usuario y la compañía primero
       const data = await this.dataService.getUserAndCompany();
+
       if (data && data.company && data.user) {
         this.companyID = data.company.id;
         this.userID = data.user.id;

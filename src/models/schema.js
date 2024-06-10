@@ -63,11 +63,11 @@ export const schema = {
                         ]
                     }
                 },
-                "Emisions": {
-                    "name": "Emisions",
+                "Establishment": {
+                    "name": "Establishment",
                     "isArray": true,
                     "type": {
-                        "model": "Emision"
+                        "model": "Establishment"
                     },
                     "isRequired": false,
                     "attributes": [],
@@ -413,6 +413,13 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
+                "EstablishmentID": {
+                    "name": "EstablishmentID",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
                 "createdAt": {
                     "name": "createdAt",
                     "isArray": false,
@@ -452,6 +459,15 @@ export const schema = {
                         "name": "byCompany",
                         "fields": [
                             "companyID"
+                        ]
+                    }
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byEstablishment",
+                        "fields": [
+                            "EstablishmentID"
                         ]
                     }
                 },
@@ -688,10 +704,113 @@ export const schema = {
                     }
                 }
             ]
+        },
+        "Establishment": {
+            "name": "Establishment",
+            "fields": {
+                "id": {
+                    "name": "id",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "name": {
+                    "name": "name",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "companyID": {
+                    "name": "companyID",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "Emisions": {
+                    "name": "Emisions",
+                    "isArray": true,
+                    "type": {
+                        "model": "Emision"
+                    },
+                    "isRequired": false,
+                    "attributes": [],
+                    "isArrayNullable": true,
+                    "association": {
+                        "connectionType": "HAS_MANY",
+                        "associatedWith": [
+                            "EstablishmentID"
+                        ]
+                    }
+                },
+                "createdAt": {
+                    "name": "createdAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
+                },
+                "updatedAt": {
+                    "name": "updatedAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
+                }
+            },
+            "syncable": true,
+            "pluralName": "Establishments",
+            "attributes": [
+                {
+                    "type": "model",
+                    "properties": {}
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byEstablishment",
+                        "fields": [
+                            "companyID"
+                        ]
+                    }
+                },
+                {
+                    "type": "auth",
+                    "properties": {
+                        "rules": [
+                            {
+                                "allow": "public",
+                                "operations": [
+                                    "create",
+                                    "read",
+                                    "update",
+                                    "delete"
+                                ]
+                            },
+                            {
+                                "provider": "userPools",
+                                "ownerField": "owner",
+                                "allow": "owner",
+                                "identityClaim": "cognito:username",
+                                "operations": [
+                                    "create",
+                                    "update",
+                                    "delete",
+                                    "read"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
         }
     },
     "enums": {},
     "nonModels": {},
     "codegenVersion": "3.4.4",
-    "version": "49af47cc92958cd7cd4e97734dceedb3"
+    "version": "c05f3e0cad71a81c7aebf812f3af1a39"
 };

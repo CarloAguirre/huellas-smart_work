@@ -17,7 +17,7 @@ type EagerCompany = {
   readonly isActive?: boolean | null;
   readonly Users?: (User | null)[] | null;
   readonly Factors?: (Factor | null)[] | null;
-  readonly Emisions?: (Emision | null)[] | null;
+  readonly Establishment?: (Establishment | null)[] | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -30,10 +30,11 @@ type LazyCompany = {
   readonly id: string;
   readonly name?: string | null;
   readonly email?: string | null;
+  readonly companyID?: string | null;
   readonly isActive?: boolean | null;
   readonly Users: AsyncCollection<User>;
   readonly Factors: AsyncCollection<Factor>;
-  readonly Emisions: AsyncCollection<Emision>;
+  readonly Establishment: AsyncCollection<Establishment>;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -113,6 +114,7 @@ type EagerEmision = {
   readonly ORIGENFE?: string | null;
   readonly userID: string;
   readonly companyID: string;
+  readonly EstablishmentID: string;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -144,6 +146,7 @@ type LazyEmision = {
   readonly ORIGENFE?: string | null;
   readonly userID: string;
   readonly companyID: string;
+  readonly EstablishmentID: string;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -206,4 +209,36 @@ export declare type Factor = LazyLoading extends LazyLoadingDisabled ? EagerFact
 
 export declare const Factor: (new (init: ModelInit<Factor>) => Factor) & {
   copyOf(source: Factor, mutator: (draft: MutableModel<Factor>) => MutableModel<Factor> | void): Factor;
+}
+
+type EagerEstablishment = {
+  readonly [__modelMeta__]: {
+    identifier: ManagedIdentifier<Establishment, 'id'>;
+    readOnlyFields: 'createdAt' | 'updatedAt';
+  };
+  readonly id: string;
+  readonly name: string;
+  readonly companyID: string;
+  readonly Emisions?: (Emision | null)[] | null;
+  readonly createdAt?: string | null;
+  readonly updatedAt?: string | null;
+}
+
+type LazyEstablishment = {
+  readonly [__modelMeta__]: {
+    identifier: ManagedIdentifier<Establishment, 'id'>;
+    readOnlyFields: 'createdAt' | 'updatedAt';
+  };
+  readonly id: string;
+  readonly name: string;
+  readonly companyID: string;
+  readonly Emisions: AsyncCollection<Emision>;
+  readonly createdAt?: string | null;
+  readonly updatedAt?: string | null;
+}
+
+export declare type Establishment = LazyLoading extends LazyLoadingDisabled ? EagerEstablishment : LazyEstablishment
+
+export declare const Establishment: (new (init: ModelInit<Establishment>) => Establishment) & {
+  copyOf(source: Establishment, mutator: (draft: MutableModel<Establishment>) => MutableModel<Establishment> | void): Establishment;
 }

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { DataStore } from '@aws-amplify/datastore';
 import { DataService } from './services/data.service';  // Importa DataService
 
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -12,9 +13,8 @@ export class AppComponent implements OnInit {  // Asegúrate de que tu component
   title = 'huella-smart-lite';
   user: any = null;  // Añade propiedad para guardar el usuario
   company: any = null;  // Añade propiedad para guardar la compañía
+  establishments: any = null;
 
-
-  
   constructor(
     private router: Router,
     private dataService: DataService  // Inyecta DataService en el constructor
@@ -41,9 +41,10 @@ export class AppComponent implements OnInit {  // Asegúrate de que tu component
       if (data) {
         this.user = data.user;
         this.company = data.company;
-
+        this.establishments = data.establishments
         console.log('Usuario:', this.user);
         console.log('Compañía:', this.company);
+        console.log('Establecimientos:', this.establishments);
       }
     } catch (error) {
       console.error("Error al obtener el usuario y la compañía:", error);
@@ -61,7 +62,7 @@ export class AppComponent implements OnInit {  // Asegúrate de que tu component
       // Limpiar el DataStore local
       await DataStore.clear();
       console.log('DataStore ha sido limpiado.');
-      
+
       // Luego, usar la función de cerrar sesión provista por el slot
       signOutFunction();
     } catch (error) {

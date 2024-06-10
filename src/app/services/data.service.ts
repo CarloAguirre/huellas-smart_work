@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DataStore } from 'aws-amplify';
-import { Company, User } from '../../models';
+import { Company, User, Establishment } from '../../models';
 import { Auth } from 'aws-amplify';
 
 @Injectable({
@@ -9,7 +9,7 @@ import { Auth } from 'aws-amplify';
 export class DataService {
     dataStoreReady: Promise<void>;
 
-    constructor() { 
+    constructor() {
         this.dataStoreReady = DataStore.start();
     }
 
@@ -22,7 +22,9 @@ export class DataService {
             const user = users.find(u => u.sub === sub);
             const companyID = cognitoUser.attributes['custom:companyID'];
             const company = await DataStore.query(Company, companyID);
-            return { user, company };
+
+            const establishments = await DataStore.query(Establishment, companyID)
+            return { user, company, companyID, establishments };
         } catch (error) {
             console.error(error);
             return null;

@@ -19,5 +19,23 @@
         "HuellaSmartLite": {}
       }
     }
+  },
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-huellasmartlite-dev-01733-authRole",
+      "UnauthRoleArn": "arn:aws:iam::798825020263:role/amplify-huellasmartlite-dev-01733-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::798825020263:role/amplify-huellasmartlite-dev-01733-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-huellasmartlite-dev-01733-deployment",
+      "UnauthRoleName": "amplify-huellasmartlite-dev-01733-unauthRole",
+      "StackName": "amplify-huellasmartlite-dev-01733",
+      "StackId": "arn:aws:cloudformation:us-east-1:798825020263:stack/amplify-huellasmartlite-dev-01733/b2b33b80-2540-11ef-8c25-0affd35d3fe5",
+      "AmplifyAppId": "d16ikmzckgd0lp"
+    },
+    "categories": {
+      "auth": {
+        "HuellaSmartLite": {}
+      }
+    }
   }
 }

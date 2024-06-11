@@ -28,3 +28,27 @@ mat-form-field.mat-select {
 .campofecha {
     width: 50%;
 }
+
+.graphics-container{
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-template-areas: "graphic-one graphic-two";
+
+}
+
+.graphic-one {
+  grid-area: graphic-one;
+  background-color: #EEF3EF;
+  border-radius: 10px;
+}
+
+.graphic-two {
+  display: flex;
+  flex-direction: column;
+  gap: 20px
+}
+.alcance-uno, .alcance-dos, .alcance-tres{
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}

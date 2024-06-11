@@ -41,10 +41,10 @@ export class AppComponent implements OnInit {  // Asegúrate de que tu component
       if (data) {
         this.user = data.user;
         this.company = data.company;
-        this.establishments = data.establishments
         console.log('Usuario:', this.user);
         console.log('Compañía:', this.company);
         console.log('Establecimientos:', this.establishments);
+
       }
     } catch (error) {
       console.error("Error al obtener el usuario y la compañía:", error);

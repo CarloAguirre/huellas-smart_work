@@ -21,10 +21,13 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import {MatDatepickerModule, } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
+import { NgApexchartsModule } from 'ng-apexcharts';
+
 
 
 
 import { ReactiveFormsModule } from '@angular/forms';
+
 
 Amplify.configure({
   ...awsconfig,
@@ -38,7 +41,8 @@ Amplify.configure({
     AppComponent,
     FactoresDeEmisionComponent,
     EmisionesComponent,
-    ResultadosComponent
+    ResultadosComponent,
+
   ],
   imports: [
     BrowserModule,
@@ -55,7 +59,8 @@ Amplify.configure({
     MatSnackBarModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatIconModule
+    MatIconModule,
+    NgApexchartsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,13 +1,18 @@
 
 <button mat-raised-button [style.backgroundColor]="formularioEstablecimientoAbierto ? '#f44336' : '#9fd09f'"
     style="float: left; border-radius: 5px; border: 2px solid #9fd09f; padding: 6px 10px; font-size: 16px; font-weight: 600; color: white; margin: 20px 5px;"
+    class="nuevo-establecimiento"
+    [disabled]="formularioAbierto"
     (click)="manejarClickEstablecimiento()"
     >
     {{ formularioEstablecimientoAbierto ? 'Cancelar' : 'Nuevo Establecimiento' }}
 </button>
 <button mat-raised-button [style.backgroundColor]="formularioAbierto ? '#f44336' : '#9fd09f'"
     style="float: left; border-radius: 5px; border: 2px solid #9fd09f; padding: 6px 10px; font-size: 16px; font-weight: 600; color: white; margin: 20px 5px;"
-    (click)="manejarClick()"
+    class="nueva-emision"
+    [disabled]="formularioEstablecimientoAbierto"
+    (click)="manejarClick()
+    "
     >
     {{ formularioAbierto ? 'Cancelar' : 'Nueva Emisión' }}
 </button>
@@ -45,7 +50,7 @@
       <mat-form-field>
         <mat-label>ESTABLECIMIENTO</mat-label>
         <mat-select formControlName="ESTABLECIMIENTO">
-            <mat-option *ngFor="let establecimiento of establecimientos" [value]="establecimiento">{{ establecimiento.name }}</mat-option>
+            <mat-option *ngFor="let establecimiento of establecimientos" [value]="establecimiento.id">{{ establecimiento.name }}</mat-option>
         </mat-select>
     </mat-form-field>
 
@@ -150,6 +155,10 @@
         <th mat-header-cell *matHeaderCellDef>ALCANCE</th>
         <td mat-cell *matCellDef="let factor">{{factor.ALCANCE}}</td>
     </ng-container>
+    <ng-container matColumnDef="ESTABLECIMIENTO">
+      <th mat-header-cell *matHeaderCellDef>ESTABLECIMIENTO</th>
+      <td mat-cell *matCellDef="let emision">{{ obtenerNombreEstablecimiento(emision.EstablishmentID) }}</td>
+  </ng-container>
     <!-- CATEGORIA Column -->
     <ng-container matColumnDef="CATEGORIA">
         <th mat-header-cell *matHeaderCellDef>CATEGORIA</th>

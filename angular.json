@@ -30,7 +30,9 @@
               "node_modules/@aws-amplify/ui-angular/theme.css",
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/apexcharts/dist/apexcharts.min.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -93,7 +95,9 @@
               "@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+               "node_modules/apexcharts/dist/apexcharts.min.js"
+            ]
           }
         }
       }

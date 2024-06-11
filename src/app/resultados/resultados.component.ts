@@ -1,7 +1,38 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild  } from '@angular/core';
 import { DataStore } from 'aws-amplify';
 import { Emision } from 'src/models'; // La ruta puede variar según donde se generó tu modelo.
 import { SelectionModel } from '@angular/cdk/collections';
+import {
+  ApexAxisChartSeries,
+  ApexChart,
+  ChartComponent,
+  ApexDataLabels,
+  ApexXAxis,
+  ApexPlotOptions,
+  ApexStroke,
+  ApexTitleSubtitle,
+  ApexTooltip,
+  ApexFill,
+  ApexLegend,
+  ApexYAxis
+} from "ng-apexcharts";
+
+
+export type ChartOptions = {
+  series: ApexAxisChartSeries | any;
+  chart: ApexChart| any;
+  dataLabels: ApexDataLabels| any;
+  plotOptions: ApexPlotOptions| any;
+  xaxis: ApexXAxis| any;
+  yaxis: ApexYAxis| any;
+  stroke: ApexStroke| any;
+  title: ApexTitleSubtitle| any;
+  tooltip: ApexTooltip| any;
+  fill: ApexFill| any;
+  legend: ApexLegend| any;
+};
+
+
 
 interface EmisionesResumen {
   periodo: string;
@@ -24,8 +55,67 @@ interface EmisionesResumen {
   styleUrls: ['./resultados.component.css'],
 })
 export class ResultadosComponent implements OnInit {
+  public chartOptions: Partial<ChartOptions>;
   emisiones: Emision[] = [];
-  resumenEmisiones: EmisionesResumen[] = []; // Añadir esta línea para almacenar el resumen
+  public resumenEmisiones: EmisionesResumen[] = []; // Añadir esta línea para almacenar el resumen
+  alcanceUno: any = null
+  alcanceDos: any = null
+  alcanceTres: any = null
+  constructor() {
+    this.chartOptions = {
+      series: [
+        {
+          name: "Alcance 1",
+          data: [this.alcanceUno]
+        },
+        {
+          name: "Alcance 2",
+          data: [this.alcanceDos]
+        },
+        {
+          name: "Alcance 3",
+          data: [this.alcanceTres]
+        }
+      ],
+      chart: {
+        type: "bar",
+        height: 200,
+        stacked: true,
+        stackType: "100%"
+      },
+      plotOptions: {
+        bar: {
+          horizontal: true
+        }
+      },
+      stroke: {
+        width: 1,
+        colors: ["#fff"]
+      },
+      title: {
+        text: "100% Stacked Bar"
+      },
+      xaxis: {
+        categories: [2024]
+      },
+      tooltip: {
+        y: {
+          formatter: function(val: any) {
+            return val + "K";
+          }
+        }
+      },
+      fill: {
+        opacity: 1
+      },
+      legend: {
+        position: "top",
+        horizontalAlign: "left",
+        offsetX: 40
+      }
+    };
+  }
+
   selection = new SelectionModel<Emision>(true, []);
   displayedColumns: string[] = [
     'periodo',
@@ -56,38 +146,38 @@ export class ResultadosComponent implements OnInit {
     try {
       this.emisiones = await DataStore.query(Emision);
       const emisionesMensuales: { [key: string]: EmisionesResumen } = {};
-    
+
       this.emisiones.forEach((emision) => {
         const fechaInicio = new Date(emision.InicioPeriodo);
         const fechaTermino = new Date(emision.TerminoPeriodo);
         const añoInicio = fechaInicio.getFullYear();
         const añoTermino = fechaTermino.getFullYear();
-    
+
         let acumuladorFactor = 0; // Acumulador para los factores proporcionales
-    
+
         for (let año = añoInicio; año <= añoTermino; año++) {
           const mesComienzo = año === añoInicio ? fechaInicio.getMonth() : 0;
           const mesFin = año === añoTermino ? fechaTermino.getMonth() : 11;
-    
+
           for (let mes = mesComienzo; mes <= mesFin; mes++) {
             const inicioDelMesActual = new Date(año, mes, 1);
             const finDelMesActual = new Date(año, mes + 1, 0);
             const fechaInicioConsiderada = fechaInicio > inicioDelMesActual ? fechaInicio : inicioDelMesActual;
             const fechaTerminoConsiderada = fechaTermino < finDelMesActual ? fechaTermino : finDelMesActual;
-    
+
             if (fechaInicioConsiderada <= fechaTerminoConsiderada) {
               const diasDelMesEnPeriodo = (fechaTerminoConsiderada.getTime() - fechaInicioConsiderada.getTime()) / (1000 * 3600 * 24) + 1;
               const diasTotales = (fechaTermino.getTime() - fechaInicio.getTime()) / (1000 * 3600 * 24) + 1;
               let factorProporcional = diasDelMesEnPeriodo / diasTotales;
-    
+
               const esUltimoMes = año === añoTermino && mes === mesFin;
               if (esUltimoMes) {
                 // Ajustar el factor proporcional del último mes
                 factorProporcional = 1 - acumuladorFactor;
               }
-    
+
               const key = `${this.mesAbreviado(mes)}-${año}`;
-    
+
               if (!emisionesMensuales[key]) {
                 emisionesMensuales[key] = {
                   periodo: `${this.mesAbreviado(mes)}-${año}`,
@@ -132,13 +222,51 @@ export class ResultadosComponent implements OnInit {
             }
           }
         }
-    
+
         this.resumenEmisiones = Object.values(emisionesMensuales);
+        this.updateChart();
       });
     } catch (error) {
       console.error('Error al consultar los datos:', error);
     }
+
   }
+
+  updateChart() {
+    const totalAlcance1 = this.resumenEmisiones.reduce((acc, curr) => acc + curr.totalAlcance1, 0);
+    const totalAlcance2 = this.resumenEmisiones.reduce((acc, curr) => acc + curr.totalAlcance2, 0);
+    const totalAlcance3 = this.resumenEmisiones.reduce((acc, curr) => acc + curr.totalAlcance3, 0);
+
+    const total = totalAlcance1 + totalAlcance2 + totalAlcance3;
+
+    this.alcanceUno = totalAlcance1 > 0 ? ((totalAlcance1 / total) * 100).toFixed(2) : 0;
+    this.alcanceDos = totalAlcance2 > 0 ? ((totalAlcance2 / total) * 100).toFixed(2) : 0;
+    this.alcanceTres = totalAlcance3 > 0 ? ((totalAlcance3 / total) * 100).toFixed(2) : 0;
+
+    this.chartOptions.series = [
+      {
+        name: "Alcance 1",
+        data: [parseFloat(this.alcanceUno)]
+      },
+      {
+        name: "Alcance 2",
+        data: [parseFloat(this.alcanceDos)]
+      },
+      {
+        name: "Alcance 3",
+        data: [parseFloat(this.alcanceTres)]
+      }
+    ];
+
+    this.chartOptions.xaxis.categories = ["Porcentaje"];
+
+    this.chartOptions.title.text = "Porcentaje de Emisiones por Alcance";
+
+    this.chartOptions.tooltip.y.formatter = function(val: any) {
+      return val.toFixed(2) + "%";
+    };
+  }
+
   isAllSelected() {
     const numSelected = this.selection.selected.length;
     const numRows = this.emisiones.length;
@@ -156,9 +284,9 @@ export class ResultadosComponent implements OnInit {
     let str = '';
     const header = Object.keys(array[0]);
     const row = header.join(';'); // Usamos punto y coma como separador de campos
-  
+
     str += row + '\r\n';
-  
+
     for (let i = 0; i < array.length; i++) {
       let line = '';
       for (const index in array[i]) {
@@ -177,7 +305,7 @@ export class ResultadosComponent implements OnInit {
     }
     return str;
   }
-  
+
 
   private descargarCSV(data: string, filename = 'download.csv'): void {
     const blob = new Blob(['\ufeff' + data], { type: 'text/csv;charset=utf-8;' });
@@ -196,4 +324,8 @@ export class ResultadosComponent implements OnInit {
     const csvData = this.convertToCSV(this.resumenEmisiones);
     this.descargarCSV(csvData, 'resumen-emisiones.csv');
   }
+
+
+
+
 }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DataStore } from 'aws-amplify';
+import { DataStore, Predicates  } from 'aws-amplify';
 import { Emision, Establishment, User } from 'src/models'; // La ruta puede variar según donde se generó tu modelo.
 import { Factor } from 'src/models'; // La ruta puede variar según donde se generó tu modelo.
 import { HttpClient } from '@angular/common/http';
@@ -43,6 +43,7 @@ export class EmisionesComponent implements OnInit {
   displayedColumns: string[] = [
     'select',
     'ALCANCE',
+    'ESTABLECIMIENTO',
     'CATEGORIA',
     'SUBCATEGORIA',
     'ACTIVIDAD',
@@ -65,8 +66,8 @@ export class EmisionesComponent implements OnInit {
   categorias: string[] = [];
   concatenados: string[] = [];
   unidades: string[] = [];
-
-
+  selectedEstablecimiento: any = null;
+  emitionBtn: any = null;
 
   public form: FormGroup = new FormGroup({
     ALCANCE: new FormControl('', Validators.required),
@@ -97,6 +98,7 @@ export class EmisionesComponent implements OnInit {
   userID: string | null = 'null';
   establishmentID: string = 'null';
   establecimientos: Establishment[] = [];
+
 
 
   handleFile(event: any) {
@@ -289,19 +291,25 @@ export class EmisionesComponent implements OnInit {
 
   async cargarEmisiones(): Promise<void> {
     this.emisiones = await DataStore.query(Emision);
+
+  }
+
+  obtenerNombreEstablecimiento(id: string): string {
+    const establecimiento = this.establecimientos.find(est => est.id === id);
+    return establecimiento ? establecimiento.name : 'Nombre no encontrado';
   }
 
   async cargarEstablecimiento(): Promise<void> {
     this.establecimiento = await DataStore.query(Establishment);
   }
   async ngOnInit(): Promise<void> {
+    console.log(Factor)
     try {
       const data = await this.dataService.getUserAndCompany();
       if (data && data.company && data.user) {
         this.companyID = data.user.companyID;
         this.userID = data.user.id;
-        this.establecimientos = (data.establishments ?? []) as Establishment[];
-
+        this.establecimientos = await DataStore.query(Establishment, est => est.companyID.eq(this.companyID));
       } else {
         console.error('No se pudo obtener el usuario o la compañía');
       }
@@ -329,6 +337,7 @@ export class EmisionesComponent implements OnInit {
         ...new Set(this.factores.map((factor) => factor.ALCANCE)),
       ];
       console.log(this.alcances); // Ahora deberías ver los alcances aquí
+
 
       this.form.get('ALCANCE')?.valueChanges.subscribe((selectedAlcance) => {
         this.form.patchValue({
@@ -496,12 +505,11 @@ export class EmisionesComponent implements OnInit {
           ORIGENFE: ORIGENFE,
           companyID: this.companyID!,
           userID: this.userID!,
-          EstablishmentID: this.establishmentID
+          EstablishmentID: values.ESTABLECIMIENTO
         });
 
         // Guardar el objeto Emision en DataStore
         try {
-          console.log(emision)
           await DataStore.save(emision);
           this.snackBar.open('Emisión guardada con éxito!', 'Cerrar', {
             duration: 2000,
@@ -526,47 +534,53 @@ export class EmisionesComponent implements OnInit {
     }
   }
 
-  //TODO CREAR ESTABLECIMIENTO:
-  manejarClickEstablecimiento(): void {
+  //TODO: CREAR ESTABLECIMIENTO:
+  async manejarClickEstablecimiento() {
+
     if (this.formularioEstablecimientoAbierto) {
       this.cerrarFormularioEstablecimiento();  // si el formulario está abierto, ciérralo
     } else {
       this.mostrarFormularioEstablecimiento();  // si el formulario está cerrado, ábrelo
     }
   }
-async agregarEstablecimiento() {
+  async agregarEstablecimiento() {
+    if (this.formEstablecimiento.valid) {
+      const nombre = this.formEstablecimiento.value.ESTABLECIMIENTO;
 
-  var nombre = ''
-  if (this.formEstablecimiento) {
-    nombre = this.formEstablecimiento.value.ESTABLECIMIENTO;
-  }
+      // TODO: Verificar si ya existe un establecimiento con el mismo nombre
+      const existeEstablecimiento = this.establecimientos.find(est => est.name === nombre);
 
-  console.log(typeof this.companyID);
-  console.log(this.userID);
+      if (existeEstablecimiento) {
+        this.snackBar.open('Ya existe un establecimiento con este nombre', 'Cerrar', {
+          duration: 2000,
+        });
+        return;
+      }
 
-  if (this.companyID !== null) {
-    const establecimiento = new Establishment({
-      companyID: this.companyID,
-      name: nombre
-    });
+      if (this.companyID !== null) {
+        const establecimiento = new Establishment({
+          companyID: this.companyID,
+          name: nombre
+        });
 
-    try {
-      await DataStore.save(establecimiento);
-      this.snackBar.open('Establecimiento guardado con éxito!', 'Cerrar', {
-        duration: 2000,
-      });
-      this.cancelarFormularioEstablecimiento();
-      await this.cargarEstablecimiento();
-    } catch (error) {
-      this.snackBar.open('Error al guardar el establecimiento', 'Cerrar', {
-        duration: 2000,
-      });
-      console.error('Error al guardar en DataStore:', error);
-    }
-  } else {
+        try {
+          await DataStore.save(establecimiento);
+          this.snackBar.open('Establecimiento guardado con éxito!', 'Cerrar', {
+            duration: 2000,
+          });
+          this.cancelarFormularioEstablecimiento();
+          await this.cargarEstablecimiento();
+        } catch (error) {
+          this.snackBar.open('Error al guardar el establecimiento', 'Cerrar', {
+            duration: 2000,
+          });
+          console.error('Error al guardar en DataStore:', error);
+        }
+      } else {
         console.error('companyID is null');
+      }
+    }
   }
-}
 
 
   cancelarFormulario() {
@@ -680,4 +694,6 @@ async agregarEstablecimiento() {
     a.click();
     document.body.removeChild(a);
   }
+
+
 }

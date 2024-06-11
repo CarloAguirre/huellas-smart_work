@@ -23,8 +23,10 @@ export class DataService {
             const companyID = cognitoUser.attributes['custom:companyID'];
             const company = await DataStore.query(Company, companyID);
 
-            const establishments = await DataStore.query(Establishment, companyID)
-            return { user, company, companyID, establishments };
+            // const establishments = await DataStore.query(Establishment, companyID)
+
+            // const lala = establishments.filter(est => est.companyID === this.companyID) as Establishment[];
+            return { user, company, companyID };
         } catch (error) {
             console.error(error);
             return null;

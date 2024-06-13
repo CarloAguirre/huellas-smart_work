@@ -2,6 +2,8 @@ import { Component, OnInit, ViewChild  } from '@angular/core';
 import { DataStore } from 'aws-amplify';
 import { Emision } from 'src/models'; // La ruta puede variar según donde se generó tu modelo.
 import { SelectionModel } from '@angular/cdk/collections';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import {EmisionesResumen} from './dashboard/interfaces/EmisionesResumen.interfaces'
 import {
   ApexAxisChartSeries,
   ApexChart,
@@ -34,22 +36,6 @@ export type ChartOptions = {
 };
 
 
-
-interface EmisionesResumen {
-  periodo: string;
-  totalTonCO2eq: number;
-  totalAlcance1: number;
-  totalAlcance2: number;
-  totalAlcance3: number;
-  totalCO2: number;
-  totalCH4: number;
-  totalN2O: number;
-  totalSF6: number;
-  totalHFC: number;
-  totalPFC: number;
-  totalNF3: number;
-}
-
 @Component({
   selector: 'app-resultados',
   templateUrl: './resultados.component.html',
@@ -57,16 +43,16 @@ interface EmisionesResumen {
 })
 export class ResultadosComponent implements OnInit {
   public chartOptions: Partial<ChartOptions>;
-  emisiones: Emision[] = [];
+  public emisiones: Emision[] = [];
   public resumenEmisiones: EmisionesResumen[] = []; // Añadir esta línea para almacenar el resumen
-  alcanceUno: any = null
-  alcanceDos: any = null
-  alcanceTres: any = null
-  totalAlcanceUno: any | null = null
-  totalAlcanceDos: any | null = null
-  totalAlcanceTres: any | null = null
-  totalAlcance: any | null = null
-
+  public alcanceUno: any = null
+  public alcanceDos: any = null
+  public alcanceTres: any = null
+  public totalAlcanceUno: any | null = null
+  public totalAlcanceDos: any | null = null
+  public totalAlcanceTres: any | null = null
+  public totalAlcance: any | null = null
+  @ViewChild(DashboardComponent) dashboardComponent!: DashboardComponent;
 
   constructor() {
     this.chartOptions = {
@@ -232,7 +218,6 @@ export class ResultadosComponent implements OnInit {
         }
 
         this.resumenEmisiones = Object.values(emisionesMensuales);
-
 
         this.updateChart();
         });

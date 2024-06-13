@@ -24,9 +24,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { NgApexchartsModule } from 'ng-apexcharts';
 
 
-
-
 import { ReactiveFormsModule } from '@angular/forms';
+import { DashboardComponent } from './resultados/dashboard/dashboard.component';
 
 
 Amplify.configure({
@@ -42,6 +41,7 @@ Amplify.configure({
     FactoresDeEmisionComponent,
     EmisionesComponent,
     ResultadosComponent,
+    DashboardComponent,
 
   ],
   imports: [

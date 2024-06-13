@@ -20,16 +20,17 @@ import {
 
 export type ChartOptions = {
   series: ApexAxisChartSeries | any;
-  chart: ApexChart| any;
-  dataLabels: ApexDataLabels| any;
-  plotOptions: ApexPlotOptions| any;
-  xaxis: ApexXAxis| any;
-  yaxis: ApexYAxis| any;
-  stroke: ApexStroke| any;
-  title: ApexTitleSubtitle| any;
-  tooltip: ApexTooltip| any;
-  fill: ApexFill| any;
-  legend: ApexLegend| any;
+  chart: ApexChart | any;
+  dataLabels: ApexDataLabels | any;
+  plotOptions: ApexPlotOptions | any;
+  xaxis: ApexXAxis | any;
+  yaxis: ApexYAxis | any;
+  stroke: ApexStroke | any;
+  title: ApexTitleSubtitle | any;
+  tooltip: ApexTooltip | any;
+  fill: ApexFill | any;
+  legend: ApexLegend | any;
+  colors: string[] | any;
 };
 
 
@@ -61,6 +62,12 @@ export class ResultadosComponent implements OnInit {
   alcanceUno: any = null
   alcanceDos: any = null
   alcanceTres: any = null
+  totalAlcanceUno: any | null = null
+  totalAlcanceDos: any | null = null
+  totalAlcanceTres: any | null = null
+  totalAlcance: any | null = null
+
+
   constructor() {
     this.chartOptions = {
       series: [
@@ -77,9 +84,10 @@ export class ResultadosComponent implements OnInit {
           data: [this.alcanceTres]
         }
       ],
+      colors: ['#9FD09F', '#97BCDD', '#ffba49'],
       chart: {
         type: "bar",
-        height: 200,
+        height: 160,
         stacked: true,
         stackType: "100%"
       },
@@ -93,7 +101,7 @@ export class ResultadosComponent implements OnInit {
         colors: ["#fff"]
       },
       title: {
-        text: "100% Stacked Bar"
+        text: "My Footprint"
       },
       xaxis: {
         categories: [2024]
@@ -224,13 +232,21 @@ export class ResultadosComponent implements OnInit {
         }
 
         this.resumenEmisiones = Object.values(emisionesMensuales);
-        this.updateChart();
-      });
-    } catch (error) {
-      console.error('Error al consultar los datos:', error);
-    }
 
-  }
+
+        this.updateChart();
+        });
+        } catch (error) {
+          console.error('Error al consultar los datos:', error);
+          }
+
+        this.resumenEmisiones.forEach(periodo => {
+          this.totalAlcanceUno += periodo.totalAlcance1
+          this.totalAlcanceDos += periodo.totalAlcance2
+          this.totalAlcanceTres += periodo.totalAlcance3
+          this.totalAlcance += periodo.totalCO2
+      });
+          }
 
   updateChart() {
     const totalAlcance1 = this.resumenEmisiones.reduce((acc, curr) => acc + curr.totalAlcance1, 0);
@@ -256,8 +272,8 @@ export class ResultadosComponent implements OnInit {
         name: "Alcance 3",
         data: [parseFloat(this.alcanceTres)]
       }
-    ];
 
+    ];
     this.chartOptions.xaxis.categories = ["Porcentaje"];
 
     this.chartOptions.title.text = "Porcentaje de Emisiones por Alcance";
@@ -324,8 +340,6 @@ export class ResultadosComponent implements OnInit {
     const csvData = this.convertToCSV(this.resumenEmisiones);
     this.descargarCSV(csvData, 'resumen-emisiones.csv');
   }
-
-
 
 
 }

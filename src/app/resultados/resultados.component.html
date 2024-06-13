@@ -1,30 +1,60 @@
 
 
 
-<div class="graphics-container">
-  <apx-chart
-    class="graphic-one"
-    [series]="chartOptions.series"
-    [chart]="chartOptions.chart"
-    [plotOptions]="chartOptions.plotOptions"
-    [xaxis]="chartOptions.xaxis"
-    [yaxis]="chartOptions.yaxis"
-    [title]="chartOptions.title"
-    [tooltip]="chartOptions.tooltip"
-    [fill]="chartOptions.fill"
-    [legend]="chartOptions.legend"
-    [stroke]="chartOptions.stroke"
-  ></apx-chart>
-  <div class="graphic-two">
-    <section class="alcance-uno">
-      <p>Alcance uno</p>
-      <p>54,6%</p>
-      <p>12321323</p>
-    </section>
-    <section class="alcance-dos"></section>
-    <section class="alcance-tres"></section>
+<!-- <div class="graphics-container">
+  <div class="graphic-one">
+    <apx-chart
+      [series]="chartOptions.series"
+      [chart]="chartOptions.chart"
+      [plotOptions]="chartOptions.plotOptions"
+      [xaxis]="chartOptions.xaxis"
+      [yaxis]="chartOptions.yaxis"
+      [title]="chartOptions.title"
+      [tooltip]="chartOptions.tooltip"
+      [fill]="chartOptions.fill"
+      [colors]="chartOptions.colors"
+      [legend]="chartOptions.legend"
+      [stroke]="chartOptions.stroke"
+      ></apx-chart>
+      <hr>
+      <div class="total-footprint">
+        <p>Total Footprint</p>
+        <p class="total">{{totalAlcance.toFixed(2)}}<span>tCO2</span></p>
+      </div>
   </div>
-</div>
+  <div class="graphic-two">
+    <div class="alcance-container">
+      <div class="alcance-icon">
+        <i class="fa-solid fa-fire"></i>
+      </div>
+      <section class="alcance-uno">
+        <p class="alcance-text">Alcance 1</p>
+        <p class="porcent">{{alcanceUno}}%</p>
+        <p class="total">{{totalAlcanceUno.toFixed(2)}}<span>tCO2</span></p>
+      </section>
+    </div>
+    <div class="alcance-container">
+      <div class="alcance-icon">
+        <i class="fa-solid fa-plug-circle-exclamation"></i>
+      </div>
+      <section class="alcance-dos">
+        <p class="alcance-text">Alcance 2</p>
+        <p class="porcent">{{alcanceDos}}%</p>
+        <p class="total">{{totalAlcanceDos.toFixed(2)}}<span>tCO2</span></p>
+      </section>
+    </div>
+    <div class="alcance-container">
+      <div class="alcance-icon">
+        <i class="fa-solid fa-explosion"></i>
+      </div>
+      <section class="alcance-tres">
+        <p class="alcance-text">Alcance 3</p>
+        <p class="porcent">{{alcanceTres}}%</p>
+        <p class="total">{{totalAlcanceTres.toFixed(2)}}<span>tCO2</span></p>
+      </section>
+    </div>
+  </div>
+</div> -->
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 5px;">
     <h1>Resultados de periodos</h1>

@@ -42,8 +42,9 @@
   padding-right: 13px;
 }
 .total {
-  font-size: x-large;
+  font-size: xx-large;
   color: rgb(43, 43, 43);
+  font-weight: normal;
 }
 
 .total span {
@@ -76,4 +77,39 @@ hr {
   justify-content: flex-end;
   gap: 10px;
   margin-top: 1rem;
+  font-weight: 500;
+}
+
+.nav-pills {
+  --bs-nav-pills-border-radius: var(--bs-border-radius);
+  --bs-nav-pills-link-active-color: #fff;
+  --bs-nav-pills-link-active-bg: rgb(43, 43, 43);;
+
+}
+.nav-pills .nav-link {
+  border-radius: 0;
+  border: solid 1px black;
+  color: rgb(43, 43, 43);;
+  font-weight: 500;
+}
+.nav-pills .nav-link__left {
+  border-radius: 0;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+.nav-pills .nav-link__right {
+  border-radius: 0;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+.active-text {
+  color: #fff !important;
+}
+
+.tab-container {
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  margin-top: 3rem;
+  padding-right: 1.15rem;
 }

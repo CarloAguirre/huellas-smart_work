@@ -36,6 +36,7 @@ export type ChartOptions = {
 };
 
 
+
 @Component({
   selector: 'app-resultados',
   templateUrl: './resultados.component.html',
@@ -90,8 +91,9 @@ export class ResultadosComponent implements OnInit {
         text: "My Footprint"
       },
       xaxis: {
-        categories: [2024]
+        categories: [' ']
       },
+
       tooltip: {
         y: {
           formatter: function(val: any) {
@@ -219,17 +221,17 @@ export class ResultadosComponent implements OnInit {
 
         this.resumenEmisiones = Object.values(emisionesMensuales);
 
-        this.updateChart();
         });
         } catch (error) {
           console.error('Error al consultar los datos:', error);
           }
 
-        this.resumenEmisiones.forEach(periodo => {
-          this.totalAlcanceUno += periodo.totalAlcance1
-          this.totalAlcanceDos += periodo.totalAlcance2
-          this.totalAlcanceTres += periodo.totalAlcance3
-          this.totalAlcance += periodo.totalCO2
+          this.resumenEmisiones.forEach(periodo => {
+            this.totalAlcanceUno += periodo.totalAlcance1
+            this.totalAlcanceDos += periodo.totalAlcance2
+            this.totalAlcanceTres += periodo.totalAlcance3
+            this.totalAlcance += periodo.totalCO2
+            this.updateChart();
       });
           }
 

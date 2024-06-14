@@ -14,9 +14,14 @@
       [stroke]="chartOptions.stroke"
       ></apx-chart>
       <hr>
+
+
       <div class="total-footprint">
         <p>Total Footprint</p>
-        <p class="total">{{totalAlcance.toFixed(2)}}<span>tCO2</span></p>
+        <p class="total  placeholder-glow" *ngIf="totalAlcance == null" style="width: 8rem;">
+          <span class="placeholder" style="width: 8rem; height: 2rem;"></span>
+      </p>
+        <p class="total" *ngIf="totalAlcance !== null">{{totalAlcance.toFixed(2)}}<span>tCO2</span></p>
       </div>
   </div>
   <div class="graphic-two">
@@ -26,8 +31,14 @@
       </div>
       <section class="alcance-uno">
         <p class="alcance-text">Alcance 1</p>
+        <p class="total  placeholder-glow" *ngIf="totalAlcance == null" style="width: 3rem;">
+          <span class="placeholder col-8"></span>
+      </p>
         <p class="porcent">{{alcanceUno}}%</p>
-        <p class="total">{{totalAlcanceUno.toFixed(2)}}<span>tCO2</span></p>
+        <p class="total  placeholder-glow" *ngIf="totalAlcance == null" style="width: 3rem; ">
+          <span class="placeholder col-8"></span>
+      </p>
+        <p class="total" *ngIf="totalAlcanceUno !== null">{{totalAlcanceUno.toFixed(2)}}<span>tCO2</span></p>
       </section>
     </div>
     <div class="alcance-container">
@@ -36,8 +47,14 @@
       </div>
       <section class="alcance-dos">
         <p class="alcance-text">Alcance 2</p>
+        <p class="total  placeholder-glow" *ngIf="totalAlcance == null" style="width: 3rem;">
+          <span class="placeholder col-8"></span>
+      </p>
         <p class="porcent">{{alcanceDos}}%</p>
-        <p class="total">{{totalAlcanceDos.toFixed(2)}}<span>tCO2</span></p>
+        <p class="total  placeholder-glow" *ngIf="totalAlcance == null" style="width: 3rem;">
+          <span class="placeholder col-8"></span>
+      </p>
+        <p class="total" *ngIf="totalAlcanceDos !== null">{{totalAlcanceDos.toFixed(2)}}<span>tCO2</span></p>
       </section>
     </div>
     <div class="alcance-container">
@@ -46,9 +63,32 @@
       </div>
       <section class="alcance-tres">
         <p class="alcance-text">Alcance 3</p>
+        <p class="total  placeholder-glow" *ngIf="totalAlcance == null" style="width: 3rem;">
+          <span class="placeholder col-8"></span>
+      </p>
         <p class="porcent">{{alcanceTres}}%</p>
-        <p class="total">{{totalAlcanceTres.toFixed(2)}}<span>tCO2</span></p>
+        <p class="total  placeholder-glow" *ngIf="totalAlcance == null" style="width: 3rem;">
+          <span class="placeholder col-8"></span>
+      </p>
+        <p class="total" *ngIf="totalAlcanceTres !== null">{{totalAlcanceTres.toFixed(2)}}<span>tCO2</span></p>
       </section>
     </div>
   </div>
+</div>
+
+<div class="tab-container">
+  <ul class="nav nav-pills">
+    <li class="nav-item">
+      <a class="nav-link active nav-link__left active-text" aria-current="page" href="">ALL ALCANCES</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="">ALCANCE 1</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="">ALCANCE 2</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link disabled nav-link__right">ALCANCE 3</a>
+    </li>
+  </ul>
 </div>

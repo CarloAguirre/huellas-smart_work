@@ -35,7 +35,7 @@ export type ChartOptions = {
   colors: string[] | any;
 };
 
-type Categoria = {
+export type Categoria = {
   combustionEstacionaria: number | null;
   emisionesFugitivas: number | null;
   emisionesDeProcesos: number | null;
@@ -52,10 +52,10 @@ type Categoria = {
   viajeDeNegocios: number | null;
 };
 
-type TotalCategorias = {
+export type TotalCategorias = {
   alcanceUno: Categoria;
   alcanceDos: Categoria;
-  alcanceTres: Categoria;
+  alcanceTres:Categoria;
 };
 
 
@@ -249,7 +249,7 @@ export class ResultadosComponent implements OnInit {
         this.totalCategorias[scopeKey][categoryKey]! += emision.CO2;
       }
     });
-    console.log(this.totalCategorias)
+    // console.log(this.totalCategorias)
   }
 
 
@@ -258,7 +258,7 @@ export class ResultadosComponent implements OnInit {
     try {
       this.emisiones = await DataStore.query(Emision);
 
-      console.log(this.emisiones)
+      // console.log(this.emisiones)
       const emisionesMensuales: { [key: string]: EmisionesResumen } = {};
       this.emisiones.forEach((emision) => {
         const fechaInicio = new Date(emision.InicioPeriodo);
@@ -350,7 +350,7 @@ export class ResultadosComponent implements OnInit {
           console.error('Error al consultar los datos:', error);
         }
 
-        console.log(this.totalCategorias)
+        // console.log(this.totalCategorias)
 
         this.resumenEmisiones.forEach(periodo => {
           this.totalAlcanceUno += periodo.totalAlcance1/1000

@@ -84,29 +84,40 @@
 </div>
 <hr>
 <table class="table table-striped">
-
   <thead>
     <tr>
-      <th>Categoría</th>
-      <th>CO2</th>
-      <th>Gráfico</th>
+      <th class="category-column">Categoría</th>
+      <th class="co2-column">CO2</th>
+      <th class="progress-column">Gráfico</th>
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let emision of emisiones">
-      <td>{{ emision.CATEGORIA }}</td>
-      <td>
-        {{ emision.CO2 | number:'1.2-2' }} ({{ getCO2Percentage(emision.CO2) | number:'1.0-0' }}%)
-      </td>
-      <td class="bar-width">
-        <div class="progress-bar-container">
-          <div
-            class="progress-bar bar-width"
-            [style.width.%]="getCO2Percentage(emision.CO2)"
-            [style.background-color]="getBarColor(emision.ALCANCE)">
+    <ng-container *ngFor="let item of sortedCategories">
+      <tr>
+        <td class="category-column">{{ getCategoryName(item.key) }}</td>
+        <td class="co2-column">
+          {{ item.value.toFixed(2) }}
+          ({{ getPercentage(item.value, getTotalForAllAlcances()) | number:'1.0-2' }}%)
+        </td>
+        <td class="progress-column">
+          <div class="bar-container">
+            <div class="bar"
+                 [ngStyle]="{
+                   'width': getPercentage(item.value, getTotalForAllAlcances()) + '%',
+                   'background-color': getBarColor(item.alcance)
+                 }"></div>
           </div>
-        </div>
-      </td>
-    </tr>
+        </td>
+      </tr>
+    </ng-container>
   </tbody>
 </table>
+
+
+
+
+
+
+
+
+

@@ -114,21 +114,40 @@ hr {
   padding-right: 1.15rem;
 }
 .progress-bar-container {
-
   background-color: #e0e0e0;
   border-radius: 0.25rem;
   overflow: hidden;
 }
 
-.progress-bar {
-  height: 1rem;
-  background-color: #007bff;
-  border-radius: 0.25rem;
+.table {
+  width: 100%;
 }
-.bar-width {
-  width: 40vw;
+
+.category-column {
+  width: 30%;
+}
+
+.co2-column {
+  width: 30%;
+  text-align: end;
+}
+
+.progress-column {
+  width: 40%;
+}
+
+.bar-container {
+  width: 100%;
+  background-color: #f1f1f1;
   height: 1.8rem;
 }
+
+.bar {
+  height: 100%;
+  display: inline-block;
+}
+
+
 .td {
   display: flex;
   align-items: center;

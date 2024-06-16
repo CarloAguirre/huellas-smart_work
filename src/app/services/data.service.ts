@@ -23,7 +23,7 @@ export class DataService {
             const companys = await DataStore.query(Company);
             const company = companys.find(c => c.id == user?.companyID)
 
-            console.log(user, company)
+            // console.log(user, company)
             return { user, company };
         } catch (error) {
             console.error(error);

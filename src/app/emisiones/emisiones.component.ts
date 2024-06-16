@@ -245,8 +245,8 @@ export class EmisionesComponent implements OnInit {
           default:
             console.error(`Contaminante no reconocido: ${factor.CONTAMINANTE}`);
         }
-        console.log("Factores relevantes:", factoresRelevantes);
-        console.log("Objeto emision a guardar:", emision);
+        // console.log("Factores relevantes:", factoresRelevantes);
+        // console.log("Objeto emision a guardar:", emision);
       });
 
    // Crear un objeto Emision basado en los valores del formulario
@@ -303,7 +303,6 @@ export class EmisionesComponent implements OnInit {
     this.establecimiento = await DataStore.query(Establishment);
   }
   async ngOnInit(): Promise<void> {
-    console.log(Factor)
     try {
       const data = await this.dataService.getUserAndCompany();
       if (data && data.company && data.user) {
@@ -314,6 +313,7 @@ export class EmisionesComponent implements OnInit {
         console.error('No se pudo obtener el usuario o la compañía');
       }
 
+      // console.log(this.establecimientos)
 
       // Espera a que ambas fuentes de datos estén listas
       const [
@@ -336,8 +336,7 @@ export class EmisionesComponent implements OnInit {
       this.alcances = [
         ...new Set(this.factores.map((factor) => factor.ALCANCE)),
       ];
-      console.log(this.alcances); // Ahora deberías ver los alcances aquí
-
+      // console.log(this.alcances);
 
       this.form.get('ALCANCE')?.valueChanges.subscribe((selectedAlcance) => {
         this.form.patchValue({
@@ -389,7 +388,7 @@ export class EmisionesComponent implements OnInit {
     } catch (error) {
       console.error('Error al consultar los datos:', error);
     }
-    console.log(this.establecimientos)
+    // console.log(this.establecimientos)
   }
 
   formularioAbierto: boolean = false;

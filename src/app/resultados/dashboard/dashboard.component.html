@@ -15,11 +15,10 @@
       ></apx-chart>
       <hr>
 
-
       <div class="total-footprint">
         <p>Total Footprint</p>
         <p class="total  placeholder-glow" *ngIf="totalAlcance == null" style="width: 8rem;">
-          <span class="placeholder" style="width: 8rem; height: 2rem;"></span>
+          <span class="placeholder" style="width: 8rem; height: 2rem; border-radius: 12px;"></span>
       </p>
         <p class="total" *ngIf="totalAlcance !== null">{{totalAlcance.toFixed(2)}}<span>tCO2</span></p>
       </div>
@@ -33,7 +32,7 @@
         <p class="alcance-text" >Alcance 1</p>
         <p class="porcent">{{alcanceUno}}%</p>
         <p class="total  placeholder-glow" *ngIf="totalAlcance == null" style="width: 6rem; margin-right: -1rem;">
-          <span class="placeholder col-8" style="height: 2rem;"></span>
+          <span class="placeholder col-8" style="height: 2rem; border-radius: 12px"></span>
       </p>
         <p class="total" *ngIf="totalAlcanceUno !== null">{{totalAlcanceUno.toFixed(2)}}<span>tCO2</span></p>
       </section>
@@ -46,7 +45,7 @@
         <p class="alcance-text">Alcance 2</p>
         <p class="porcent">{{alcanceDos}}%</p>
         <p class="total  placeholder-glow" *ngIf="totalAlcance == null" style="width: 6rem; margin-right: -1rem;">
-          <span class="placeholder col-8" style="height: 2rem;"></span>
+          <span class="placeholder col-8" style="height: 2rem; border-radius: 12px"></span>
       </p>
         <p class="total" *ngIf="totalAlcanceDos !== null">{{totalAlcanceDos.toFixed(2)}}<span>tCO2</span></p>
       </section>
@@ -59,7 +58,7 @@
         <p class="alcance-text">Alcance 3</p>
         <p class="porcent">{{alcanceTres}}%</p>
         <p class="total  placeholder-glow" *ngIf="totalAlcance == null" style="width: 6rem; margin-right: -1rem;">
-          <span class="placeholder col-8" style="height: 2rem;"></span>
+          <span class="placeholder col-8" style="height: 2rem; border-radius: 12px"></span>
       </p>
         <p class="total" *ngIf="totalAlcanceTres !== null">{{totalAlcanceTres.toFixed(2)}}<span>tCO2</span></p>
       </section>
@@ -83,3 +82,31 @@
     </li>
   </ul>
 </div>
+<hr>
+<table class="table table-striped">
+
+  <thead>
+    <tr>
+      <th>Categoría</th>
+      <th>CO2</th>
+      <th>Gráfico</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let emision of emisiones">
+      <td>{{ emision.CATEGORIA }}</td>
+      <td>
+        {{ emision.CO2 | number:'1.2-2' }} ({{ getCO2Percentage(emision.CO2) | number:'1.0-0' }}%)
+      </td>
+      <td class="bar-width">
+        <div class="progress-bar-container">
+          <div
+            class="progress-bar bar-width"
+            [style.width.%]="getCO2Percentage(emision.CO2)"
+            [style.background-color]="getBarColor(emision.ALCANCE)">
+          </div>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>

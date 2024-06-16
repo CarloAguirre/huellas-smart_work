@@ -55,7 +55,7 @@ export class FactoresDeEmisionComponent implements OnInit {
 
 
   ) { }
-  companyID: string | null = null;
+  company: any | null = null;
   userID: string | null = null;
 
   async ngOnInit(): Promise<void> {
@@ -64,11 +64,13 @@ export class FactoresDeEmisionComponent implements OnInit {
       const data = await this.dataService.getUserAndCompany();
 
       if (data && data.company && data.user) {
-        this.companyID = data.company.id;
+        this.company = data.company;
         this.userID = data.user.id;
       } else {
         console.error('No se pudo obtener el usuario o la compañía');
       }
+
+      console.log(this.company)
 
       // Luego, consulta los factores de emisión en DataStore
       const factoresDesdeDataStore: Factor[] = await DataStore.query(Factor);
@@ -139,7 +141,7 @@ export class FactoresDeEmisionComponent implements OnInit {
         ...nuevoFactorBase,
         CONTAMINANTE: contaminante.nombre,
         VALORFE: contaminante.valor,
-        companyID: this.companyID,  // Usa this.companyID
+        company: this.company,  // Usa this.company
         userID: this.userID          // Usa this.userID
       };
 
@@ -317,7 +319,7 @@ export class FactoresDeEmisionComponent implements OnInit {
   }
 
   async agregarFactorDesdeExcel(factorData: any): Promise<void> {
-    if (!this.companyID || !this.userID) {
+    if (!this.company || !this.userID) {
       throw new Error('Datos de usuario o compañía no disponibles.');
     }
 
@@ -334,7 +336,7 @@ export class FactoresDeEmisionComponent implements OnInit {
       UNIDADFE: factorData.UNIDADFE,
       ORIGENFE: factorData.ORIGENFE,
       CONCATENADO: `${factorData.SUBCATEGORIA} - ${factorData.ACTIVIDAD} - ${factorData.COMBUSTIBLE}`,
-      companyID: this.companyID,
+      companyID: this.company,
       userID: this.userID
     });
 

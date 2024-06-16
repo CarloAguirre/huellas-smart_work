@@ -66,19 +66,21 @@
   </div>
 </div>
 
+<div class="table-container">
 <div class="tab-container">
+  <h2>Detalle por Alcance</h2>
   <ul class="nav nav-pills">
     <li class="nav-item">
-      <a class="nav-link active nav-link__left active-text" aria-current="page" href="">ALL ALCANCES</a>
+      <button class="nav-link nav-link__left" [class.active]="selectedAlcance === 'all'" aria-current="page" (click)="setAlcance('all')">ALL ALCANCES</button>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="">ALCANCE 1</a>
+      <button class="nav-link" [class.active]="selectedAlcance === 'alcanceUno'"  (click)="setAlcance('alcanceUno')">ALCANCE 1</button>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="">ALCANCE 2</a>
+      <button class="nav-link" [class.active]="selectedAlcance === 'alcanceDos'" (click)="setAlcance('alcanceDos')">ALCANCE 2</button>
     </li>
     <li class="nav-item">
-      <a class="nav-link disabled nav-link__right">ALCANCE 3</a>
+      <button class="nav-link nav-link__right" [class.active]="selectedAlcance === 'alcanceTres'" (click)="setAlcance('alcanceTres')">ALCANCE 3</button>
     </li>
   </ul>
 </div>
@@ -92,7 +94,7 @@
     </tr>
   </thead>
   <tbody>
-    <ng-container *ngFor="let item of sortedCategories">
+    <ng-container *ngFor="let item of filteredCategories">
       <tr>
         <td class="category-column">{{ getCategoryName(item.key) }}</td>
         <td class="co2-column">
@@ -112,6 +114,7 @@
     </ng-container>
   </tbody>
 </table>
+</div>
 
 
 

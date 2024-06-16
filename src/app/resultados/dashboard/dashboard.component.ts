@@ -64,6 +64,8 @@ export class DashboardComponent implements OnInit, OnChanges {
 
   alcanceKeys: Alcance[] = ['alcanceUno', 'alcanceDos', 'alcanceTres'];
   sortedCategories: { alcance: Alcance, key: keyof Categoria, value: number }[] = [];
+  filteredCategories: { alcance: Alcance, key: keyof Categoria, value: number }[] = [];
+  selectedAlcance: Alcance | 'all' = 'all';
 
   constructor() {
     this.totalCategorias = {
@@ -145,9 +147,18 @@ export class DashboardComponent implements OnInit, OnChanges {
     }
 
     this.sortedCategories = categories.sort((a, b) => b.value - a.value);
+    this.filterCategories();
 
     // Debug output
     console.log("Sorted Categories: ", this.sortedCategories);
+  }
+
+  filterCategories(): void {
+    if (this.selectedAlcance === 'all') {
+      this.filteredCategories = this.sortedCategories;
+    } else {
+      this.filteredCategories = this.sortedCategories.filter(category => category.alcance === this.selectedAlcance);
+    }
   }
 
   getCategoryName(categoryKey: keyof Categoria): string {
@@ -192,5 +203,10 @@ export class DashboardComponent implements OnInit, OnChanges {
     const value = this.totalCategorias[alcance][key];
     console.log(`getCategoriaTotal - Alcance: ${alcance}, Key: ${key}, Value: ${value}`);
     return value ?? 0;
+  }
+
+  setAlcance(alcance: Alcance | 'all'): void {
+    this.selectedAlcance = alcance;
+    this.filterCategories();
   }
 }

@@ -1,4 +1,17 @@
 
+<mat-form-field appearance="fill">
+  <mat-label>Selecciona el rango de fechas</mat-label>
+  <mat-date-range-input [formGroup]="dateRangeForm" [rangePicker]="picker">
+    <input matStartDate formControlName="start" placeholder="Inicio Periodo">
+    <input matEndDate formControlName="end" placeholder="Termino Periodo">
+  </mat-date-range-input>
+  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+  <mat-date-range-picker #picker></mat-date-range-picker>
+</mat-form-field>
+
+<button mat-raised-button color="primary" (click)="applyDateFilter()">Aplicar Filtro</button>
+
+
 <app-dashboard
   [resumenEmisiones]="resumenEmisiones"
   [alcanceUno]="alcanceUno"

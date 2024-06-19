@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild  } from '@angular/core';
+import { Component, OnInit, SimpleChanges, ViewChild  } from '@angular/core';
 import { DataStore } from 'aws-amplify';
 import { Emision } from 'src/models'; // La ruta puede variar según donde se generó tu modelo.
 import { SelectionModel } from '@angular/cdk/collections';
@@ -18,6 +18,10 @@ import {
   ApexLegend,
   ApexYAxis
 } from "ng-apexcharts";
+import { TotalCategorias, Emisiones } from './dashboard/interfaces/TotalCategorias.interfaces';
+import { CategoryMap } from './dashboard/interfaces/CategoryMap.interfaces';
+import { categoryMap } from './dashboard/data/category-map';
+import { totalCategorias } from './dashboard/data/total-caregoria';
 
 
 export type ChartOptions = {
@@ -35,31 +39,6 @@ export type ChartOptions = {
   colors: string[] | any;
 };
 
-export type Categoria = {
-  combustionEstacionaria: number | null;
-  emisionesFugitivas: number | null;
-  emisionesDeProcesos: number | null;
-  combustionMovil: number | null;
-  carlorVaporRefrigeracion: number | null;
-  electricidadComprada: number | null;
-  perdidasPorTransmision: number | null;
-  bienesYServicios: number | null;
-  residuosGenerados: number | null;
-  transporteAguasArriba: number | null;
-  transporteAguasAbajo: number | null;
-  usoDeProductos: number | null;
-  desplazamientoDeEmpleados: number | null;
-  viajeDeNegocios: number | null;
-};
-
-export type TotalCategorias = {
-  alcanceUno: Categoria;
-  alcanceDos: Categoria;
-  alcanceTres:Categoria;
-};
-
-
-
 @Component({
   selector: 'app-resultados',
   templateUrl: './resultados.component.html',
@@ -76,79 +55,13 @@ export class ResultadosComponent implements OnInit {
   public totalAlcanceDos: any | null = null
   public totalAlcanceTres: any | null = null
   public totalAlcance: any | null = null
-  public categoryMap: { [key: string]: keyof Categoria } = {
-    "Combustión estacionaria": "combustionEstacionaria",
-    "Emisiones fugitivas": "emisionesFugitivas",
-    "Emisiones de procesos": "emisionesDeProcesos",
-    "Combustión móvil": "combustionMovil",
-    "Calor, vapor, refrigeración y aire comprimido comprados": "carlorVaporRefrigeracion",
-    "Electricidad comprada": "electricidadComprada",
-    "Pérdidas por transmisión y distribución": "perdidasPorTransmision",
-    "Bienes y servicios comprados": "bienesYServicios",
-    "Residuos generados en las operaciones": "residuosGenerados",
-    "Transporte y distribución aguas arriba (cadena de suministro)": "transporteAguasArriba",
-    "Transporte y distribución aguas abajo (cadena de valor)": "transporteAguasAbajo",
-    "Uso de productos vendidos": "usoDeProductos",
-    "Desplazamiento de los empleados": "desplazamientoDeEmpleados",
-    "Viaje de negocio": "viajeDeNegocios"
-  };
-
+  public categoryMap: CategoryMap = categoryMap
   public scopeMap: { [key: string]: keyof TotalCategorias } = {
     "Alcance 1": "alcanceUno",
     "Alcance 2": "alcanceDos",
     "Alcance 3": "alcanceTres"
   };
-  public totalCategorias: TotalCategorias = {
-    alcanceUno: {
-      combustionEstacionaria: 0,
-      emisionesFugitivas: 0,
-      emisionesDeProcesos: 0,
-      combustionMovil: 0,
-      carlorVaporRefrigeracion: 0,
-      electricidadComprada: 0,
-      perdidasPorTransmision: 0,
-      bienesYServicios: 0,
-      residuosGenerados: 0,
-      transporteAguasArriba: 0,
-      transporteAguasAbajo: 0,
-      usoDeProductos: 0,
-      desplazamientoDeEmpleados: 0,
-      viajeDeNegocios: 0
-    },
-    alcanceDos: {
-      combustionEstacionaria: 0,
-      emisionesFugitivas: 0,
-      emisionesDeProcesos: 0,
-      combustionMovil: 0,
-      carlorVaporRefrigeracion: 0,
-      electricidadComprada: 0,
-      perdidasPorTransmision: 0,
-      bienesYServicios: 0,
-      residuosGenerados: 0,
-      transporteAguasArriba: 0,
-      transporteAguasAbajo: 0,
-      usoDeProductos: 0,
-      desplazamientoDeEmpleados: 0,
-      viajeDeNegocios: 0
-    },
-    alcanceTres: {
-      combustionEstacionaria: 0,
-      emisionesFugitivas: 0,
-      emisionesDeProcesos: 0,
-      combustionMovil: 0,
-      carlorVaporRefrigeracion: 0,
-      electricidadComprada: 0,
-      perdidasPorTransmision: 0,
-      bienesYServicios: 0,
-      residuosGenerados: 0,
-      transporteAguasArriba: 0,
-      transporteAguasAbajo: 0,
-      usoDeProductos: 0,
-      desplazamientoDeEmpleados: 0,
-      viajeDeNegocios: 0
-    }
-  };
-
+  public totalCategorias!: TotalCategorias;
 
   @ViewChild(DashboardComponent) dashboardComponent!: DashboardComponent;
 
@@ -208,8 +121,8 @@ export class ResultadosComponent implements OnInit {
       }
     };
 
-
-    this.calculateTotalCategorias();
+    this.totalCategorias = totalCategorias;
+    // this.updateChart()
   }
 
   selection = new SelectionModel<Emision>(true, []);
@@ -237,20 +150,22 @@ export class ResultadosComponent implements OnInit {
     return meses[mes] || '';
   }
 
-  calculateTotalCategorias() {
-    this.emisiones.forEach(emision => {
-      const categoryKey = this.categoryMap[emision.CATEGORIA];
-      const scopeKey = this.scopeMap[emision.ALCANCE];
+  // calculateTotalCategorias() {
 
-      if (categoryKey && scopeKey) {
-        if (this.totalCategorias[scopeKey][categoryKey] === null) {
-          this.totalCategorias[scopeKey][categoryKey] = 0;
-        }
-        this.totalCategorias[scopeKey][categoryKey]! += emision.CO2;
-      }
-    });
-    // console.log(this.totalCategorias)
-  }
+  //   this.emisiones.forEach(emision => {
+  //     const categoryKey = this.categoryMap[emision.CATEGORIA];
+  //     const scopeKey = this.scopeMap[emision.ALCANCE];
+
+  //     if (categoryKey && scopeKey) {
+  //       if (this.totalCategorias[scopeKey][categoryKey] === null) {
+  //         this.totalCategorias[scopeKey][categoryKey] = 0;
+  //       }
+  //       this.totalCategorias[scopeKey][categoryKey]! += emision.CO2 + emision.CH4 + emision.HFC + emision.N2O + emision.NF3 + emision.PFC + emision.SF6;
+  //     }
+  //     console.log(this.totalCategorias)
+  //   });
+
+  // }
 
 
   async ngOnInit() {
@@ -258,7 +173,6 @@ export class ResultadosComponent implements OnInit {
     try {
       this.emisiones = await DataStore.query(Emision);
 
-      // console.log(this.emisiones)
       const emisionesMensuales: { [key: string]: EmisionesResumen } = {};
       this.emisiones.forEach((emision) => {
         const fechaInicio = new Date(emision.InicioPeriodo);
@@ -342,7 +256,7 @@ export class ResultadosComponent implements OnInit {
         const scopeKey = this.scopeMap[emision.ALCANCE];
 
         if (categoryKey && scopeKey) {
-          this.totalCategorias[scopeKey][categoryKey]! += emision.CO2;
+          this.totalCategorias[scopeKey][categoryKey]! += emision.CO2 + emision.CH4 + emision.HFC + emision.N2O + emision.NF3 + emision.PFC + emision.SF6;;
         }
 
         });
@@ -350,51 +264,15 @@ export class ResultadosComponent implements OnInit {
           console.error('Error al consultar los datos:', error);
         }
 
-        // console.log(this.totalCategorias)
-
         this.resumenEmisiones.forEach(periodo => {
           this.totalAlcanceUno += periodo.totalAlcance1/1000
           this.totalAlcanceDos += periodo.totalAlcance2/1000
           this.totalAlcanceTres += periodo.totalAlcance3/1000
+
         });
         this.totalAlcance += this.totalAlcanceUno + this.totalAlcanceDos + this.totalAlcanceTres
-        this.updateChart();
     }
 
-  updateChart() {
-    const totalAlcance1 = this.resumenEmisiones.reduce((acc, curr) => acc + curr.totalAlcance1, 0);
-    const totalAlcance2 = this.resumenEmisiones.reduce((acc, curr) => acc + curr.totalAlcance2, 0);
-    const totalAlcance3 = this.resumenEmisiones.reduce((acc, curr) => acc + curr.totalAlcance3, 0);
-
-    const total = totalAlcance1 + totalAlcance2 + totalAlcance3;
-
-    this.alcanceUno = totalAlcance1 > 0 ? ((totalAlcance1 / total) * 100).toFixed(2) : 0;
-    this.alcanceDos = totalAlcance2 > 0 ? ((totalAlcance2 / total) * 100).toFixed(2) : 0;
-    this.alcanceTres = totalAlcance3 > 0 ? ((totalAlcance3 / total) * 100).toFixed(2) : 0;
-
-    this.chartOptions.series = [
-      {
-        name: "Alcance 1",
-        data: [parseFloat(this.alcanceUno)]
-      },
-      {
-        name: "Alcance 2",
-        data: [parseFloat(this.alcanceDos)]
-      },
-      {
-        name: "Alcance 3",
-        data: [parseFloat(this.alcanceTres)]
-      }
-
-    ];
-    this.chartOptions.xaxis.categories = ["Porcentaje"];
-
-    this.chartOptions.title.text = "Porcentaje de Emisiones por Alcance";
-
-    this.chartOptions.tooltip.y.formatter = function(val: any) {
-      return val.toFixed(2) + "%";
-    };
-  }
 
   isAllSelected() {
     const numSelected = this.selection.selected.length;

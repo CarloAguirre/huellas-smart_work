@@ -6,6 +6,17 @@
   column-gap: 2rem;
   padding: 20px;
 }
+@media (max-width: 980px){
+   .graphics-container {
+    grid-template-columns: 1fr;
+    row-gap: 30px;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas:
+    "graphic-one"
+    "graphic-two";
+   }
+
+}
 
 .graphic-one {
   grid-area: graphic-one;

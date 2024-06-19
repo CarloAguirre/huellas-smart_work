@@ -1,33 +1,58 @@
 import { Injectable } from '@angular/core';
 import { DataStore } from 'aws-amplify';
-import { Company, User, Establishment } from '../../models';
+import { Company, User } from '../../models';
 import { Auth } from 'aws-amplify';
 
 @Injectable({
-    providedIn: 'root',
+  providedIn: 'root',
 })
 export class DataService {
-    dataStoreReady: Promise<void>;
+  dataStoreReady: Promise<void>;
 
-    constructor() {
-        this.dataStoreReady = DataStore.start();
+  constructor() {
+    this.dataStoreReady = DataStore.start();
+  }
+
+  async getUserAndCompany() {
+    try {
+      await this.dataStoreReady;
+
+      // Esperar a que el DataStore sincronice los datos
+      await this.syncDataStore();
+
+      const cognitoUser = await Auth.currentAuthenticatedUser();
+      const sub = cognitoUser.attributes.sub;
+
+      const users = await DataStore.query(User);
+      console.log('Usuarios obtenidos:', users);
+
+      if (users.length > 0) {
+        const user = users.find(u => u.sub === sub);
+        const companies = await DataStore.query(Company);
+        const company = companies.find(c => c.id === user?.companyID);
+
+        console.log('Usuario:', user);
+        console.log('Compañía:', company);
+        return { user, company };
+      } else {
+        console.log('No se encontraron usuarios.');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error al obtener el usuario y la compañía:', error);
+      return null;
     }
+  }
 
-    async getUserAndCompany() {
-        try {
-            await this.dataStoreReady;  // Espera a que DataStore esté listo
-            const cognitoUser = await Auth.currentAuthenticatedUser();
-            const sub = cognitoUser.username;
-            const users = await DataStore.query(User);
-            const user = users.find(u => u.sub === sub);
-            const companys = await DataStore.query(Company);
-            const company = companys.find(c => c.id == user?.companyID)
-
-            // console.log(user, company)
-            return { user, company };
-        } catch (error) {
-            console.error(error);
-            return null;
+  private async syncDataStore() {
+    return new Promise<void>((resolve) => {
+      const interval = setInterval(async () => {
+        const users = await DataStore.query(User);
+        if (users.length > 0) {
+          clearInterval(interval);
+          resolve();
         }
-    }
+      }, 1000);
+    });
+  }
 }

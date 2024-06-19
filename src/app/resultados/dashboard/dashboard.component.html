@@ -89,8 +89,8 @@
   <thead>
     <tr>
       <th class="category-column">Categoría</th>
-      <th class="co2-column">CO2</th>
-      <th class="progress-column">Gráfico</th>
+      <th class="co2-column">tCO2</th>
+      <th class="progress-column"></th>
     </tr>
   </thead>
   <tbody>
@@ -98,14 +98,14 @@
       <tr>
         <td class="category-column">{{ getCategoryName(item.key) }}</td>
         <td class="co2-column">
-          {{ item.value.toFixed(2) }}
+          {{ (item.value / 1000).toFixed(2) }}
           ({{ getPercentage(item.value, getTotalForAllAlcances()) | number:'1.0-2' }}%)
         </td>
         <td class="progress-column">
           <div class="bar-container">
             <div class="bar"
                  [ngStyle]="{
-                   'width': getPercentage(item.value, getTotalForAllAlcances()) + '%',
+                   'width': getRelativePercentage(item.value) + '%',
                    'background-color': getBarColor(item.alcance)
                  }"></div>
           </div>

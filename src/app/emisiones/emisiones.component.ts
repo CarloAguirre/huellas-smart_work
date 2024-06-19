@@ -10,6 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import * as XLSX from 'xlsx';
 import { DataService } from '../services/data.service';
 import { ElementRef, ViewChild } from '@angular/core';
+import { DataStoreService } from '../services/data-store.service';
 
 function excelDateToJSDate(serial: number): Date {
   const utcDays = Math.floor(serial - 25569);
@@ -91,6 +92,7 @@ export class EmisionesComponent implements OnInit {
     private http: HttpClient,
     private cdRef: ChangeDetectorRef,
     private snackBar: MatSnackBar,
+    private dataStoreService: DataStoreService,
     private dataService: DataService  // Inyecta DataService
 
   ) { }

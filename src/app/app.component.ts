@@ -1,47 +1,56 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { DataStore } from '@aws-amplify/datastore';
-import { DataService } from './services/data.service';  // Importa DataService
-
+import { DataStore } from 'aws-amplify';
+import { DataService } from './services/data.service';
+import { Hub } from 'aws-amplify';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {  // Asegúrate de que tu componente implemente OnInit
+export class AppComponent implements OnInit {
   title = 'huella-smart-lite';
-  user: any = null;  // Añade propiedad para guardar el usuario
-  company: any = null;  // Añade propiedad para guardar la compañía
+  user: any = null;
+  company: any = null;
   establishments: any = null;
 
   constructor(
     private router: Router,
-    private dataService: DataService  // Inyecta DataService en el constructor
+    private dataService: DataService,
+    private changeDetector: ChangeDetectorRef  // Inyectar ChangeDetectorRef
   ) { }
 
   async ngOnInit(): Promise<void> {
     try {
-      await DataStore.start();  // Inicia DataStore
+      await DataStore.start();
       console.log('DataStore has started!');
+
+      // Escuchar eventos de autenticación
+      Hub.listen('auth', (data) => {
+        const { event } = data.payload;
+        if (event === 'signIn') {
+          this.handleSignIn();
+        }
+      });
     } catch (error) {
       console.error('Error starting DataStore:', error);
-      return;  // Si hay un error, sale temprano
     }
-    this.loadUserData();  // Llama a la nueva función loadUserData en lugar de loadNickname
   }
 
-  handleSignIn(event: any): void {
-    this.loadUserData();  // Llama a loadUserData cuando el usuario inicia sesión
-}
+  async handleSignIn(): Promise<void> {
+    await this.loadUserData();
+    this.router.navigate(['/resultados']);  // Redirigir a la ruta "resultados"
+  }
 
   async loadUserData() {
     try {
-      const data = await this.dataService.getUserAndCompany();  // Llama a getUserAndCompany
+      const data = await this.dataService.getUserAndCompany();
       if (data) {
         this.user = data.user;
         this.company = data.company;
-
+        console.log(this.user);
+        this.changeDetector.detectChanges();  // Forzar la detección de cambios
       }
     } catch (error) {
       console.error("Error al obtener el usuario y la compañía:", error);
@@ -56,11 +65,9 @@ export class AppComponent implements OnInit {  // Asegúrate de que tu component
 
   async handleSignOut(signOutFunction: any) {
     try {
-      // Limpiar el DataStore local
       await DataStore.clear();
       console.log('DataStore ha sido limpiado.');
 
-      // Luego, usar la función de cerrar sesión provista por el slot
       signOutFunction();
     } catch (error) {
       console.error('Hubo un error:', error);

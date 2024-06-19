@@ -1,6 +1,8 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { EmisionesResumen } from '../dashboard/interfaces/EmisionesResumen.interfaces';
 import { Emision } from 'src/models';
+import { TotalCategorias } from './interfaces/TotalCategorias.interfaces';
+
 
 export type Categoria = {
   combustionEstacionaria: number | null;
@@ -17,12 +19,6 @@ export type Categoria = {
   usoDeProductos: number | null;
   desplazamientoDeEmpleados: number | null;
   viajeDeNegocios: number | null;
-};
-
-export type TotalCategorias = {
-  alcanceUno: Categoria;
-  alcanceDos: Categoria;
-  alcanceTres: Categoria;
 };
 
 type Alcance = 'alcanceUno' | 'alcanceDos' | 'alcanceTres';
@@ -43,24 +39,8 @@ export class DashboardComponent implements OnInit, OnChanges {
   @Input() totalAlcanceTres: any;
   @Input() totalAlcance: any;
   @Input() emisiones: Emision[] = [];
-  @Input() totalCategorias!: TotalCategorias;
-
-  public categoryMap: { [key: string]: keyof Categoria } = {
-    "Combustión estacionaria": "combustionEstacionaria",
-    "Emisiones fugitivas": "emisionesFugitivas",
-    "Emisiones de procesos": "emisionesDeProcesos",
-    "Combustión móvil": "combustionMovil",
-    "Calor, vapor, refrigeración y aire comprimido comprados": "carlorVaporRefrigeracion",
-    "Electricidad comprada": "electricidadComprada",
-    "Pérdidas por transmisión y distribución": "perdidasPorTransmision",
-    "Bienes y servicios comprados": "bienesYServicios",
-    "Residuos generados en las operaciones": "residuosGenerados",
-    "Transporte y distribución aguas arriba (cadena de suministro)": "transporteAguasArriba",
-    "Transporte y distribución aguas abajo (cadena de valor)": "transporteAguasAbajo",
-    "Uso de productos vendidos": "usoDeProductos",
-    "Desplazamiento de los empleados": "desplazamientoDeEmpleados",
-    "Viaje de negocio": "viajeDeNegocios"
-  };
+  @Input() totalCategorias!: TotalCategorias ;
+  @Input() categoryMap: { [key: string]: keyof Categoria } = {};
 
   alcanceKeys: Alcance[] = ['alcanceUno', 'alcanceDos', 'alcanceTres'];
   sortedCategories: { alcance: Alcance, key: keyof Categoria, value: number }[] = [];
@@ -68,78 +48,64 @@ export class DashboardComponent implements OnInit, OnChanges {
   selectedAlcance: Alcance | 'all' = 'all';
 
   constructor() {
-    this.totalCategorias = {
-      alcanceUno: {
-        combustionEstacionaria: 0,
-        emisionesFugitivas: 0,
-        emisionesDeProcesos: 0,
-        combustionMovil: 0,
-        carlorVaporRefrigeracion: 0,
-        electricidadComprada: 0,
-        perdidasPorTransmision: 0,
-        bienesYServicios: 0,
-        residuosGenerados: 0,
-        transporteAguasArriba: 0,
-        transporteAguasAbajo: 0,
-        usoDeProductos: 0,
-        desplazamientoDeEmpleados: 0,
-        viajeDeNegocios: 0
-      },
-      alcanceDos: {
-        combustionEstacionaria: 0,
-        emisionesFugitivas: 0,
-        emisionesDeProcesos: 0,
-        combustionMovil: 0,
-        carlorVaporRefrigeracion: 0,
-        electricidadComprada: 0,
-        perdidasPorTransmision: 0,
-        bienesYServicios: 0,
-        residuosGenerados: 0,
-        transporteAguasArriba: 0,
-        transporteAguasAbajo: 0,
-        usoDeProductos: 0,
-        desplazamientoDeEmpleados: 0,
-        viajeDeNegocios: 0
-      },
-      alcanceTres: {
-        combustionEstacionaria: 0,
-        emisionesFugitivas: 0,
-        emisionesDeProcesos: 0,
-        combustionMovil: 0,
-        carlorVaporRefrigeracion: 0,
-        electricidadComprada: 0,
-        perdidasPorTransmision: 0,
-        bienesYServicios: 0,
-        residuosGenerados: 0,
-        transporteAguasArriba: 0,
-        transporteAguasAbajo: 0,
-        usoDeProductos: 0,
-        desplazamientoDeEmpleados: 0,
-        viajeDeNegocios: 0
-      }
-    };
   }
 
   ngOnInit(): void {
-    // Eliminado el cálculo de categorías ordenadas aquí
+    this.updateChart()
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     this.calculateSortedCategories();
-    if (changes['totalCategorias']) {
-      console.log('Total Categorias On Changes: ', this.totalCategorias);
-    }
+    this.updateChart()
+  }
+
+  updateChart() {
+    const totalAlcance1 = this.resumenEmisiones.reduce((acc, curr) => acc + curr.totalAlcance1, 0);
+    const totalAlcance2 = this.resumenEmisiones.reduce((acc, curr) => acc + curr.totalAlcance2, 0);
+    const totalAlcance3 = this.resumenEmisiones.reduce((acc, curr) => acc + curr.totalAlcance3, 0);
+
+    const total = totalAlcance1 + totalAlcance2 + totalAlcance3;
+
+    this.alcanceUno = totalAlcance1 > 0 ? ((totalAlcance1 / total) * 100).toFixed(2) : 0;
+    this.alcanceDos = totalAlcance2 > 0 ? ((totalAlcance2 / total) * 100).toFixed(2) : 0;
+    this.alcanceTres = totalAlcance3 > 0 ? ((totalAlcance3 / total) * 100).toFixed(2) : 0;
+
+
+    console.log(this.alcanceUno)
+    console.log(this.alcanceDos)
+    console.log(this.alcanceTres)
+    this.chartOptions.series = [
+      {
+        name: "Alcance 1",
+        data: [parseFloat(this.alcanceUno)]
+      },
+      {
+        name: "Alcance 2",
+        data: [parseFloat(this.alcanceDos)]
+      },
+      {
+        name: "Alcance 3",
+        data: [parseFloat(this.alcanceTres)]
+      }
+
+    ];
+    this.chartOptions.xaxis.categories = ["Porcentaje"];
+
+    this.chartOptions.title.text = "Porcentaje de Emisiones por Alcance";
+
+    this.chartOptions.tooltip.y.formatter = function(val: any) {
+      return val.toFixed(2) + "%";
+    };
   }
 
   calculateSortedCategories(): void {
+
     const categories: { alcance: Alcance, key: keyof Categoria, value: number }[] = [];
 
     for (const alcance of this.alcanceKeys) {
       const categoria = this.totalCategorias[alcance];
-      console.log(`Procesando alcance: ${alcance}`, categoria); // Debug
       for (const key of this.getCategoryKeys(categoria)) {
         const value = this.getCategoriaTotal(alcance, key);
-        console.log(`Categoria: ${key}, Valor: ${value}`); // Debug
         if (value !== null && value !== 0) {
           categories.push({ alcance, key, value });
         }
@@ -149,8 +115,6 @@ export class DashboardComponent implements OnInit, OnChanges {
     this.sortedCategories = categories.sort((a, b) => b.value - a.value);
     this.filterCategories();
 
-    // Debug output
-    console.log("Sorted Categories: ", this.sortedCategories);
   }
 
   filterCategories(): void {
@@ -181,6 +145,10 @@ export class DashboardComponent implements OnInit, OnChanges {
   getPercentage(value: number, total: number): number {
     return total > 0 ? (value / total) * 100 : 0;
   }
+  getRelativePercentage(value: number): number {
+    const maxValue = this.getMaxValue();
+    return maxValue > 0 ? (value / maxValue) * 100 : 0;
+  }
 
   getBarColor(alcance: Alcance): string {
     switch (alcance) {
@@ -191,7 +159,7 @@ export class DashboardComponent implements OnInit, OnChanges {
       case 'alcanceTres':
         return '#ffba49';
       default:
-        return '#cccccc'; // Color por defecto si el alcance no coincide con ninguno
+        return '#cccccc';
     }
   }
 
@@ -201,12 +169,14 @@ export class DashboardComponent implements OnInit, OnChanges {
 
   getCategoriaTotal(alcance: Alcance, key: keyof Categoria): number {
     const value = this.totalCategorias[alcance][key];
-    console.log(`getCategoriaTotal - Alcance: ${alcance}, Key: ${key}, Value: ${value}`);
     return value ?? 0;
   }
 
   setAlcance(alcance: Alcance | 'all'): void {
     this.selectedAlcance = alcance;
     this.filterCategories();
+  }
+  getMaxValue(): number {
+    return Math.max(...this.sortedCategories.map(category => category.value));
   }
 }

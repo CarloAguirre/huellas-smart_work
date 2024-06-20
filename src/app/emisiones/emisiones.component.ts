@@ -187,6 +187,7 @@ export class EmisionesComponent implements OnInit {
     });
   }
 
+
   async agregarEmisionDesdeFormulario(form: FormGroup) {
     const nickname = 'holamundo'
     if (form.valid) {

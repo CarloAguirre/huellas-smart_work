@@ -7,6 +7,7 @@ import { EmisionesResumen } from './dashboard/interfaces/EmisionesResumen.interf
 import {
   ApexAxisChartSeries,
   ApexChart,
+  ChartComponent,
   ApexDataLabels,
   ApexXAxis,
   ApexPlotOptions,
@@ -47,9 +48,9 @@ export class ResultadosComponent implements OnInit {
   public chartOptions: Partial<ChartOptions>;
   public emisiones: Emision[] = [];
   public resumenEmisiones: EmisionesResumen[] = [];
-  public alcanceUno: any = null;
-  public alcanceDos: any = null;
-  public alcanceTres: any = null;
+  public alcanceUno: any = null;  // %
+  public alcanceDos: any = null;  // %
+  public alcanceTres: any = null;  // %
   public totalAlcanceUno: any | null = null;
   public totalAlcanceDos: any | null = null;
   public totalAlcanceTres: any | null = null;
@@ -62,6 +63,7 @@ export class ResultadosComponent implements OnInit {
   };
   public totalCategorias!: TotalCategorias;
   dateRangeForm: FormGroup;
+  isFiltered: boolean = false;  // Nueva variable
 
   @ViewChild(DashboardComponent) dashboardComponent!: DashboardComponent;
 
@@ -152,9 +154,27 @@ export class ResultadosComponent implements OnInit {
     return meses[mes] || '';
   }
 
+  ngOnInit() {
+    this.dateRangeForm.valueChanges.subscribe(() => {
+      this.applyDateFilter();
+    });
+
+    this.loadEmisiones();
+  }
+
+  async loadEmisiones() {
+    try {
+      this.emisiones = await DataStore.query(Emision);
+      this.calculateEmisionesMensuales(this.emisiones);
+    } catch (error) {
+      console.error('Error al consultar los datos:', error);
+    }
+  }
+
   applyDateFilter() {
     const { start, end } = this.dateRangeForm.value;
     if (start && end) {
+      this.isFiltered = true;
       const filteredEmisiones = this.emisiones.filter(emision => {
         const inicio = new Date(emision.InicioPeriodo);
         const termino = new Date(emision.TerminoPeriodo);
@@ -164,13 +184,10 @@ export class ResultadosComponent implements OnInit {
     }
   }
 
-  async ngOnInit() {
-    try {
-      this.emisiones = await DataStore.query(Emision);
-      this.calculateEmisionesMensuales(this.emisiones);
-    } catch (error) {
-      console.error('Error al consultar los datos:', error);
-    }
+  resetDateFilter() {
+    this.dateRangeForm.reset();
+    this.isFiltered = false;
+    this.calculateEmisionesMensuales(this.emisiones);
   }
 
   calculateEmisionesMensuales(emisiones: Emision[]) {

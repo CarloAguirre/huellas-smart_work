@@ -63,7 +63,8 @@ export class ResultadosComponent implements OnInit {
   };
   public totalCategorias!: TotalCategorias;
   dateRangeForm: FormGroup;
-  isFiltered: boolean = false;  // Nueva variable
+  isFiltered: boolean = false;
+  selectedCategory: string = 'Todas las categorías'; // Nueva variable
 
   @ViewChild(DashboardComponent) dashboardComponent!: DashboardComponent;
 
@@ -156,7 +157,7 @@ export class ResultadosComponent implements OnInit {
 
   ngOnInit() {
     this.dateRangeForm.valueChanges.subscribe(() => {
-      this.applyDateFilter();
+      this.applyFilters();
     });
 
     this.loadEmisiones();
@@ -165,29 +166,36 @@ export class ResultadosComponent implements OnInit {
   async loadEmisiones() {
     try {
       this.emisiones = await DataStore.query(Emision);
-      this.calculateEmisionesMensuales(this.emisiones);
+      this.applyFilters();
     } catch (error) {
       console.error('Error al consultar los datos:', error);
     }
   }
 
-  applyDateFilter() {
+  applyFilters() {
     const { start, end } = this.dateRangeForm.value;
+    let filteredEmisiones = this.emisiones;
+
     if (start && end) {
       this.isFiltered = true;
-      const filteredEmisiones = this.emisiones.filter(emision => {
+      filteredEmisiones = filteredEmisiones.filter(emision => {
         const inicio = new Date(emision.InicioPeriodo);
         const termino = new Date(emision.TerminoPeriodo);
         return (inicio >= start && termino <= end);
       });
-      this.calculateEmisionesMensuales(filteredEmisiones);
     }
+
+    if (this.selectedCategory !== 'Todas las categorías') {
+      filteredEmisiones = filteredEmisiones.filter(emision => emision.CATEGORIA === this.selectedCategory);
+    }
+
+    this.calculateEmisionesMensuales(filteredEmisiones);
   }
 
   resetDateFilter() {
     this.dateRangeForm.reset();
     this.isFiltered = false;
-    this.calculateEmisionesMensuales(this.emisiones);
+    this.applyFilters();
   }
 
   calculateEmisionesMensuales(emisiones: Emision[]) {

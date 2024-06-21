@@ -39,8 +39,12 @@ export class AppComponent implements OnInit {
   }
 
   async handleSignIn(): Promise<void> {
-    await this.loadUserData();
-    this.router.navigate(['/resultados']);  // Redirigir a la ruta "resultados"
+    const userData = await this.loadUserData();
+    if (userData) {
+      this.router.navigate(['/resultados']);  // Redirigir a la ruta "resultados"
+    } else {
+      console.error('No se pudo obtener los datos del usuario.');
+    }
   }
 
   async loadUserData() {
@@ -51,9 +55,13 @@ export class AppComponent implements OnInit {
         this.company = data.company;
         console.log(this.user);
         this.changeDetector.detectChanges();  // Forzar la detección de cambios
+        return data;  // Devolver los datos si se obtuvieron correctamente
+      } else {
+        return null;  // Devolver null si no se encontraron datos
       }
     } catch (error) {
       console.error("Error al obtener el usuario y la compañía:", error);
+      return null;  // Devolver null en caso de error
     } finally {
       console.log('loadUserData completado.');
     }

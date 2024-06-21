@@ -111,6 +111,11 @@ hr {
 .filters-container {
   display: flex;
   justify-content: space-between;
+  gap: 30px;
+}
+.filters-container__wrapper {
+  display: flex;
+  justify-content: flex-end;
 }
 .reset-btn{
   border-radius: 5px;

@@ -1,14 +1,14 @@
 /* Estilo para el contenedor principal */
 .principal-container {
     display: flex;
-    height: 100vh; /* Ocupará toda la altura de la ventana */
+    height: 94vh;
   }
 
   /* Estilo para el sidebar */
   .sidebar {
     position: relative; /* Esto es necesario para que el posicionamiento absoluto del logo funcione correctamente */
     box-sizing: border-box;
-    height: 100vh;
+    height: 94vh;
     min-width: 200px; /* Ajusta este valor al ancho mínimo que desees */
     max-width: 200px;
     overflow-y: auto;

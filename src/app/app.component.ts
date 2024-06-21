@@ -1,8 +1,12 @@
+// app.component.ts
+
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { DataStore } from 'aws-amplify';
 import { DataService } from './services/data.service';
 import { Hub } from 'aws-amplify';
+import { Establishment, Emision } from 'src/models';
+import { DataSharingService } from './services//data-sharing.service';
 
 @Component({
   selector: 'app-root',
@@ -13,12 +17,17 @@ export class AppComponent implements OnInit {
   title = 'huella-smart-lite';
   user: any = null;
   company: any = null;
-  establishments: any = null;
+  companyID: string = '';
+  userID: string | null = 'null';
+  establishmentID: string = 'null';
+  establecimientos: Establishment[] = [];
+  emisiones: Emision[] = [];
 
   constructor(
     private router: Router,
     private dataService: DataService,
-    private changeDetector: ChangeDetectorRef  // Inyectar ChangeDetectorRef
+    private dataSharingService: DataSharingService,
+    private changeDetector: ChangeDetectorRef
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -26,13 +35,17 @@ export class AppComponent implements OnInit {
       await DataStore.start();
       console.log('DataStore has started!');
 
-      // Escuchar eventos de autenticación
       Hub.listen('auth', (data) => {
         const { event } = data.payload;
         if (event === 'signIn') {
           this.handleSignIn();
         }
       });
+
+      const userData = await this.loadUserData();
+      if (userData) {
+        this.router.navigate(['/resultados']);
+      }
     } catch (error) {
       console.error('Error starting DataStore:', error);
     }
@@ -41,7 +54,7 @@ export class AppComponent implements OnInit {
   async handleSignIn(): Promise<void> {
     const userData = await this.loadUserData();
     if (userData) {
-      this.router.navigate(['/resultados']);  // Redirigir a la ruta "resultados"
+      this.router.navigate(['/resultados']);
     } else {
       console.error('No se pudo obtener los datos del usuario.');
     }
@@ -50,18 +63,26 @@ export class AppComponent implements OnInit {
   async loadUserData() {
     try {
       const data = await this.dataService.getUserAndCompany();
-      if (data) {
+      if (data && data.company && data.user) {
         this.user = data.user;
         this.company = data.company;
-        console.log(this.user);
-        this.changeDetector.detectChanges();  // Forzar la detección de cambios
-        return data;  // Devolver los datos si se obtuvieron correctamente
+        this.companyID = data.user.companyID;
+        this.userID = data.user.id;
+
+        this.establecimientos = await DataStore.query(Establishment, est => est.companyID.eq(this.companyID));
+        this.dataSharingService.updateEstablecimientos(this.establecimientos);
+
+        this.emisiones = await DataStore.query(Emision);
+        this.dataSharingService.updateEmisiones(this.emisiones);
+
+        this.changeDetector.detectChanges();
+        return data;
       } else {
-        return null;  // Devolver null si no se encontraron datos
+        return null;
       }
     } catch (error) {
       console.error("Error al obtener el usuario y la compañía:", error);
-      return null;  // Devolver null en caso de error
+      return null;
     } finally {
       console.log('loadUserData completado.');
     }

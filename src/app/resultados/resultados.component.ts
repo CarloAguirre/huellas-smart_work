@@ -1,13 +1,13 @@
+// resultados.component.ts
+
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { DataStore } from 'aws-amplify';
-import { Emision } from 'src/models';
+import { Emision, Establishment } from 'src/models';
 import { SelectionModel } from '@angular/cdk/collections';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { EmisionesResumen } from './dashboard/interfaces/EmisionesResumen.interfaces';
 import {
   ApexAxisChartSeries,
   ApexChart,
-  ChartComponent,
   ApexDataLabels,
   ApexXAxis,
   ApexPlotOptions,
@@ -23,6 +23,7 @@ import { CategoryMap } from './dashboard/interfaces/CategoryMap.interfaces';
 import { categoryMap } from './dashboard/data/category-map';
 import { totalCategorias } from './dashboard/data/total-caregoria';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { DataSharingService } from '../services/data-sharing.service';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries | any;
@@ -48,9 +49,9 @@ export class ResultadosComponent implements OnInit {
   public chartOptions: Partial<ChartOptions>;
   public emisiones: Emision[] = [];
   public resumenEmisiones: EmisionesResumen[] = [];
-  public alcanceUno: any = null;  // %
-  public alcanceDos: any = null;  // %
-  public alcanceTres: any = null;  // %
+  public alcanceUno: any = null;
+  public alcanceDos: any = null;
+  public alcanceTres: any = null;
   public totalAlcanceUno: any | null = null;
   public totalAlcanceDos: any | null = null;
   public totalAlcanceTres: any | null = null;
@@ -64,11 +65,17 @@ export class ResultadosComponent implements OnInit {
   public totalCategorias!: TotalCategorias;
   dateRangeForm: FormGroup;
   isFiltered: boolean = false;
-  selectedCategory: string = 'Todas las categorías'; // Nueva variable
+  selectedCategory: string = 'Todas las categorías';
+  selectedEstablishment: string = 'Todos los establecimientos';
+  establecimientos: Establishment[] = [];
 
   @ViewChild(DashboardComponent) dashboardComponent!: DashboardComponent;
 
-  constructor(private changeDetector: ChangeDetectorRef, private fb: FormBuilder) {
+  constructor(
+    private changeDetector: ChangeDetectorRef,
+    private fb: FormBuilder,
+    private dataSharingService: DataSharingService
+  ) {
     this.chartOptions = {
       series: [
         {
@@ -108,7 +115,7 @@ export class ResultadosComponent implements OnInit {
       },
       tooltip: {
         y: {
-          formatter: function(val: any) {
+          formatter: function (val: any) {
             return val + "K";
           }
         }
@@ -156,20 +163,18 @@ export class ResultadosComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.dateRangeForm.valueChanges.subscribe(() => {
+    this.dataSharingService.emisiones$.subscribe(emisiones => {
+      this.emisiones = emisiones;
       this.applyFilters();
     });
 
-    this.loadEmisiones();
-  }
+    this.dataSharingService.establecimientos$.subscribe(establecimientos => {
+      this.establecimientos = establecimientos;
+    });
 
-  async loadEmisiones() {
-    try {
-      this.emisiones = await DataStore.query(Emision);
+    this.dateRangeForm.valueChanges.subscribe(() => {
       this.applyFilters();
-    } catch (error) {
-      console.error('Error al consultar los datos:', error);
-    }
+    });
   }
 
   applyFilters() {
@@ -187,6 +192,10 @@ export class ResultadosComponent implements OnInit {
 
     if (this.selectedCategory !== 'Todas las categorías') {
       filteredEmisiones = filteredEmisiones.filter(emision => emision.CATEGORIA === this.selectedCategory);
+    }
+
+    if (this.selectedEstablishment !== 'Todos los establecimientos') {
+      filteredEmisiones = filteredEmisiones.filter(emision => emision.EstablishmentID === this.selectedEstablishment);
     }
 
     this.calculateEmisionesMensuales(filteredEmisiones);
@@ -327,7 +336,7 @@ export class ResultadosComponent implements OnInit {
     this.chartOptions.xaxis.categories = ["Porcentaje"];
     this.chartOptions.title.text = "Porcentaje de Emisiones por Alcance";
 
-    this.chartOptions.tooltip.y.formatter = function(val: any) {
+    this.chartOptions.tooltip.y.formatter = function (val: any) {
       return val.toFixed(2) + "%";
     };
   }

@@ -21,6 +21,15 @@
         </mat-select>
       </mat-form-field>
     </div>
+    <div>
+      <mat-form-field appearance="fill">
+        <mat-label>Selecciona un establecimiento</mat-label>
+        <mat-select [(value)]="selectedEstablishment" (selectionChange)="applyFilters()">
+          <mat-option value="Todos los establecimientos">Todos los establecimientos</mat-option>
+          <mat-option *ngFor="let est of establecimientos" [value]="est.id"> <li>{{ est.name }}</li></mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
   </div>
 
 </div>

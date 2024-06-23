@@ -30,7 +30,6 @@ type LazyCompany = {
   readonly id: string;
   readonly name?: string | null;
   readonly email?: string | null;
-  readonly companyID?: string | null;
   readonly isActive?: boolean | null;
   readonly Users: AsyncCollection<User>;
   readonly Factors: AsyncCollection<Factor>;

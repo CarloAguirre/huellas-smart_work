@@ -6,7 +6,7 @@ import { DataStore } from 'aws-amplify';
 import { DataService } from './services/data.service';
 import { Hub } from 'aws-amplify';
 import { Establishment, Emision } from 'src/models';
-import { DataSharingService } from './services//data-sharing.service';
+import { DataSharingService } from './services/data-sharing.service';
 
 @Component({
   selector: 'app-root',
@@ -98,6 +98,7 @@ export class AppComponent implements OnInit {
       console.log('DataStore ha sido limpiado.');
 
       signOutFunction();
+      this.router.navigate(['/']);
     } catch (error) {
       console.error('Hubo un error:', error);
     }

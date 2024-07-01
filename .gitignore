@@ -6,6 +6,10 @@
 /out-tsc
 /bazel-out
 
+#aws configs
+/src/aws-exports.js
+/src/aws-exports.ts
+
 # Node
 /node_modules
 npm-debug.log

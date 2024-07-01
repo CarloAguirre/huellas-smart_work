@@ -20,7 +20,7 @@
         <p class="total  placeholder-glow" *ngIf="totalAlcance == null" style="width: 8rem;">
           <span class="placeholder" style="width: 8rem; height: 2rem; border-radius: 12px;"></span>
       </p>
-        <p class="total" *ngIf="totalAlcance !== null">{{totalAlcance.toFixed(2)}}<span>tCO2</span></p>
+        <p class="total" *ngIf="totalAlcance !== null">{{totalAlcance! | numberFormat }}<span>tCO2</span></p>
       </div>
   </div>
   <div class="graphic-two">
@@ -34,7 +34,7 @@
         <p class="total  placeholder-glow" *ngIf="totalAlcance == null" style="width: 6rem; margin-right: -1rem;">
           <span class="placeholder col-8" style="height: 2rem; border-radius: 12px"></span>
       </p>
-        <p class="total" *ngIf="totalAlcanceUno !== null">{{totalAlcanceUno.toFixed(2)}}<span>tCO2</span></p>
+        <p class="total" *ngIf="totalAlcanceUno !== null">{{totalAlcanceUno! | numberFormat}}<span>tCO2</span></p>
       </section>
     </div>
     <div class="alcance-container">
@@ -47,7 +47,7 @@
         <p class="total  placeholder-glow" *ngIf="totalAlcance == null" style="width: 6rem; margin-right: -1rem;">
           <span class="placeholder col-8" style="height: 2rem; border-radius: 12px"></span>
       </p>
-        <p class="total" *ngIf="totalAlcanceDos !== null">{{totalAlcanceDos.toFixed(2)}}<span>tCO2</span></p>
+        <p class="total" *ngIf="totalAlcanceDos !== null">{{totalAlcanceDos! | numberFormat}}<span>tCO2</span></p>
       </section>
     </div>
     <div class="alcance-container">
@@ -60,7 +60,7 @@
         <p class="total  placeholder-glow" *ngIf="totalAlcance == null" style="width: 6rem; margin-right: -1rem;">
           <span class="placeholder col-8" style="height: 2rem; border-radius: 12px"></span>
       </p>
-        <p class="total" *ngIf="totalAlcanceTres !== null">{{totalAlcanceTres.toFixed(2)}}<span>tCO2</span></p>
+        <p class="total" *ngIf="totalAlcanceTres !== null">{{totalAlcanceTres! | numberFormat}}<span>tCO2</span></p>
       </section>
     </div>
   </div>
@@ -68,7 +68,7 @@
 
 <div class="table-container">
 <div class="tab-container">
-  <h2>Detalle por Alcance</h2>
+  <h2>Detalle por Categoría</h2>
   <ul class="nav nav-pills">
     <li class="nav-item">
       <button class="nav-link nav-link__left" [class.active]="selectedAlcance === 'all'" aria-current="page" (click)="setAlcance('all')">ALL ALCANCES</button>
@@ -98,7 +98,7 @@
       <tr>
         <td class="category-column">{{ getCategoryName(item.key) }}</td>
         <td class="co2-column">
-          {{ (item.value / 1000).toFixed(2) }}
+          {{ (item.value / 1000)! | numberFormat }}
           ({{ getPercentage(item.value, getTotalForAllAlcances()) | number:'1.0-2' }}%)
         </td>
         <td class="progress-column">

@@ -131,3 +131,18 @@ hr {
 .filters-hr{
   border: solid rgba(128, 128, 128, 0.745) 1px;
 }
+.date-picker {
+  width: 14rem;
+}
+@media (max-width: 745px){
+   .filters-container {
+    flex-direction: column;
+    width: 100%;
+   }
+   .filters-container__wrapper {
+    justify-content: center;
+   }
+   .date-picker{
+    width: 100%;
+   }
+}

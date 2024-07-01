@@ -1,0 +1,33 @@
+
+<div class="principal-container">
+
+  <h2>Detalle Alcance Uno</h2>
+  <table>
+    <tbody>
+      <tr>
+        <td class="gas-value">{{ (alcanceUnoDetail!.CO2 | numberFormat) }}</td>
+        <td class="gas-value">{{ (alcanceUnoDetail!.CH4 | numberFormat) }}</td>
+        <td class="gas-value">{{ (alcanceUnoDetail!.N2O | numberFormat) }}</td>
+        <td class="gas-value">{{ (alcanceUnoDetail!.SF6 | numberFormat) }}</td>
+        <td class="gas-value">{{ (alcanceUnoDetail!.HFC | numberFormat) }}</td>
+        <td class="gas-value">{{ (alcanceUnoDetail!.PFC | numberFormat) }}</td>
+        <td class="gas-value">{{ (alcanceUnoDetail!.NF3 | numberFormat) }}</td>
+      </tr>
+      <tr>
+        <td colspan="7">
+          <hr>
+        </td>
+      </tr>
+      <tr>
+        <td class="gas-name">CO2</td>
+        <td class="gas-name">CH4</td>
+        <td class="gas-name">N2O</td>
+        <td class="gas-name">SF6</td>
+        <td class="gas-name">HFC</td>
+        <td class="gas-name">PFC</td>
+        <td class="gas-name">NF3</td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>

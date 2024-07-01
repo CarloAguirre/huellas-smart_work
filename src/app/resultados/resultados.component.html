@@ -2,7 +2,7 @@
   <div class="filters-container">
     <div class="date-filter__container">
       <button *ngIf="isFiltered" mat-raised-button (click)="resetDateFilter()" class="reset-btn">Restaurar</button>
-      <mat-form-field appearance="fill" style="width: 14rem;">
+      <mat-form-field appearance="fill" class="date-picker">
         <mat-label>Periodo</mat-label>
         <mat-date-range-input [formGroup]="dateRangeForm" [rangePicker]="picker">
           <input matStartDate formControlName="start" placeholder="Inicio Periodo">
@@ -12,7 +12,7 @@
         <mat-date-range-picker #picker></mat-date-range-picker>
       </mat-form-field>
     </div>
-    <div>
+    <!-- <div>
       <mat-form-field appearance="fill">
         <mat-label>Selecciona una categoría</mat-label>
         <mat-select [(value)]="selectedCategory" (selectionChange)="applyFilters()">
@@ -20,7 +20,7 @@
           <mat-option *ngFor="let key of categoryMap | keyvalue" [value]="key.key"> <li>{{ key.key }}</li></mat-option>
         </mat-select>
       </mat-form-field>
-    </div>
+    </div> -->
     <div>
       <mat-form-field appearance="fill">
         <mat-label>Selecciona un establecimiento</mat-label>
@@ -38,107 +38,114 @@
 <hr class="filters-hr">
 
 <app-dashboard
-  [resumenEmisiones]="resumenEmisiones"
-  [alcanceUno]="alcanceUno"
-  [alcanceDos]="alcanceDos"
-  [alcanceTres]="alcanceTres"
-  [alcanceDos]="alcanceDos"
-  [totalAlcance]="totalAlcance"
-  [totalAlcanceUno]="totalAlcanceUno"
-  [totalAlcanceDos]="totalAlcanceDos"
-  [totalAlcanceTres]="totalAlcanceTres"
-  [chartOptions]="chartOptions"
-  [emisiones]="emisiones"
-  [totalCategorias]=" totalCategorias"
-  [categoryMap]="categoryMap"
-  >
-
+[resumenEmisiones]="resumenEmisiones"
+[alcanceUno]="alcanceUno"
+[alcanceDos]="alcanceDos"
+[alcanceTres]="alcanceTres"
+[alcanceDos]="alcanceDos"
+[totalAlcance]="totalAlcance"
+[totalAlcanceUno]="totalAlcanceUno"
+[totalAlcanceDos]="totalAlcanceDos"
+[totalAlcanceTres]="totalAlcanceTres"
+[chartOptions]="chartOptions"
+[emisiones]="emisiones"
+[totalCategorias]=" totalCategorias"
+[categoryMap]="categoryMap"
+>
 </app-dashboard>
 
-<div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 5px;">
-    <h1>Resultados de periodos</h1>
+<app-table-one [alcanceUnoDetail] = "alcanceUnoDetail"></app-table-one>
+
+
+
+<div style="margin: 20px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 5px;">
+    <h2>Resultados de periodos</h2>
     <button mat-raised-button
-        style="border-radius: 5px; border: 2px solid #4c91cc; padding: 6px 10px; font-size: 16px; font-weight: 600; background-color: #4c91cc; color: white;"
-        (click)="generarYDescargarCSV()">Descargar CSV
-    </button>
-</div>
+    style="border-radius: 5px; border: 2px solid #4c91cc; padding: 6px 10px; font-size: 16px; font-weight: 600; background-color: #4c91cc; color: white;"
+    (click)="generarYDescargarCSV()">Descargar CSV
+  </button>
+  </div>
 
-<table mat-table [dataSource]="resumenEmisiones" class="mat-elevation-z8 tablaEmisiones">
-    <!-- Columna de selección -->
+    <hr>
+
+  <table mat-table [dataSource]="resumenEmisiones" class="mat-elevation-z8 tablaEmisiones">
+
     <ng-container matColumnDef="select">
-        <th mat-header-cell *matHeaderCellDef>
-            <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
-                [indeterminate]="selection.hasValue() && !isAllSelected()">
-            </mat-checkbox>
-        </th>
-        <td mat-cell *matCellDef="let row">
-            <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
-                [checked]="selection.isSelected(row)">
-            </mat-checkbox>
-        </td>
-    </ng-container>
-    <ng-container matColumnDef="periodo">
-        <th mat-header-cell *matHeaderCellDef>Periodo</th>
-        <td mat-cell *matCellDef="let resumen">{{resumen.periodo}}</td>
-    </ng-container>
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
+        [indeterminate]="selection.hasValue() && !isAllSelected()">
+      </mat-checkbox>
+    </th>
+    <td mat-cell *matCellDef="let row">
+      <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+      [checked]="selection.isSelected(row)">
+    </mat-checkbox>
+  </td>
+</ng-container>
+<ng-container matColumnDef="periodo">
+  <th mat-header-cell *matHeaderCellDef>Periodo</th>
+  <td mat-cell *matCellDef="let resumen">{{resumen.periodo}}</td>
+</ng-container>
 
-    <ng-container matColumnDef="totalTonCO2eq">
-        <th mat-header-cell *matHeaderCellDef>Total TonCO2eq</th>
-        <td mat-cell *matCellDef="let resumen">{{resumen.totalTonCO2eq}}</td>
-    </ng-container>
+<ng-container matColumnDef="totalTonCO2eq">
+  <th mat-header-cell *matHeaderCellDef>Total TonCO2eq</th>
+  <td mat-cell *matCellDef="let resumen">{{(resumen.totalTonCO2eq! | numberFormat)}}</td>
+</ng-container>
 
-    <ng-container matColumnDef="totalAlcance1">
-        <th mat-header-cell *matHeaderCellDef>Total Alcance 1</th>
-        <td mat-cell *matCellDef="let resumen">{{resumen.totalAlcance1}}</td>
-    </ng-container>
+<ng-container matColumnDef="totalAlcance1">
+  <th mat-header-cell *matHeaderCellDef>Total Alcance 1</th>
+  <td mat-cell *matCellDef="let resumen">{{(resumen.totalAlcance1! | numberFormat)}}</td>
+</ng-container>
 
-    <ng-container matColumnDef="totalAlcance2">
-        <th mat-header-cell *matHeaderCellDef>Total Alcance 2</th>
-        <td mat-cell *matCellDef="let resumen">{{resumen.totalAlcance2}}</td>
-    </ng-container>
+<ng-container matColumnDef="totalAlcance2">
+  <th mat-header-cell *matHeaderCellDef>Total Alcance 2</th>
+  <td mat-cell *matCellDef="let resumen">{{(resumen.totalAlcance2! | numberFormat)}}</td>
+</ng-container>
 
-    <ng-container matColumnDef="totalAlcance3">
-        <th mat-header-cell *matHeaderCellDef>Total Alcance 3</th>
-        <td mat-cell *matCellDef="let resumen">{{resumen.totalAlcance3}}</td>
-    </ng-container>
+<ng-container matColumnDef="totalAlcance3">
+  <th mat-header-cell *matHeaderCellDef>Total Alcance 3</th>
+  <td mat-cell *matCellDef="let resumen">{{(resumen.totalAlcance3! | numberFormat)}}</td>
+</ng-container>
 
-    <ng-container matColumnDef="totalCO2">
-        <th mat-header-cell *matHeaderCellDef>totalCO2</th>
-        <td mat-cell *matCellDef="let resumen">{{resumen.totalCO2}}</td>
-    </ng-container>
+<ng-container matColumnDef="totalCO2">
+  <th mat-header-cell *matHeaderCellDef>totalCO2</th>
+  <td mat-cell *matCellDef="let resumen">{{(resumen.totalCO2! | numberFormat)}}</td>
+</ng-container>
 
-    <ng-container matColumnDef="totalCH4">
-        <th mat-header-cell *matHeaderCellDef>totalCH4</th>
-        <td mat-cell *matCellDef="let resumen">{{resumen.totalCH4}}</td>
-    </ng-container>
+<ng-container matColumnDef="totalCH4">
+  <th mat-header-cell *matHeaderCellDef>totalCH4</th>
+  <td mat-cell *matCellDef="let resumen">{{(resumen.totalCH4! | numberFormat)}}</td>
+</ng-container>
 
-    <ng-container matColumnDef="totalN2O">
-        <th mat-header-cell *matHeaderCellDef>totalN2O</th>
-        <td mat-cell *matCellDef="let resumen">{{resumen.totalN2O}}</td>
-    </ng-container>
+<ng-container matColumnDef="totalN2O">
+  <th mat-header-cell *matHeaderCellDef>totalN2O</th>
+  <td mat-cell *matCellDef="let resumen">{{(resumen.totalN2O! | numberFormat)}}</td>
+</ng-container>
 
-    <ng-container matColumnDef="totalSF6">
-        <th mat-header-cell *matHeaderCellDef>totalSF6</th>
-        <td mat-cell *matCellDef="let resumen">{{resumen.totalSF6}}</td>
-    </ng-container>
+<ng-container matColumnDef="totalSF6">
+  <th mat-header-cell *matHeaderCellDef>totalSF6</th>
+  <td mat-cell *matCellDef="let resumen">{{(resumen.totalSF6! | numberFormat)}}</td>
+</ng-container>
 
-    <ng-container matColumnDef="totalHFC">
-        <th mat-header-cell *matHeaderCellDef>totalHFC</th>
-        <td mat-cell *matCellDef="let resumen">{{resumen.totalHFC}}</td>
-    </ng-container>
+<ng-container matColumnDef="totalHFC">
+  <th mat-header-cell *matHeaderCellDef>totalHFC</th>
+  <td mat-cell *matCellDef="let resumen">{{(resumen.totalHFC! | numberFormat)}}</td>
+</ng-container>
 
-    <ng-container matColumnDef="totalPFC">
-        <th mat-header-cell *matHeaderCellDef>totalPFC</th>
-        <td mat-cell *matCellDef="let resumen">{{resumen.totalPFC}}</td>
-    </ng-container>
+<ng-container matColumnDef="totalPFC">
+  <th mat-header-cell *matHeaderCellDef>totalPFC</th>
+  <td mat-cell *matCellDef="let resumen">{{(resumen.totalPFC! | numberFormat)}}</td>
+</ng-container>
 
-    <ng-container matColumnDef="totalNF3">
-        <th mat-header-cell *matHeaderCellDef>totalNF3</th>
-        <td mat-cell *matCellDef="let resumen">{{resumen.totalNF3}}</td>
-    </ng-container>
+<ng-container matColumnDef="totalNF3">
+  <th mat-header-cell *matHeaderCellDef>totalNF3</th>
+  <td mat-cell *matCellDef="let resumen">{{(resumen.totalNF3! | numberFormat)}}</td>
+</ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+<tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>
+</div>
 
 

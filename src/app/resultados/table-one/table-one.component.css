@@ -1,0 +1,50 @@
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 8px;
+  text-align: center;
+  width: 14.2857%; /* 100% / 7 columns = 14.2857% */
+}
+
+.dotted-line {
+  border: none;
+  border-top: 1px dotted gray;
+  margin: 0; /* Remove default margin */
+}
+
+tr {
+  display: flex;
+  justify-content: space-around;
+}
+
+td, th {
+  flex: 1;
+  padding: 4px 8px; /* Reduce padding to bring elements closer */
+}
+
+td hr {
+  margin: 4px 0; /* Add margin to position hr closer to td */
+}
+hr{
+  border: none;
+  border: dashed rgba(128, 128, 128, 0.745) 1px;
+
+}
+.principal-container{
+  margin-bottom: 4rem;
+  margin-top: 4rem;
+  padding-right: 20px;
+  padding-left: 20px;
+}
+.gas-name {
+  color: rgb(108, 108, 108);
+  font-weight: 500;
+}
+.gas-value {
+  color: rgb(43, 43, 43);
+  font-size: larger;
+  font-weight: 500;
+}

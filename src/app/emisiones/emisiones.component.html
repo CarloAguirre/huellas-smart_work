@@ -189,42 +189,42 @@
 
     <ng-container matColumnDef="CANTIDAD">
         <th mat-header-cell *matHeaderCellDef>CANTIDAD</th>
-        <td mat-cell *matCellDef="let factor">{{factor.CANTIDAD}}</td>
+        <td mat-cell *matCellDef="let factor">{{factor!.CANTIDAD | numberFormat}}</td>
     </ng-container>
 
     <ng-container matColumnDef="CO2">
         <th mat-header-cell *matHeaderCellDef>CO2</th>
-        <td mat-cell *matCellDef="let factor">{{factor.CO2}}</td>
+        <td mat-cell *matCellDef="let factor">{{factor!.CO2 | numberFormat}}</td>
     </ng-container>
 
     <ng-container matColumnDef="CH4">
         <th mat-header-cell *matHeaderCellDef>CH4</th>
-        <td mat-cell *matCellDef="let factor">{{factor.CH4}}</td>
+        <td mat-cell *matCellDef="let factor">{{factor!.CH4 | numberFormat}}</td>
     </ng-container>
 
     <ng-container matColumnDef="N2O">
         <th mat-header-cell *matHeaderCellDef>N2O</th>
-        <td mat-cell *matCellDef="let factor">{{factor.N2O}}</td>
+        <td mat-cell *matCellDef="let factor">{{factor!.N2O | numberFormat}}</td>
     </ng-container>
 
     <ng-container matColumnDef="SF6">
         <th mat-header-cell *matHeaderCellDef>SF6</th>
-        <td mat-cell *matCellDef="let factor">{{factor.SF6}}</td>
+        <td mat-cell *matCellDef="let factor">{{factor!.SF6 | numberFormat}}</td>
     </ng-container>
 
     <ng-container matColumnDef="HFC">
         <th mat-header-cell *matHeaderCellDef>HFC</th>
-        <td mat-cell *matCellDef="let factor">{{factor.HFC}}</td>
+        <td mat-cell *matCellDef="let factor">{{factor!.HFC | numberFormat}}</td>
     </ng-container>
 
     <ng-container matColumnDef="PFC">
         <th mat-header-cell *matHeaderCellDef>PFC</th>
-        <td mat-cell *matCellDef="let factor">{{factor.PFC}}</td>
+        <td mat-cell *matCellDef="let factor">{{factor!.PFC | numberFormat}}</td>
     </ng-container>
 
     <ng-container matColumnDef="NF3">
         <th mat-header-cell *matHeaderCellDef>NF3</th>
-        <td mat-cell *matCellDef="let factor">{{factor.NF3}}</td>
+        <td mat-cell *matCellDef="let factor">{{factor!.NF3 | numberFormat}}</td>
     </ng-container>
 
     <ng-container matColumnDef="InicioPeriodo">

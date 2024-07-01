@@ -36,6 +36,7 @@
   .alcance-uno, .alcance-dos, .alcance-tres{
   border: solid 1.5px #EEF3EF;
   display: flex;
+  gap: 10px;
   justify-content: space-between;
   padding-right: 12px;
   border-top-right-radius: 12px;
@@ -80,7 +81,7 @@
 
 hr {
   border: none;
-  border: dashed rgba(128, 128, 128, 0.745) 1px;
+  border: dashed rgba(128, 128, 128, 0.745) 1.5px;
 }
 .total-footprint {
   display: flex;
@@ -127,6 +128,35 @@ hr {
   justify-content:space-between;
   margin-top: 3rem;
   padding-right: 1.15rem;
+}
+@media (max-width: 980px){
+   .tab-container{
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+   }
+}
+@media (max-width: 740px){
+  .nav-link__left{
+    border-bottom-left-radius: 0px !important;
+    border-top-right-radius: 5px !important;
+  }
+  .nav-link__right{
+    border-top-right-radius: 0px !important;
+    border-bottom-left-radius: 5px !important;
+  }
+  .tab-container{
+    width: 100%;
+  }
+   .nav {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+   }
+   .nav-link{
+    width: 100%;
+   }
 }
 .table-container {
   padding-right: 20px;

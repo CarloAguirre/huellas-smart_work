@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DataStore, Predicates  } from 'aws-amplify';
+import { DataStore, Hub, Predicates  } from 'aws-amplify';
 import { Emision, Establishment, User } from 'src/models'; // La ruta puede variar según donde se generó tu modelo.
 import { Factor } from 'src/models'; // La ruta puede variar según donde se generó tu modelo.
 import { HttpClient } from '@angular/common/http';
@@ -281,6 +281,10 @@ export class EmisionesComponent implements OnInit {
 
       try {
         await DataStore.save(emision);
+        Hub.dispatch('emisiones', {
+          event: 'nuevaEmision',
+          data: emision
+        });
       } catch (error) {
         console.error('Detalle del error:', error);
 
@@ -515,6 +519,10 @@ export class EmisionesComponent implements OnInit {
           await DataStore.save(emision);
           this.snackBar.open('Emisión guardada con éxito!', 'Cerrar', {
             duration: 2000,
+          });
+          Hub.dispatch('emisiones', {
+            event: 'nuevaEmision',
+            data: emision
           });
           this.cancelarFormulario();
           await this.cargarEmisiones();

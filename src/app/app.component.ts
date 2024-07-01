@@ -33,7 +33,13 @@ export class AppComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     try {
       await DataStore.start();
-      console.log('DataStore has started!');
+
+      Hub.listen('emisiones', async (data) => {
+        const { event } = data.payload;
+        if (event === 'nuevaEmision') {
+          await this.actualizarEmisiones();
+        }
+      });
 
       Hub.listen('auth', (data) => {
         const { event } = data.payload;
@@ -41,6 +47,8 @@ export class AppComponent implements OnInit {
           this.handleSignIn();
         }
       });
+
+
 
       const userData = await this.loadUserData();
       if (userData) {
@@ -50,6 +58,7 @@ export class AppComponent implements OnInit {
       console.error('Error starting DataStore:', error);
     }
   }
+
 
   async handleSignIn(): Promise<void> {
     const userData = await this.loadUserData();
@@ -98,9 +107,18 @@ export class AppComponent implements OnInit {
       console.log('DataStore ha sido limpiado.');
 
       signOutFunction();
-      this.router.navigate(['/']);
     } catch (error) {
       console.error('Hubo un error:', error);
+    }
+  }
+
+  async actualizarEmisiones(): Promise<void> {
+    try {
+      this.emisiones = await DataStore.query(Emision);
+      this.dataSharingService.updateEmisiones(this.emisiones);
+      this.changeDetector.detectChanges();
+    } catch (error) {
+      console.error('Error al actualizar las emisiones:', error);
     }
   }
 }

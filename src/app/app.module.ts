@@ -26,6 +26,8 @@ import { NgApexchartsModule } from 'ng-apexcharts';
 
 import { ReactiveFormsModule } from '@angular/forms';
 import { DashboardComponent } from './resultados/dashboard/dashboard.component';
+import { TableOneComponent } from './resultados/table-one/table-one.component';
+import { NumberFormatPipe } from './number-format.pipe';
 
 
 Amplify.configure({
@@ -42,6 +44,8 @@ Amplify.configure({
     EmisionesComponent,
     ResultadosComponent,
     DashboardComponent,
+    TableOneComponent,
+    NumberFormatPipe,
 
   ],
   imports: [

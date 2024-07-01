@@ -38,7 +38,7 @@ export class DashboardComponent implements OnInit, OnChanges {
   @Input() totalAlcanceTres: any;
   @Input() totalAlcance: any;
   @Input() emisiones: Emision[] = [];
-  @Input() totalCategorias!: TotalCategorias ;
+  @Input() totalCategorias!: TotalCategorias;
   @Input() categoryMap: { [key: string]: keyof Categoria } = {};
 
   alcanceKeys: Alcance[] = ['alcanceUno', 'alcanceDos', 'alcanceTres'];
@@ -46,9 +46,14 @@ export class DashboardComponent implements OnInit, OnChanges {
   filteredCategories: { alcance: Alcance, key: keyof Categoria, value: number }[] = [];
   selectedAlcance: Alcance | 'all' = 'all';
 
+  private filteredMaxValue: number = 0;
+
   constructor(private changeDetector: ChangeDetectorRef) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.resumenEmisiones = this.resumenEmisiones;
+    this.calculateFilteredMaxValue(); // Calcula el valor máximo inicial
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['totalCategorias'] || changes['resumenEmisiones'] || changes['alcanceUno'] || changes['alcanceDos'] || changes['alcanceTres'] || changes['totalAlcanceUno'] || changes['totalAlcanceDos'] || changes['totalAlcanceTres'] || changes['totalAlcance'] || changes['emisiones'] || changes['chartOptions']) {
@@ -80,6 +85,19 @@ export class DashboardComponent implements OnInit, OnChanges {
     } else {
       this.filteredCategories = this.sortedCategories.filter(category => category.alcance === this.selectedAlcance);
     }
+    this.calculateFilteredMaxValue(); // Recalcula el valor máximo para las categorías filtradas
+  }
+
+  calculateFilteredMaxValue(): void {
+    if (this.filteredCategories.length > 0) {
+      this.filteredMaxValue = Math.max(...this.filteredCategories.map(category => category.value));
+    } else {
+      this.filteredMaxValue = 0;
+    }
+  }
+
+  getRelativePercentage(value: number): number {
+    return this.filteredMaxValue > 0 ? (value / this.filteredMaxValue) * 100 : 0;
   }
 
   getCategoryName(categoryKey: keyof Categoria): string {
@@ -101,11 +119,6 @@ export class DashboardComponent implements OnInit, OnChanges {
 
   getPercentage(value: number, total: number): number {
     return total > 0 ? (value / total) * 100 : 0;
-  }
-
-  getRelativePercentage(value: number): number {
-    const maxValue = this.getMaxValue();
-    return maxValue > 0 ? (value / maxValue) * 100 : 0;
   }
 
   getBarColor(alcance: Alcance): string {

@@ -24,7 +24,6 @@ export class FactoresDeEmisionComponent implements OnInit {
   displayedColumns: string[] = ['select', 'ID/COD', 'ALCANCE', 'CATEGORIA', 'SUBCATEGORIA', 'ACTIVIDAD', 'COMBUSTIBLE', 'CONTAMINANTE', 'INCERTIDUMBRE', 'VALORFE', 'UNIDADFE', 'ORIGENFE'];
   nombreArchivo: string = 'Seleccionar archivo';  // Añade esta línea
 
-
   public form: FormGroup = new FormGroup({
     cod: new FormControl('', Validators.required),
     ALCANCE: new FormControl('', Validators.required),

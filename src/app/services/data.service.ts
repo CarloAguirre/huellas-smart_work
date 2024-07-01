@@ -16,23 +16,17 @@ export class DataService {
   async getUserAndCompany() {
     try {
       await this.dataStoreReady;
-
-      // Esperar a que el DataStore sincronice los datos
       await this.syncDataStore();
 
       const cognitoUser = await Auth.currentAuthenticatedUser();
       const sub = cognitoUser.attributes.sub;
 
       const users = await DataStore.query(User);
-      console.log('Usuarios obtenidos:', users);
 
       if (users.length > 0) {
         const user = users.find(u => u.sub === sub);
         const companies = await DataStore.query(Company);
         const company = companies.find(c => c.id === user?.companyID);
-
-        console.log('Usuario:', user);
-        console.log('Compañía:', company);
         return { user, company };
       } else {
         console.log('No se encontraron usuarios.');

@@ -1,6 +1,4 @@
-// resultados.component.ts
-
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { Emision, Establishment } from 'src/models';
 import { SelectionModel } from '@angular/cdk/collections';
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -24,6 +22,8 @@ import { categoryMap } from './dashboard/data/category-map';
 import { totalCategorias } from './dashboard/data/total-caregoria';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { DataSharingService } from '../services/data-sharing.service';
+import { DataStore } from 'aws-amplify';
+import { AlcanceUnoPeriodo } from './dashboard/interfaces/alcanceUno.interfaces';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries | any;
@@ -45,7 +45,7 @@ export type ChartOptions = {
   templateUrl: './resultados.component.html',
   styleUrls: ['./resultados.component.css'],
 })
-export class ResultadosComponent implements OnInit {
+export class ResultadosComponent implements OnInit, OnChanges {
   public chartOptions: Partial<ChartOptions>;
   public emisiones: Emision[] = [];
   public resumenEmisiones: EmisionesResumen[] = [];
@@ -57,12 +57,13 @@ export class ResultadosComponent implements OnInit {
   public totalAlcanceTres: any | null = null;
   public totalAlcance: any | null = null;
   public categoryMap: CategoryMap = categoryMap;
+  public totalCategorias: TotalCategorias;
+  public alcanceUnoDetail!: AlcanceUnoPeriodo;
   public scopeMap: { [key: string]: keyof TotalCategorias } = {
     "Alcance 1": "alcanceUno",
     "Alcance 2": "alcanceDos",
     "Alcance 3": "alcanceTres"
   };
-  public totalCategorias!: TotalCategorias;
   dateRangeForm: FormGroup;
   isFiltered: boolean = false;
   selectedCategory: string = 'Todas las categorías';
@@ -130,6 +131,16 @@ export class ResultadosComponent implements OnInit {
       }
     };
 
+    this.alcanceUnoDetail = {
+      CO2: 0,
+      CH4: 0,
+      N2O: 0,
+      SF6: 0,
+      HFC: 0,
+      PFC: 0,
+      NF3: 0
+    };
+
     this.dateRangeForm = this.fb.group({
       start: [null],
       end: [null]
@@ -162,7 +173,8 @@ export class ResultadosComponent implements OnInit {
     return meses[mes] || '';
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    await DataStore.start();
     this.dataSharingService.emisiones$.subscribe(emisiones => {
       this.emisiones = emisiones;
       this.applyFilters();
@@ -175,6 +187,24 @@ export class ResultadosComponent implements OnInit {
     this.dateRangeForm.valueChanges.subscribe(() => {
       this.applyFilters();
     });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['emisiones']) {
+      this.dataSharingService.emisiones$.subscribe(emisiones => {
+        this.emisiones = emisiones;
+        this.applyFilters();
+      });
+
+      this.dataSharingService.establecimientos$.subscribe(establecimientos => {
+        this.establecimientos = establecimientos;
+      });
+
+      this.dateRangeForm.valueChanges.subscribe(() => {
+        this.applyFilters();
+      });
+      this.changeDetector.detectChanges();
+    }
   }
 
   applyFilters() {
@@ -213,6 +243,17 @@ export class ResultadosComponent implements OnInit {
     this.totalAlcanceUno = 0;
     this.totalAlcanceDos = 0;
     this.totalAlcanceTres = 0;
+
+    // Reiniciar alcanceUnoDetail
+    this.alcanceUnoDetail = {
+      CO2: 0,
+      CH4: 0,
+      N2O: 0,
+      SF6: 0,
+      HFC: 0,
+      PFC: 0,
+      NF3: 0
+    };
 
     emisiones.forEach((emision) => {
       const fechaInicio = new Date(emision.InicioPeriodo);
@@ -267,6 +308,13 @@ export class ResultadosComponent implements OnInit {
 
             if (emision.ALCANCE === "Alcance 1") {
               emisionesMensuales[key].totalAlcance1 += totalEmissionForThisEntry;
+              this.alcanceUnoDetail.CO2 += emision.CO2 ?? 0;
+              this.alcanceUnoDetail.CH4 += emision.CH4 ?? 0;
+              this.alcanceUnoDetail.N2O += emision.N2O ?? 0;
+              this.alcanceUnoDetail.SF6 += emision.SF6 ?? 0;
+              this.alcanceUnoDetail.HFC += emision.HFC ?? 0;
+              this.alcanceUnoDetail.PFC += emision.PFC ?? 0;
+              this.alcanceUnoDetail.NF3 += emision.NF3 ?? 0;
             } else if (emision.ALCANCE === "Alcance 2") {
               emisionesMensuales[key].totalAlcance2 += totalEmissionForThisEntry;
             } else if (emision.ALCANCE === "Alcance 3") {

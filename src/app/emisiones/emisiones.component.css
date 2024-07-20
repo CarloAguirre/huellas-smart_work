@@ -1,9 +1,12 @@
 .tablaEmisiones {
     max-width: 90%;       /* Establece el ancho máximo que puede tener la tabla */
-    overflow-x: auto;     /* Si el contenido excede el ancho máximo, muestra una barra de desplazamiento */
     margin: 0 auto;       /* Centra la tabla horizontalmente */
     max-height: 500px;    /* Establece el alto máximo para la tabla */
     overflow-y: auto;     /* Si el contenido excede el alto máximo, muestra una barra de desplazamiento vertical */
+  }
+  .table-container {
+  overflow-x: auto;     /* Si el contenido excede el ancho máximo, muestra una barra de desplazamiento */
+
 }
 
 .tablaEmisiones td {
@@ -29,5 +32,28 @@ mat-form-field.mat-select {
     width: 50%;
 }
 
-
-  
+hr {
+  border: none;
+  border: dashed rgba(128, 128, 128, 0.745) 1.5px;
+}
+.btn-wrapper {
+  display: flex;
+  justify-content: flex-end;
+}
+.principal-container {
+  margin: 20px;
+}
+.btn-header {
+  display: flex;
+}
+.form-container{
+  display: flex;
+  gap: 20px;
+}
+h2{
+  font-weight: 300;
+}
+table {
+  max-width: 100vw;
+  width: 100vw;
+}

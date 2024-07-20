@@ -67,32 +67,5 @@
         }
       }
     }
-  },
-  "newlite": {
-    "awscloudformation": {
-      "AuthRoleName": "amplify-huellasmartlite-newlite-2cf22-authRole",
-      "UnauthRoleArn": "arn:aws:iam::039546685094:role/amplify-huellasmartlite-newlite-2cf22-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::039546685094:role/amplify-huellasmartlite-newlite-2cf22-authRole",
-      "Region": "us-east-1",
-      "DeploymentBucketName": "amplify-huellasmartlite-newlite-2cf22-deployment",
-      "UnauthRoleName": "amplify-huellasmartlite-newlite-2cf22-unauthRole",
-      "StackName": "amplify-huellasmartlite-newlite-2cf22",
-      "StackId": "arn:aws:cloudformation:us-east-1:039546685094:stack/amplify-huellasmartlite-newlite-2cf22/c9eec6d0-42fe-11ef-90c5-12e386316d93",
-      "AmplifyAppId": "d3p4yiogzh1x76"
-    },
-    "categories": {
-      "auth": {
-        "HuellaSmartLite": {}
-      },
-      "hosting": {
-        "amplifyhosting": {
-          "appId": "d3p4yiogzh1x76",
-          "type": "manual"
-        }
-      },
-      "api": {
-        "HuellaSmartLite": {}
-      }
-    }
   }
 }

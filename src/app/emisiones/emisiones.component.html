@@ -1,252 +1,449 @@
-
-<button mat-raised-button [style.backgroundColor]="formularioEstablecimientoAbierto ? '#f44336' : '#9fd09f'"
-    style="float: left; border-radius: 5px; border: 2px solid #9fd09f; padding: 6px 10px; font-size: 16px; font-weight: 600; color: white; margin: 20px 5px;"
+<div class="btn-header">
+  <button
+    mat-raised-button
+    [style.backgroundColor]="
+      formularioEstablecimientoAbierto ? '#f44336' : '#9fd09f'
+    "
+    style="
+      border-radius: 5px;
+      border: 2px solid #9fd09f;
+      padding: 6px 10px;
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+      margin: 20px 5px;
+    "
     class="nuevo-establecimiento"
     [disabled]="formularioAbierto"
     (click)="manejarClickEstablecimiento()"
-    >
-    {{ formularioEstablecimientoAbierto ? 'Cancelar' : 'Nuevo Establecimiento' }}
-</button>
-<button mat-raised-button [style.backgroundColor]="formularioAbierto ? '#f44336' : '#9fd09f'"
-    style="float: left; border-radius: 5px; border: 2px solid #9fd09f; padding: 6px 10px; font-size: 16px; font-weight: 600; color: white; margin: 20px 5px;"
+  >
+    {{ formularioEstablecimientoAbierto ? "Cancelar" : "Establecimientos" }}
+  </button>
+  <button
+    mat-raised-button
+    [style.backgroundColor]="formularioAbierto ? '#f44336' : '#9fd09f'"
+    style="
+      border-radius: 5px;
+      border: 2px solid #9fd09f;
+      padding: 6px 10px;
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+      margin: 20px 5px;
+    "
     class="nueva-emision"
     [disabled]="formularioEstablecimientoAbierto"
-    (click)="manejarClick()
+    (click)="manejarClick()"
+  >
+    {{ formularioAbierto ? "Cancelar" : "Nueva Emisión" }}
+  </button>
+
+  <label
+    for="fileInput"
+    style="
+      border-radius: 5px;
+      border: 2px solid #97bcdd;
+      padding: 4px 10px;
+      font-size: 16px;
+      font-weight: 600;
+      background-color: #97bcdd;
+      color: white;
+      margin: 20px 5px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 36px;
     "
-    >
-    {{ formularioAbierto ? 'Cancelar' : 'Nueva Emisión' }}
-</button>
-
-<label for="fileInput"
-    style="float: left; border-radius: 5px; border: 2px solid #97bcdd; padding: 4px 10px; font-size: 16px; font-weight: 600; background-color: #97bcdd; color: white; margin: 20px 5px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; height: 36px;">
-    <mat-icon style="margin-right: 8px;">folder</mat-icon>
+  >
+    <mat-icon style="margin-right: 8px">folder</mat-icon>
     {{ nombreArchivo }}
-</label>
-<input type="file" #fileInput id="fileInput" (change)="handleFile($event)" style="display: none;" />
-<button (click)="procesarEmisiones()"
-    style="float: left; border-radius: 5px; border: 2px solid #97bcdd; padding: 1.5px 10px; font-size: 16px; font-weight: 600; background-color: #97bcdd; color: white; margin: 20px 0px;">
+  </label>
+  <input
+    type="file"
+    #fileInput
+    id="fileInput"
+    (change)="handleFile($event)"
+    style="display: none"
+  />
+  <button
+    (click)="procesarEmisiones()"
+    style="
+      border-radius: 5px;
+      border: 2px solid #97bcdd;
+      padding: 1.5px 10px;
+      font-size: 16px;
+      font-weight: 600;
+      background-color: #97bcdd;
+      color: white;
+      margin: 20px 0px;
+    "
+  >
     <img src="/assets/icons/save.svg" alt="Guardar" />
-</button>
-
-<!-- Últimos dos botones alineados a la derecha -->
-<button mat-raised-button
-    style="float: right; border-radius: 5px; border: 2px solid #4c91cc; padding: 6px 10px; font-size: 16px; font-weight: 600; background-color: #4c91cc; color: white; margin: 20px 5px;"
-    (click)="generarYDescargarCSVEmisiones()">Descargar CSV
-</button>
-<button mat-raised-button
-    style="float: right; border-radius: 5px; border: 2px solid #f44336; padding: 6px 10px; font-size: 16px; font-weight: 600; background-color: #f44336; color: white; margin: 20px 5px;"
-    (click)="eliminarSeleccionados()">Eliminar
-</button>
+  </button>
+</div>
 
 <!-- Limpia los floats -->
-<div style="clear: both;"></div>
+<div style="clear: both"></div>
 
-
-<div *ngIf="formularioAbierto">
-
+<div class="principal-container">
+  <div *ngIf="formularioAbierto">
+    <h2>Generar nueva emisión</h2>
+    <hr>
     <form [formGroup]="form" (ngSubmit)="agregarEmision()">
-
-
       <mat-form-field>
         <mat-label>ESTABLECIMIENTO</mat-label>
         <mat-select formControlName="ESTABLECIMIENTO">
-            <mat-option *ngFor="let establecimiento of establecimientos" [value]="establecimiento.id">{{ establecimiento.name }}</mat-option>
+          <mat-option
+            *ngFor="let establecimiento of establecimientos"
+            [value]="establecimiento.id"
+            >{{ establecimiento.name }}</mat-option
+          >
         </mat-select>
-    </mat-form-field>
-
-        <mat-form-field>
-            <mat-label>ALCANCE</mat-label>
-            <mat-select formControlName="ALCANCE">
-                <mat-option *ngFor="let alcance of alcances" [value]="alcance">{{ alcance }}</mat-option>
-            </mat-select>
-        </mat-form-field>
-
-        <mat-form-field>
-            <mat-label>CATEGORIA</mat-label>
-            <mat-select formControlName="CATEGORIA">
-                <mat-option *ngFor="let categoria of categorias" [value]="categoria">{{ categoria }}</mat-option>
-            </mat-select>
-        </mat-form-field>
-
-        <mat-form-field>
-            <mat-label>SUBCATEGORIA	- ACTIVIDAD - COMBUSTIBLE</mat-label>
-            <mat-select formControlName="CONCATENADO">
-                <mat-option *ngFor="let concatenado of concatenados" [value]="concatenado">{{ concatenado }}</mat-option>
-            </mat-select>
-        </mat-form-field>
-
-        <mat-form-field>
-            <mat-label>UNIDADFE</mat-label>
-            <mat-select formControlName="UNIDADFE">
-                <mat-option *ngFor="let unidad of unidades" [value]="unidad">{{ unidad }}</mat-option>
-            </mat-select>
-        </mat-form-field>
-
-        <mat-form-field>
-            <input matInput placeholder="CANTIDAD" formControlName="CANTIDAD">
-        </mat-form-field>
-
-        <mat-form-field>
-            <mat-label>Inicio Periodo</mat-label>
-            <input matInput [matDatepicker]="inicioPicker" placeholder="InicioPeriodo" formControlName="InicioPeriodo">
-            <mat-datepicker-toggle matIconSuffix [for]="inicioPicker"></mat-datepicker-toggle>
-            <mat-datepicker #inicioPicker></mat-datepicker>
-        </mat-form-field>
-
-        <mat-form-field>
-            <mat-label>Termino Periodo</mat-label>
-            <input matInput [matDatepicker]="terminoPicker" placeholder="TerminoPeriodo" formControlName="TerminoPeriodo">
-            <mat-datepicker-toggle matIconSuffix [for]="terminoPicker"></mat-datepicker-toggle>
-            <mat-datepicker #terminoPicker></mat-datepicker>
-        </mat-form-field>
-
-
-        <button mat-raised-button type="submit"
-        style="float: right; border-radius: 5px; border: 2px solid #9fd09f; padding: 5px 10px; font-size: 16px; font-weight: 600; background-color: #9fd09f; color: white; margin: 20px 5px;">
-        Guardar
-    </button>
-    <button mat-raised-button type="button" (click)="manejarClick()"
-        style="float: right; border-radius: 5px; border: 2px solid #f44336; padding: 5px 10px; font-size: 16px; font-weight: 600; background-color: #f44336; color: white; margin: 20px 5px;">
-        Cancelar
-    </button>
-    </form>
-</div>
-
-
-<!-- ESTABLECIMIENTOS -->
-<div *ngIf="formularioEstablecimientoAbierto">
-
-  <form [formGroup]="formEstablecimiento" (ngSubmit)="agregarEstablecimiento()">
-
-      <mat-form-field>
-          <input matInput placeholder="NOMBRE DEL ESTABLECIMIENTO" formControlName="ESTABLECIMIENTO">
       </mat-form-field>
 
-      <button mat-raised-button type="submit"
-      style="float: right; border-radius: 5px; border: 2px solid #9fd09f; padding: 5px 10px; font-size: 16px; font-weight: 600; background-color: #9fd09f; color: white; margin: 20px 5px;">
-      Guardar
-  </button>
-  <button mat-raised-button type="button" (click)="manejarClickEstablecimiento()"
-      style="float: right; border-radius: 5px; border: 2px solid #f44336; padding: 5px 10px; font-size: 16px; font-weight: 600; background-color: #f44336; color: white; margin: 20px 5px;">
-      Cancelar
-  </button>
-  </form>
-</div>
+      <mat-form-field>
+        <mat-label>ALCANCE</mat-label>
+        <mat-select formControlName="ALCANCE">
+          <mat-option *ngFor="let alcance of alcances" [value]="alcance">{{
+            alcance
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
 
-<table mat-table [dataSource]="emisiones" class="mat-elevation-z8 tablaEmisiones">
+      <mat-form-field>
+        <mat-label>CATEGORIA</mat-label>
+        <mat-select formControlName="CATEGORIA">
+          <mat-option
+            *ngFor="let categoria of categorias"
+            [value]="categoria"
+            >{{ categoria }}</mat-option
+          >
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>SUBCATEGORIA - ACTIVIDAD - COMBUSTIBLE</mat-label>
+        <mat-select formControlName="CONCATENADO">
+          <mat-option
+            *ngFor="let concatenado of concatenados"
+            [value]="concatenado"
+            >{{ concatenado }}</mat-option
+          >
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field style="display: none;">
+        <mat-label>UNIDADFE</mat-label>
+        <mat-select formControlName="UNIDADFE">
+          <mat-option [value]="unidades[0]">{{unidades[0]}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <span style="font-size: small; font-weight: lighter;">{{unidades[0]? unidades[0].split('/')[1] : ''}}</span>
+        <input matInput placeholder="CANTIDAD" formControlName="CANTIDAD" />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Inicio Periodo</mat-label>
+        <input
+          matInput
+          [matDatepicker]="inicioPicker"
+          placeholder="InicioPeriodo"
+          formControlName="InicioPeriodo"
+        />
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="inicioPicker"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #inicioPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Termino Periodo</mat-label>
+        <input
+          matInput
+          [matDatepicker]="terminoPicker"
+          placeholder="TerminoPeriodo"
+          formControlName="TerminoPeriodo"
+        />
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="terminoPicker"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #terminoPicker></mat-datepicker>
+      </mat-form-field>
+
+      <button
+        mat-raised-button
+        type="submit"
+        style="
+          float: right;
+          border-radius: 5px;
+          border: 2px solid #9fd09f;
+          padding: 5px 10px;
+          font-size: 16px;
+          font-weight: 600;
+          background-color: #9fd09f;
+          color: white;
+          margin: 20px 5px;
+        "
+      >
+        Guardar
+      </button>
+      <button
+        mat-raised-button
+        type="button"
+        (click)="manejarClick()"
+        style="
+          float: right;
+          border-radius: 5px;
+          border: 2px solid #f44336;
+          padding: 5px 10px;
+          font-size: 16px;
+          font-weight: 600;
+          background-color: #f44336;
+          color: white;
+          margin: 20px 5px;
+        "
+      >
+        Cancelar
+      </button>
+    </form>
+  </div>
+
+  <!-- ESTABLECIMIENTOS -->
+  <div *ngIf="formularioEstablecimientoAbierto">
+    <h2>Crear Establecimiento</h2>
+    <hr />
+    <form
+      [formGroup]="formEstablecimiento"
+      (ngSubmit)="agregarEstablecimiento()"
+    >
+      <div class="form-container">
+        <mat-form-field>
+          <input
+            matInput
+            placeholder="NOMBRE DEL ESTABLECIMIENTO"
+            formControlName="ESTABLECIMIENTO"
+          />
+        </mat-form-field>
+
+        <div class="btn-wrapper">
+          <button
+            mat-raised-button
+            type="submit"
+            style="
+              border-radius: 5px;
+              border: 2px solid #9fd09f;
+              padding: 5px 10px;
+              font-size: 16px;
+              font-weight: 600;
+              background-color: #9fd09f;
+              color: white;
+              margin: 20px 5px;
+            "
+          >
+            Guardar
+          </button>
+          <button
+            mat-raised-button
+            type="button"
+            (click)="manejarClickEstablecimiento()"
+            style="
+              border-radius: 5px;
+              border: 2px solid #f44336;
+              padding: 5px 10px;
+              font-size: 16px;
+              font-weight: 600;
+              background-color: #f44336;
+              color: white;
+              margin: 20px 5px;
+            "
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </form>
+    <br /><br />
+    <div>
+      <h2>Eliminar Establecimiento</h2>
+      <hr />
+      <div class="form-container">
+        <mat-form-field appearance="fill">
+          <mat-label>SELECCIONA UN ESTABLECIMIENTO</mat-label>
+          <mat-select [(value)]="selectedEstablecimientoId">
+            <mat-option *ngFor="let est of establecimientos" [value]="est.id">{{
+              est.name
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div class="btn-wrapper">
+          <button
+            mat-raised-button
+            color="warn"
+            (click)="confirmDelete()"
+            style="
+              border-radius: 5px;
+              border: 2px solid #f44336;
+              padding: 5px 10px;
+              font-size: 16px;
+              font-weight: 600;
+              background-color: #f44336;
+              color: white;
+              margin: 20px 5px;
+            "
+          >
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br /><br />
+
+  <div
+    style="
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 3rem;
+      min-width: 100%;
+    "
+  >
+    <h2>Emisiones Registradas</h2>
+    <div class="btn-wrapper">
+      <button
+        mat-raised-button
+        style="
+          border-radius: 5px;
+          border: 2px solid #4c91cc;
+          padding: 6px 10px;
+          font-size: 16px;
+          font-weight: 600;
+          background-color: #4c91cc;
+          color: white;
+          margin: 20px 5px;
+        "
+        (click)="generarYDescargarCSVEmisiones()"
+      >
+        Descargar CSV
+      </button>
+      <button
+        mat-raised-button
+        style="
+          border-radius: 5px;
+          border: 2px solid #f44336;
+          padding: 6px 10px;
+          font-size: 16px;
+          font-weight: 600;
+          background-color: #f44336;
+          color: white;
+          margin: 20px 5px;
+        "
+        (click)="eliminarSeleccionados()"
+      >
+        Eliminar
+      </button>
+    </div>
+  </div>
+  <hr />
+  <div class="table-container mat-elevation-z8 ">
+  <table
+    mat-table
+    [dataSource]="emisiones"
+    class="tablaEmisiones"
+  >
     <!-- Columna de selección -->
     <ng-container matColumnDef="select">
-        <th mat-header-cell *matHeaderCellDef>
-            <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
-                [indeterminate]="selection.hasValue() && !isAllSelected()">
-            </mat-checkbox>
-        </th>
-        <td mat-cell *matCellDef="let row">
-            <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
-                [checked]="selection.isSelected(row)">
-            </mat-checkbox>
-        </td>
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-checkbox
+          (change)="$event ? masterToggle() : null"
+          [checked]="selection.hasValue() && isAllSelected()"
+          [indeterminate]="selection.hasValue() && !isAllSelected()"
+        >
+        </mat-checkbox>
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <mat-checkbox
+          (click)="$event.stopPropagation()"
+          (change)="$event ? selection.toggle(row) : null"
+          [checked]="selection.isSelected(row)"
+        >
+        </mat-checkbox>
+      </td>
     </ng-container>
     <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef>id</th>
-        <td mat-cell *matCellDef="let factor">{{factor.id}}</td>
+      <th mat-header-cell *matHeaderCellDef>id</th>
+      <td mat-cell *matCellDef="let factor">{{ factor.id }}</td>
     </ng-container>
     <ng-container matColumnDef="ALCANCE">
-        <th mat-header-cell *matHeaderCellDef>ALCANCE</th>
-        <td mat-cell *matCellDef="let factor">{{factor.ALCANCE}}</td>
+      <th mat-header-cell *matHeaderCellDef>ALCANCE</th>
+      <td mat-cell *matCellDef="let factor">{{ factor.ALCANCE }}</td>
     </ng-container>
     <ng-container matColumnDef="ESTABLECIMIENTO">
       <th mat-header-cell *matHeaderCellDef>ESTABLECIMIENTO</th>
-      <td mat-cell *matCellDef="let emision">{{ obtenerNombreEstablecimiento(emision.EstablishmentID) }}</td>
-  </ng-container>
+      <td mat-cell *matCellDef="let emision">
+        {{ obtenerNombreEstablecimiento(emision.EstablishmentID) }}
+      </td>
+    </ng-container>
     <!-- CATEGORIA Column -->
     <ng-container matColumnDef="CATEGORIA">
-        <th mat-header-cell *matHeaderCellDef>CATEGORIA</th>
-        <td mat-cell *matCellDef="let factor">{{factor.CATEGORIA}}</td>
+      <th mat-header-cell *matHeaderCellDef>CATEGORIA</th>
+      <td mat-cell *matCellDef="let factor">{{ factor.CATEGORIA }}</td>
     </ng-container>
 
     <!-- SUBCATEGORIA Column -->
     <ng-container matColumnDef="SUBCATEGORIA">
-        <th mat-header-cell *matHeaderCellDef>SUBCATEGORIA</th>
-        <td mat-cell *matCellDef="let factor">{{factor.SUBCATEGORIA}}</td>
+      <th mat-header-cell *matHeaderCellDef>SUBCATEGORIA</th>
+      <td mat-cell *matCellDef="let factor">{{ factor.SUBCATEGORIA }}</td>
     </ng-container>
 
     <ng-container matColumnDef="ACTIVIDAD">
-        <th mat-header-cell *matHeaderCellDef>ACTIVIDAD</th>
-        <td mat-cell *matCellDef="let factor">{{factor.ACTIVIDAD}}</td>
+      <th mat-header-cell *matHeaderCellDef>ACTIVIDAD</th>
+      <td mat-cell *matCellDef="let factor">{{ factor.ACTIVIDAD }}</td>
     </ng-container>
 
     <ng-container matColumnDef="COMBUSTIBLE">
-        <th mat-header-cell *matHeaderCellDef>COMBUSTIBLE</th>
-        <td mat-cell *matCellDef="let factor">{{factor.COMBUSTIBLE}}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="UNIDADFE">
-        <th mat-header-cell *matHeaderCellDef>UNIDADFE</th>
-        <td mat-cell *matCellDef="let factor">{{factor.UNIDADFE}}</td>
+      <th mat-header-cell *matHeaderCellDef>COMBUSTIBLE</th>
+      <td mat-cell *matCellDef="let factor">{{ factor.COMBUSTIBLE }}</td>
     </ng-container>
 
 
     <ng-container matColumnDef="CANTIDAD">
-        <th mat-header-cell *matHeaderCellDef>CANTIDAD</th>
-        <td mat-cell *matCellDef="let factor">{{factor!.CANTIDAD | numberFormat}}</td>
+      <th mat-header-cell *matHeaderCellDef>CANTIDAD</th>
+      <td mat-cell *matCellDef="let factor">
+        {{ factor!.CANTIDAD | numberFormat }}
+      </td>
     </ng-container>
-
-    <ng-container matColumnDef="CO2">
-        <th mat-header-cell *matHeaderCellDef>CO2</th>
-        <td mat-cell *matCellDef="let factor">{{factor!.CO2 | numberFormat}}</td>
+    <ng-container matColumnDef="UNIDAD">
+      <th mat-header-cell *matHeaderCellDef>UNIDAD</th>
+      <td mat-cell *matCellDef="let factor">{{ factor.UNIDADFE ? factor.UNIDADFE.split('/')[1].toUpperCase() : '' }}</td>
     </ng-container>
-
-    <ng-container matColumnDef="CH4">
-        <th mat-header-cell *matHeaderCellDef>CH4</th>
-        <td mat-cell *matCellDef="let factor">{{factor!.CH4 | numberFormat}}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="N2O">
-        <th mat-header-cell *matHeaderCellDef>N2O</th>
-        <td mat-cell *matCellDef="let factor">{{factor!.N2O | numberFormat}}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="SF6">
-        <th mat-header-cell *matHeaderCellDef>SF6</th>
-        <td mat-cell *matCellDef="let factor">{{factor!.SF6 | numberFormat}}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="HFC">
-        <th mat-header-cell *matHeaderCellDef>HFC</th>
-        <td mat-cell *matCellDef="let factor">{{factor!.HFC | numberFormat}}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="PFC">
-        <th mat-header-cell *matHeaderCellDef>PFC</th>
-        <td mat-cell *matCellDef="let factor">{{factor!.PFC | numberFormat}}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="NF3">
-        <th mat-header-cell *matHeaderCellDef>NF3</th>
-        <td mat-cell *matCellDef="let factor">{{factor!.NF3 | numberFormat}}</td>
-    </ng-container>
-
     <ng-container matColumnDef="InicioPeriodo">
-        <th mat-header-cell *matHeaderCellDef>InicioPeriodo</th>
-        <td mat-cell *matCellDef="let factor">{{factor.InicioPeriodo}}</td>
+      <th mat-header-cell *matHeaderCellDef>InicioPeriodo</th>
+      <td mat-cell *matCellDef="let factor">{{ factor.InicioPeriodo }}</td>
     </ng-container>
 
     <ng-container matColumnDef="TerminoPeriodo">
-        <th mat-header-cell *matHeaderCellDef>TerminoPeriodo</th>
-        <td mat-cell *matCellDef="let factor">{{factor.TerminoPeriodo}}</td>
+      <th mat-header-cell *matHeaderCellDef>TerminoPeriodo</th>
+      <td mat-cell *matCellDef="let factor">{{ factor.TerminoPeriodo }}</td>
     </ng-container>
 
     <ng-container matColumnDef="INCERTIDUMBRE">
-        <th mat-header-cell *matHeaderCellDef>INCERTIDUMBRE</th>
-        <td mat-cell *matCellDef="let factor">{{factor.INCERTIDUMBRE}}</td>
+      <th mat-header-cell *matHeaderCellDef>INCERTIDUMBRE</th>
+      <td mat-cell *matCellDef="let factor">{{ factor.INCERTIDUMBRE }}</td>
     </ng-container>
 
     <ng-container matColumnDef="ORIGENFE">
-        <th mat-header-cell *matHeaderCellDef>ORIGENFE</th>
-        <td mat-cell *matCellDef="let factor">{{factor.ORIGENFE}}</td>
+      <th mat-header-cell *matHeaderCellDef>ORIGENFE</th>
+      <td mat-cell *matCellDef="let factor">{{ factor.ORIGENFE }}</td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-</table>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+  </div>
+</div>

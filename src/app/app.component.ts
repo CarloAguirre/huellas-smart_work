@@ -117,6 +117,7 @@ export class AppComponent implements OnInit {
       this.emisiones = await DataStore.query(Emision);
       this.dataSharingService.updateEmisiones(this.emisiones);
       this.changeDetector.detectChanges();
+      console.log('emisiones actualizadas!')
     } catch (error) {
       console.error('Error al actualizar las emisiones:', error);
     }

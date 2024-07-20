@@ -7,7 +7,7 @@ import { ResultadosComponent } from './resultados/resultados.component';
 
 const routes: Routes = [
   { path: 'factores-de-emision', component: FactoresDeEmisionComponent },
-  { path: 'emisiones', component: EmisionesComponent },
+  { path: 'datos-de-actividad', component: EmisionesComponent },
   { path: 'resultados', component: ResultadosComponent }
 ];
 

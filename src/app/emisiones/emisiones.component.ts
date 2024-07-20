@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DataStore, Hub, Predicates  } from 'aws-amplify';
+import { DataStore, Hub, Predicates } from 'aws-amplify';
 import { Emision, Establishment, User } from 'src/models'; // La ruta puede variar según donde se generó tu modelo.
 import { Factor } from 'src/models'; // La ruta puede variar según donde se generó tu modelo.
 import { HttpClient } from '@angular/common/http';
@@ -26,21 +26,27 @@ function excelDateToJSDate(serial: number): Date {
   const hours = Math.floor(totalSeconds / (60 * 60));
   const minutes = Math.floor(totalSeconds / 60) % 60;
 
-  return new Date(dateInfo.getFullYear(), dateInfo.getMonth(), dateInfo.getDate(), hours, minutes, seconds);
+  return new Date(
+    dateInfo.getFullYear(),
+    dateInfo.getMonth(),
+    dateInfo.getDate(),
+    hours,
+    minutes,
+    seconds
+  );
 }
 @Component({
   selector: 'app-emisiones',
   templateUrl: './emisiones.component.html',
   styleUrls: ['./emisiones.component.css'],
 })
-
 export class EmisionesComponent implements OnInit {
   emisionesDesdeExcel: any[] = [];
   selection = new SelectionModel<Emision>(true, []);
   factores: any[] = [];
   emisiones: Emision[] = [];
-  establecimiento: Establishment [] = []
-  nombreArchivo: string = 'Seleccionar archivo';  // Añade esta línea
+  establecimiento: Establishment[] = [];
+  nombreArchivo: string = 'Seleccionar archivo'; // Añade esta línea
   displayedColumns: string[] = [
     'select',
     'ALCANCE',
@@ -49,15 +55,8 @@ export class EmisionesComponent implements OnInit {
     'SUBCATEGORIA',
     'ACTIVIDAD',
     'COMBUSTIBLE',
-    'UNIDADFE',
     'CANTIDAD',
-    'CO2',
-    'CH4',
-    'N2O',
-    'SF6',
-    'HFC',
-    'PFC',
-    'NF3',
+    'UNIDAD',
     'InicioPeriodo',
     'TerminoPeriodo',
     'INCERTIDUMBRE',
@@ -72,14 +71,22 @@ export class EmisionesComponent implements OnInit {
 
   public form: FormGroup = new FormGroup({
     ALCANCE: new FormControl('', Validators.required),
-    CATEGORIA: new FormControl({ value: '', disabled: true }, Validators.required),
-    CONCATENADO: new FormControl({ value: '', disabled: true }, Validators.required),
-    UNIDADFE: new FormControl({ value: '', disabled: true }, Validators.required),
+    CATEGORIA: new FormControl(
+      { value: '', disabled: true },
+      Validators.required
+    ),
+    CONCATENADO: new FormControl(
+      { value: '', disabled: true },
+      Validators.required
+    ),
+    UNIDADFE: new FormControl(
+      { value: '', disabled: true },
+      Validators.required
+    ),
     CANTIDAD: new FormControl('', Validators.required),
     InicioPeriodo: new FormControl('', Validators.required),
     TerminoPeriodo: new FormControl('', Validators.required),
     ESTABLECIMIENTO: new FormControl('', Validators.required),
-
   });
   public mostrandoFormulario = false;
 
@@ -87,38 +94,34 @@ export class EmisionesComponent implements OnInit {
     ESTABLECIMIENTO: new FormControl('', Validators.required),
   });
 
-
   constructor(
     private http: HttpClient,
     private cdRef: ChangeDetectorRef,
     private snackBar: MatSnackBar,
     private dataStoreService: DataStoreService,
-    private dataService: DataService  // Inyecta DataService
-
-  ) { }
+    private dataService: DataService // Inyecta DataService
+  ) {}
   companyID: string = '';
   userID: string | null = 'null';
   establishmentID: string = 'null';
   establecimientos: Establishment[] = [];
-
-
+  selectedEstablecimientoId: string | null = null;
 
   handleFile(event: any) {
-    const target: DataTransfer = <DataTransfer>(event.target);
+    const target: DataTransfer = <DataTransfer>event.target;
 
     if (target.files.length !== 1) {
       console.error('No se puede usar múltiples archivos');
       return;
     }
 
-
     if (target.files.length !== 1) {
       console.error('No se puede usar múltiples archivos');
       return;
     }
 
-       // Actualiza el nombre del archivo
-       this.nombreArchivo = target.files[0].name;
+    // Actualiza el nombre del archivo
+    this.nombreArchivo = target.files[0].name;
 
     const reader: FileReader = new FileReader();
     reader.onload = (e: any) => {
@@ -129,8 +132,7 @@ export class EmisionesComponent implements OnInit {
       const ws: XLSX.WorkSheet = wb.Sheets[wsname];
 
       this.emisionesDesdeExcel = XLSX.utils.sheet_to_json(ws);
-      console.log("Datos cargados desde Excel:", this.emisionesDesdeExcel);
-
+      console.log('Datos cargados desde Excel:', this.emisionesDesdeExcel);
     };
 
     reader.readAsBinaryString(target.files[0]);
@@ -141,7 +143,11 @@ export class EmisionesComponent implements OnInit {
   async procesarEmisiones() {
     if (this.emisionesDesdeExcel.length === 0) {
       // Muestra una notificación al usuario
-      this.snackBar.open('No hay datos para procesar. Por favor, selecciona un archivo primero.', 'Cerrar', { duration: 4000 });
+      this.snackBar.open(
+        'No hay datos para procesar. Por favor, selecciona un archivo primero.',
+        'Cerrar',
+        { duration: 4000 }
+      );
       return;
     }
 
@@ -150,8 +156,7 @@ export class EmisionesComponent implements OnInit {
 
     for (const emisionData of this.emisionesDesdeExcel) {
       const form = this.crearFormularioConDatos(emisionData);
-      console.log("Formulario creado con datos:", form.value);
-
+      console.log('Formulario creado con datos:', form.value);
 
       if (form.valid) {
         try {
@@ -161,14 +166,21 @@ export class EmisionesComponent implements OnInit {
           errores.push({ data: emisionData, error: e.message });
         }
       } else {
-        errores.push({ data: emisionData, error: 'Datos no válidos en el formulario.' });
+        errores.push({
+          data: emisionData,
+          error: 'Datos no válidos en el formulario.',
+        });
       }
     }
 
     // Notifica al usuario sobre los resultados
-    this.snackBar.open(`${exitosos.length} emisiones agregadas con éxito. ${errores.length} emisiones tuvieron errores.`, 'Cerrar', { duration: 4000 });
+    this.snackBar.open(
+      `${exitosos.length} emisiones agregadas con éxito. ${errores.length} emisiones tuvieron errores.`,
+      'Cerrar',
+      { duration: 4000 }
+    );
 
-    this.fileInput.nativeElement.value = '';  // Resetea el control del archivo
+    this.fileInput.nativeElement.value = ''; // Resetea el control del archivo
     this.nombreArchivo = 'Seleccionar archivo';
     this.emisionesDesdeExcel = [];
   }
@@ -187,9 +199,8 @@ export class EmisionesComponent implements OnInit {
     });
   }
 
-
   async agregarEmisionDesdeFormulario(form: FormGroup) {
-    const nickname = 'holamundo'
+    const nickname = 'holamundo';
     if (form.valid) {
       const values = form.value;
       const jsInicioPeriodo = excelDateToJSDate(values.InicioPeriodo);
@@ -252,7 +263,7 @@ export class EmisionesComponent implements OnInit {
         // console.log("Objeto emision a guardar:", emision);
       });
 
-   // Crear un objeto Emision basado en los valores del formulario
+      // Crear un objeto Emision basado en los valores del formulario
       const emision = new Emision({
         Company: nickname, // Debes decidir de dónde obtener este valor
         ALCANCE: values.ALCANCE,
@@ -275,15 +286,14 @@ export class EmisionesComponent implements OnInit {
         ORIGENFE: ORIGENFE,
         userID: this.userID!,
         companyID: this.companyID!, // Asegúrate de que este valor esté disponible
-        EstablishmentID: this.establishmentID
+        EstablishmentID: this.establishmentID,
       });
-
 
       try {
         await DataStore.save(emision);
         Hub.dispatch('emisiones', {
           event: 'nuevaEmision',
-          data: emision
+          data: emision,
         });
       } catch (error) {
         console.error('Detalle del error:', error);
@@ -298,11 +308,11 @@ export class EmisionesComponent implements OnInit {
 
   async cargarEmisiones(): Promise<void> {
     this.emisiones = await DataStore.query(Emision);
-
   }
 
+
   obtenerNombreEstablecimiento(id: string): string {
-    const establecimiento = this.establecimientos.find(est => est.id === id);
+    const establecimiento = this.establecimientos.find((est) => est.id === id);
     return establecimiento ? establecimiento.name : 'Nombre no encontrado';
   }
 
@@ -315,7 +325,9 @@ export class EmisionesComponent implements OnInit {
       if (data && data.company && data.user) {
         this.companyID = data.user.companyID;
         this.userID = data.user.id;
-        this.establecimientos = await DataStore.query(Establishment, est => est.companyID.eq(this.companyID));
+        this.establecimientos = await DataStore.query(Establishment, (est) =>
+          est.companyID.eq(this.companyID)
+        );
       } else {
         console.error('No se pudo obtener el usuario o la compañía');
       }
@@ -420,14 +432,14 @@ export class EmisionesComponent implements OnInit {
 
   manejarClick(): void {
     if (this.formularioAbierto) {
-      this.cerrarFormulario();  // si el formulario está abierto, ciérralo
+      this.cerrarFormulario(); // si el formulario está abierto, ciérralo
     } else {
-      this.mostrarFormulario();  // si el formulario está cerrado, ábrelo
+      this.mostrarFormulario(); // si el formulario está cerrado, ábrelo
     }
   }
 
   async agregarEmision() {
-    const nickname = 'HolaMundo'
+    const nickname = 'HolaMundo';
 
     if (this.form.valid) {
       const values = this.form.value;
@@ -511,7 +523,7 @@ export class EmisionesComponent implements OnInit {
           ORIGENFE: ORIGENFE,
           companyID: this.companyID!,
           userID: this.userID!,
-          EstablishmentID: values.ESTABLECIMIENTO
+          EstablishmentID: values.ESTABLECIMIENTO,
         });
 
         // Guardar el objeto Emision en DataStore
@@ -522,7 +534,7 @@ export class EmisionesComponent implements OnInit {
           });
           Hub.dispatch('emisiones', {
             event: 'nuevaEmision',
-            data: emision
+            data: emision,
           });
           this.cancelarFormulario();
           await this.cargarEmisiones();
@@ -546,31 +558,34 @@ export class EmisionesComponent implements OnInit {
 
   //TODO: CREAR ESTABLECIMIENTO:
   async manejarClickEstablecimiento() {
-
     if (this.formularioEstablecimientoAbierto) {
-      this.cerrarFormularioEstablecimiento();  // si el formulario está abierto, ciérralo
+      this.cerrarFormularioEstablecimiento(); // si el formulario está abierto, ciérralo
     } else {
-      this.mostrarFormularioEstablecimiento();  // si el formulario está cerrado, ábrelo
+      this.mostrarFormularioEstablecimiento(); // si el formulario está cerrado, ábrelo
     }
   }
   async agregarEstablecimiento() {
     if (this.formEstablecimiento.valid) {
       const nombre = this.formEstablecimiento.value.ESTABLECIMIENTO;
-
-      // TODO: Verificar si ya existe un establecimiento con el mismo nombre
-      const existeEstablecimiento = this.establecimientos.find(est => est.name === nombre);
+      const existeEstablecimiento = this.establecimientos.find(
+        (est) => est.name === nombre
+      );
 
       if (existeEstablecimiento) {
-        this.snackBar.open('Ya existe un establecimiento con este nombre', 'Cerrar', {
-          duration: 2000,
-        });
+        this.snackBar.open(
+          'Ya existe un establecimiento con este nombre',
+          'Cerrar',
+          {
+            duration: 2000,
+          }
+        );
         return;
       }
 
       if (this.companyID !== null) {
         const establecimiento = new Establishment({
           companyID: this.companyID,
-          name: nombre
+          name: nombre,
         });
 
         try {
@@ -578,6 +593,9 @@ export class EmisionesComponent implements OnInit {
           this.snackBar.open('Establecimiento guardado con éxito!', 'Cerrar', {
             duration: 2000,
           });
+          this.establecimientos = await DataStore.query(Establishment, (est) =>
+            est.companyID.eq(this.companyID)
+          );
           this.cancelarFormularioEstablecimiento();
           await this.cargarEstablecimiento();
         } catch (error) {
@@ -591,7 +609,6 @@ export class EmisionesComponent implements OnInit {
       }
     }
   }
-
 
   cancelarFormulario() {
     this.formularioAbierto = false;
@@ -705,5 +722,34 @@ export class EmisionesComponent implements OnInit {
     document.body.removeChild(a);
   }
 
+  async deleteEstablecimiento(estId: string) {
+    try {
+      const toDelete = await DataStore.query(Establishment, estId);
+      if (toDelete) {
+        await DataStore.delete(toDelete);
+        this.establecimientos = this.establecimientos.filter(
+          (est) => est.id !== estId
+        );
+        console.log('Establecimiento eliminado:', estId);
+      }
+    } catch (error) {
+      console.error('Error eliminando el establecimiento:', error);
+    }
+  }
 
+  async confirmDelete() {
+    if (this.selectedEstablecimientoId) {
+      const confirmed = confirm(
+        '¿Estás seguro de que quieres eliminar el establecimiento?'
+      );
+      if (confirmed) {
+        this.deleteEstablecimiento(this.selectedEstablecimientoId);
+        this.establecimientos = await DataStore.query(Establishment, (est) =>
+          est.companyID.eq(this.companyID)
+        );
+      }
+    } else {
+      alert('Por favor, selecciona un establecimiento primero.');
+    }
+  }
 }

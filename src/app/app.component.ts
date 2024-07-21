@@ -36,7 +36,7 @@ export class AppComponent implements OnInit {
 
       Hub.listen('emisiones', async (data) => {
         const { event } = data.payload;
-        if (event === 'nuevaEmision') {
+        if (event === 'nuevaEmision' || event === "borrarEmision") {
           await this.actualizarEmisiones();
         }
       });

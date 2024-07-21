@@ -135,7 +135,7 @@
 
       <mat-form-field style="display: none;">
         <mat-label>UNIDADFE</mat-label>
-        <mat-select formControlName="UNIDADFE">
+        <mat-select formControlName="UNIDADFE" [value]="unidades[0]">
           <mat-option [value]="unidades[0]">{{unidades[0]}}</mat-option>
         </mat-select>
       </mat-form-field>

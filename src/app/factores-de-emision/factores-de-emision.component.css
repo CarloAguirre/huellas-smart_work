@@ -1,10 +1,13 @@
 .tablaFactores {
     max-width: 90%;       /* Establece el ancho máximo que puede tener la tabla */
-    overflow-x: auto;     /* Si el contenido excede el ancho máximo, muestra una barra de desplazamiento */
     margin: 0 auto;       /* Centra la tabla horizontalmente */
     max-height: 500px;    /* Establece el alto máximo para la tabla */
-    overflow-y: auto;     /* Si el contenido excede el alto máximo, muestra una barra de desplazamiento vertical */
-}
+  }
+  .table-container {
+  overflow-y: auto;     /* Si el contenido excede el alto máximo, muestra una barra de desplazamiento vertical */
+  overflow-x: auto;
+  max-height: 80vh;
+  }
 
 .tablaFactores td {
     white-space: nowrap;  /* Esto hace que el contenido de la celda no se divida */

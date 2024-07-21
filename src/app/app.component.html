@@ -16,17 +16,24 @@
     <div class="principal-container">
       <!-- Sidebar con opciones para cambiar de vista -->
       <div class="sidebar">
+        <h2>Dashboard menú</h2>
         <ul>
           <li [class.active]="isActive('/factores-de-emision')">
+            <i class="fa-solid fa-book me-1"></i>
             <a routerLink="/factores-de-emision">Factores de emisión</a>
           </li>
           <li [class.active]="isActive('/datos-de-actividad')">
+            <i class="fa-solid fa-file-lines me-1"></i>
             <a routerLink="/datos-de-actividad">Datos de actividad</a>
           </li>
           <li [class.active]="isActive('/resultados')">
+            <i class="fa-solid fa-chart-simple me-1"></i>
             <a routerLink="/resultados">Resultados</a>
           </li>
-          <li class="logout" (click)="handleSignOut(signOut)">Cerrar Sesión</li>
+          <li class="logout" (click)="handleSignOut(signOut)">
+            <i class="fa-solid fa-right-from-bracket me-1"></i>
+            Cerrar Sesión
+          </li>
         </ul>
         <div class="logo-container">
           <img src="assets/logos/HSO.png" alt="Logo" />

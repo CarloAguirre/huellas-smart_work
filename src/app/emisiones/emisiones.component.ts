@@ -11,6 +11,7 @@ import * as XLSX from 'xlsx';
 import { DataService } from '../services/data.service';
 import { ElementRef, ViewChild } from '@angular/core';
 import { DataStoreService } from '../services/data-store.service';
+import { DataSharingService } from '../services/data-sharing.service';
 
 function excelDateToJSDate(serial: number): Date {
   const utcDays = Math.floor(serial - 25569);
@@ -99,7 +100,8 @@ export class EmisionesComponent implements OnInit {
     private cdRef: ChangeDetectorRef,
     private snackBar: MatSnackBar,
     private dataStoreService: DataStoreService,
-    private dataService: DataService // Inyecta DataService
+    private dataService: DataService,// Inyecta DataService
+    private dataSharingService: DataSharingService
   ) {}
   companyID: string = '';
   userID: string | null = 'null';
@@ -321,16 +323,24 @@ export class EmisionesComponent implements OnInit {
   }
   async ngOnInit(): Promise<void> {
     try {
-      const data = await this.dataService.getUserAndCompany();
-      if (data && data.company && data.user) {
-        this.companyID = data.user.companyID;
-        this.userID = data.user.id;
-        this.establecimientos = await DataStore.query(Establishment, (est) =>
-          est.companyID.eq(this.companyID)
-        );
-      } else {
-        console.error('No se pudo obtener el usuario o la compañía');
-      }
+      await DataStore.start();
+      this.dataSharingService.emisiones$.subscribe(emisiones => {
+        this.emisiones = emisiones;
+      });
+
+      this.dataSharingService.establecimientos$.subscribe(establecimientos => {
+        this.establecimientos = establecimientos;
+      });
+      // const data = await this.dataService.getUserAndCompany();
+      // if (data && data.company && data.user) {
+      //   this.companyID = data.user.companyID;
+      //   this.userID = data.user.id;
+      //   this.establecimientos = await DataStore.query(Establishment, (est) =>
+      //     est.companyID.eq(this.companyID)
+      //   );
+      // } else {
+      //   console.error('No se pudo obtener el usuario o la compañía');
+      // }
 
       // console.log(this.establecimientos)
 
@@ -345,7 +355,7 @@ export class EmisionesComponent implements OnInit {
         this.http.get<any>('/assets/factores.json').toPromise(),
       ]);
 
-      await this.cargarEmisiones();
+      // await this.cargarEmisiones();
 
       this.factores = [
         ...factoresDesdeDataStore,
@@ -439,8 +449,9 @@ export class EmisionesComponent implements OnInit {
   }
 
   async agregarEmision() {
-    const nickname = 'HolaMundo';
 
+    const nickname = 'HolaMundo';
+    console.log(this.form)
     if (this.form.valid) {
       const values = this.form.value;
 
@@ -554,6 +565,9 @@ export class EmisionesComponent implements OnInit {
         );
       }
     }
+    else{
+      console.log('Emision data not valid')
+    }
   }
 
   //TODO: CREAR ESTABLECIMIENTO:
@@ -654,6 +668,11 @@ export class EmisionesComponent implements OnInit {
       for (const item of itemsConMismoCod) {
         try {
           await DataStore.delete(Emision, item.id);
+
+        Hub.dispatch('emisiones', {
+          event: 'nuevaEmision',
+          data: 'borrarEmision',
+        });
         } catch (error) {
           console.error('Error al eliminar el factor:', error);
         }

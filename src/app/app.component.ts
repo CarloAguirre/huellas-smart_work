@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { DataStore } from 'aws-amplify';
 import { DataService } from './services/data.service';
 import { Hub } from 'aws-amplify';
-import { Establishment, Emision } from 'src/models';
+import { Establishment, Emision, Factor } from 'src/models';
 import { DataSharingService } from './services/data-sharing.service';
 
 @Component({
@@ -22,6 +22,7 @@ export class AppComponent implements OnInit {
   establishmentID: string = 'null';
   establecimientos: Establishment[] = [];
   emisiones: Emision[] = [];
+  factores: Factor[] = [];
 
   constructor(
     private router: Router,
@@ -77,6 +78,8 @@ export class AppComponent implements OnInit {
         this.company = data.company;
         this.companyID = data.user.companyID;
         this.userID = data.user.id;
+        this.factores= await DataStore.query(Factor);
+
 
         this.establecimientos = await DataStore.query(Establishment, est => est.companyID.eq(this.companyID));
         this.dataSharingService.updateEstablecimientos(this.establecimientos);

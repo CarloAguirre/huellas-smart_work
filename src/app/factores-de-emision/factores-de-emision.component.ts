@@ -10,6 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DataService } from '../services/data.service';
 import * as XLSX from 'xlsx';
 import { ElementRef, ViewChild } from '@angular/core';
+import { DataSharingService } from '../services/data-sharing.service';
 
 @Component({
   selector: 'app-factores-de-emision',
@@ -50,8 +51,8 @@ export class FactoresDeEmisionComponent implements OnInit {
     private http: HttpClient,
     private cdRef: ChangeDetectorRef,
     private snackBar: MatSnackBar,
-    private dataService: DataService  // Inyecta DataService
-
+    private dataService: DataService, // Inyecta DataService
+    private dataSharingService: DataSharingService
 
   ) { }
   company: any | null = null;
@@ -59,25 +60,14 @@ export class FactoresDeEmisionComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     try {
-      // Obtener los datos del usuario y la compañía primero
-      const data = await this.dataService.getUserAndCompany();
-
-      if (data && data.company && data.user) {
-        this.company = data.company;
-        this.userID = data.user.id;
-      } else {
-        console.error('No se pudo obtener el usuario o la compañía');
-      }
-
-      console.log(this.company)
-
-      // Luego, consulta los factores de emisión en DataStore
-      const factoresDesdeDataStore: Factor[] = await DataStore.query(Factor);
+      this.dataSharingService.emisiones$.subscribe(emisiones => {
+        this.factores = emisiones;
+      });
 
       // Finalmente, obtén los factores de emisión adicionales desde el archivo JSON
       this.http.get<any>('/assets/factores.json').subscribe(data => {
         const factoresDesdeJson = data.factores;
-        this.factores = [...factoresDesdeDataStore, ...factoresDesdeJson];
+        this.factores = [...this.factores, ...factoresDesdeJson];
       }, error => {
         console.error('Error al obtener los factores de emisión desde el archivo JSON:', error);
       });

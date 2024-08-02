@@ -331,18 +331,18 @@ export class EmisionesComponent implements OnInit {
       this.dataSharingService.establecimientos$.subscribe(establecimientos => {
         this.establecimientos = establecimientos;
       });
-      // const data = await this.dataService.getUserAndCompany();
-      // if (data && data.company && data.user) {
-      //   this.companyID = data.user.companyID;
-      //   this.userID = data.user.id;
-      //   this.establecimientos = await DataStore.query(Establishment, (est) =>
-      //     est.companyID.eq(this.companyID)
-      //   );
-      // } else {
-      //   console.error('No se pudo obtener el usuario o la compañía');
-      // }
+      const data = await this.dataService.getUserAndCompany();
+      if (data && data.company && data.user) {
+        this.companyID = data.user.companyID;
+        this.userID = data.user.id;
+        // this.establecimientos = await DataStore.query(Establishment, (est) =>
+        //   est.companyID.eq(this.companyID)
+        // );
+      } else {
+        console.error('No se pudo obtener el usuario o la compañía');
+      }
 
-      // console.log(this.establecimientos)
+      console.log(this.establecimientos)
 
       // Espera a que ambas fuentes de datos estén listas
       const [

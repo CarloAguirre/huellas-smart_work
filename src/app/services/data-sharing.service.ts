@@ -15,6 +15,9 @@ export class DataSharingService {
   private factoresSource = new BehaviorSubject<Factor[]>([]);
   factores$ = this.factoresSource.asObservable();
 
+  private userData = new BehaviorSubject<object>({});
+  userData$ = this.userData.asObservable();
+
   updateEmisiones(emisiones: Emision[]) {
     this.emisionesSource.next(emisiones);
   }
@@ -25,5 +28,9 @@ export class DataSharingService {
 
   updateFactores(factores: Factor[]) {
     this.factoresSource.next(factores);
+  }
+
+  updateUserData(userData: object) {
+    this.userData.next(userData);
   }
 }

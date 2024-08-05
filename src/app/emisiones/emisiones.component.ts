@@ -342,8 +342,6 @@ export class EmisionesComponent implements OnInit {
         console.error('No se pudo obtener el usuario o la compañía');
       }
 
-      console.log(this.establecimientos)
-
       // Espera a que ambas fuentes de datos estén listas
       const [
         emisionesDesdeDataStore,

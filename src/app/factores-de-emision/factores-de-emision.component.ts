@@ -1,7 +1,7 @@
 // factores-de-emision.component.ts
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { DataStore } from 'aws-amplify';
+import { DataStore, Hub } from 'aws-amplify';
 import { Factor } from 'src/models';  // La ruta puede variar según donde se generó tu modelo.
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ChangeDetectorRef } from '@angular/core';
@@ -11,6 +11,13 @@ import { DataService } from '../services/data.service';
 import * as XLSX from 'xlsx';
 import { ElementRef, ViewChild } from '@angular/core';
 import { DataSharingService } from '../services/data-sharing.service';
+
+interface UserData {
+  userID: string;
+  companyID?: string; // Agrega las propiedades que necesitas
+  user?: any; // Define las propiedades según tus necesidades
+  company?: any;
+}
 
 @Component({
   selector: 'app-factores-de-emision',
@@ -22,6 +29,7 @@ import { DataSharingService } from '../services/data-sharing.service';
 export class FactoresDeEmisionComponent implements OnInit {
   selection = new SelectionModel<Factor>(true, []);
   factores: any[] = [];
+  userData: UserData = { userID: '', companyID: '', user: null, company: null };
   displayedColumns: string[] = ['select', 'ID/COD', 'ALCANCE', 'CATEGORIA', 'SUBCATEGORIA', 'ACTIVIDAD', 'COMBUSTIBLE', 'CONTAMINANTE', 'INCERTIDUMBRE', 'VALORFE', 'UNIDADFE', 'ORIGENFE'];
   nombreArchivo: string = 'Seleccionar archivo';  // Añade esta línea
 
@@ -60,16 +68,14 @@ export class FactoresDeEmisionComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     try {
-      this.dataSharingService.emisiones$.subscribe(emisiones => {
-        this.factores = emisiones;
-      });
+      this.dataSharingService.userData$.subscribe(userData => {
+        this.userData = userData as UserData;
+        console.log(this.userData.userID)
+      })
 
-      // Finalmente, obtén los factores de emisión adicionales desde el archivo JSON
-      this.http.get<any>('/assets/factores.json').subscribe(data => {
-        const factoresDesdeJson = data.factores;
-        this.factores = [...this.factores, ...factoresDesdeJson];
-      }, error => {
-        console.error('Error al obtener los factores de emisión desde el archivo JSON:', error);
+      this.dataSharingService.factores$.subscribe(factores => {
+        this.factores = factores;
+
       });
 
     } catch (error) {
@@ -130,8 +136,9 @@ export class FactoresDeEmisionComponent implements OnInit {
         ...nuevoFactorBase,
         CONTAMINANTE: contaminante.nombre,
         VALORFE: contaminante.valor,
-        company: this.company,  // Usa this.company
-        userID: this.userID          // Usa this.userID
+        company: this.userData.company,  // Usa this.company
+        userID: this.userData.userID,          // Usa this.userID
+        companyID: this.userData.companyID
       };
 
       // Elimina las propiedades que ya no son necesarias
@@ -145,7 +152,10 @@ export class FactoresDeEmisionComponent implements OnInit {
 
       try {
         await DataStore.save(new Factor(registro));
-        this.factores = [registro, ...this.factores];
+        Hub.dispatch('factores', {
+          event: 'nuevoFactor',
+          data: registro,
+        });
       } catch (error) {
         console.error("Error al guardar el nuevo factor:", error);
       }
